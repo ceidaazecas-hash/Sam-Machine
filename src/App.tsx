@@ -1,6 +1,7 @@
 import React from 'react';
 import { LabProvider, useLab } from './context/LabContext';
 import { Navbar } from './components/Navbar';
+import { LuxuryHero } from './components/LuxuryHero';
 import { RequestForm } from './components/RequestForm';
 import { ReturnForm } from './components/ReturnForm';
 import { LecturerDashboard } from './components/LecturerDashboard';
@@ -18,7 +19,10 @@ const MainContent: React.FC = () => {
     <div className="app-shell">
       <Navbar />
 
-      <main className="main-content-area">
+      {/* Hero Section displayed on Request & Main views */}
+      {activeTab === 'REQUEST' && <LuxuryHero />}
+
+      <main className="main-content-area" id="studio-booking-anchor">
         {activeTab === 'REQUEST' && <RequestForm />}
         {activeTab === 'RETURN' && <ReturnForm />}
         {activeTab === 'LECTURER' && <LecturerDashboard />}
@@ -26,40 +30,40 @@ const MainContent: React.FC = () => {
         {activeTab === 'HISTORY' && <HistoryAudit />}
       </main>
 
-      {/* Footer */}
+      {/* Luxury Footer */}
       <footer className="site-footer">
         <div className="footer-inner">
           <div className="footer-col">
             <div className="flex items-center gap-2">
-              <div className="brand-icon-box" style={{ width: 28, height: 28 }}>
-                <Scissors size={15} className="brand-icon" />
+              <div className="brand-icon-box" style={{ width: 32, height: 32 }}>
+                <Scissors size={17} className="brand-icon" />
               </div>
-              <span className="font-bold text-sm tracking-wide">TEXTILE LAB CONNECT</span>
+              <span className="footer-brand-title">ATELIER CRAFT • LAB CONNECT</span>
             </div>
-            <p className="text-xs text-muted mt-2 max-w-sm">
-              Laboratory Management System for Apparel, Fashion Design, and Textile Technology Studios (Rooms 719, 721, 724).
+            <p className="footer-brand-desc">
+              State-of-the-art laboratory requisition and equipment lifecycle system for Apparel, Fashion Design, and Textile Engineering Studios (Rooms 719, 721, 724).
             </p>
           </div>
 
           <div className="footer-col">
             <div className="footer-title">STUDIO PROTOCOLS</div>
             <ul className="footer-links">
-              <li>• Always turn off motor switch before leaving station</li>
-              <li>• Keep hair tied and loose jewelry removed</li>
-              <li>• Oil hook and bobbin race every 8 hours of usage</li>
+              <li>• Always turn off servo motor switch before vacating workstation</li>
+              <li>• Tie back hair, remove loose jewelry & wear eye protection</li>
+              <li>• Clear lint basin and oil hook every 8 operating hours</li>
             </ul>
           </div>
 
           <div className="footer-col">
-            <div className="footer-title">TECHNICAL SUPPORT</div>
-            <div className="text-xs text-muted space-y-1">
-              <div className="flex items-center gap-1.5">
-                <MapPin size={13} className="text-primary" />
-                <span>Technical Office: Room 718 (Next to Studio 719)</span>
+            <div className="footer-title">STUDIO DIRECTORY</div>
+            <div className="text-xs text-muted space-y-2">
+              <div className="flex items-center gap-2">
+                <MapPin size={14} className="text-primary" />
+                <span>Technical Office: Room 718 (Adjacent to Studio 719)</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <Phone size={13} className="text-emerald-400" />
-                <span>Lab Emergency Ext: 4821 / 4822</span>
+              <div className="flex items-center gap-2">
+                <Phone size={14} className="text-emerald-400" />
+                <span>Studio Support Hotline: Ext 4821 / 4822</span>
               </div>
             </div>
           </div>
@@ -67,11 +71,11 @@ const MainContent: React.FC = () => {
 
         <div className="footer-bottom">
           <span className="text-xs text-muted">
-            TextileLab Pro System • Designed with TypeScript & React
+            © 2026 Atelier Craft • Textile & Apparel Lab Management
           </span>
           <span className="text-xs text-muted flex items-center gap-1">
-            <Shield size={12} className="text-primary" />
-            <span>Industrial Safety Verified</span>
+            <Shield size={13} className="text-primary" />
+            <span>Certified Laboratory Safety Framework</span>
           </span>
         </div>
       </footer>
