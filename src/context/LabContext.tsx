@@ -61,8 +61,18 @@ interface LabContextType {
 
   // Dynamic Additions by Lecturer
   addMachine: (machine: Omit<Machine, 'id' | 'totalUsageHours' | 'healthScore'>) => Machine;
+  editMachine: (id: string, updated: Partial<Machine>) => void;
+  deleteMachine: (id: string) => void;
+
   addLecturer: (lecturer: Omit<Lecturer, 'id'>) => Lecturer;
+  editLecturer: (id: string, updated: Partial<Lecturer>) => void;
+  deleteLecturer: (id: string) => void;
+
   addClassModule: (moduleName: string) => void;
+  editClassModule: (oldName: string, newName: string) => void;
+  deleteClassModule: (moduleName: string) => void;
+
+  deleteRequest: (id: string) => void;
 
   // Excel / CSV Export functions
   exportRequestsToCSV: () => void;
@@ -73,13 +83,13 @@ interface LabContextType {
 const LabContext = createContext<LabContextType | undefined>(undefined);
 
 const STORAGE_KEYS = {
-  MACHINES: 'studio_lab_machines_v2',
-  REQUESTS: 'studio_lab_requests_v2',
-  LECTURERS: 'studio_lab_lecturers_v2',
-  MODULES: 'studio_lab_modules_v2',
-  LOGS: 'studio_lab_logs_v2',
-  THEME: 'studio_lab_theme_v2',
-  SOUND: 'studio_lab_sound_v2'
+  MACHINES: 'studio_lab_machines_v3',
+  REQUESTS: 'studio_lab_requests_v3',
+  LECTURERS: 'studio_lab_lecturers_v3',
+  MODULES: 'studio_lab_modules_v3',
+  LOGS: 'studio_lab_logs_v3',
+  THEME: 'studio_lab_theme_v3',
+  SOUND: 'studio_lab_sound_v3'
 };
 
 export const LabProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -422,9 +432,10 @@ export const LabProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   };
 
   // =========================================================================
-  // DYNAMIC ADDITIONS (ADD MACHINE, LECTURER, CLASS/MODULE)
+  // DYNAMIC ADDITIONS, EDITS & DELETIONS
   // =========================================================================
 
+  // 1. Machine Management
   const addMachine = (m: Omit<Machine, 'id' | 'totalUsageHours' | 'healthScore'>): Machine => {
     const id = m.code.trim();
     const newMachine: Machine = {
@@ -441,6 +452,19 @@ export const LabProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return newMachine;
   };
 
+  const editMachine = (id: string, updated: Partial<Machine>) => {
+    setMachines(prev =>
+      prev.map(m => (m.id === id ? { ...m, ...updated, code: updated.code || m.code } : m))
+    );
+    showToast(`Machine #${id} updated successfully.`, 'success');
+  };
+
+  const deleteMachine = (id: string) => {
+    setMachines(prev => prev.filter(m => m.id !== id));
+    showToast(`Machine #${id} removed from laboratory registry.`, 'info');
+  };
+
+  // 2. Lecturer Management
   const addLecturer = (l: Omit<Lecturer, 'id'>): Lecturer => {
     const id = `LEC-${String(lecturers.length + 1).padStart(2, '0')}`;
     const newLecturer: Lecturer = {
@@ -453,6 +477,20 @@ export const LabProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return newLecturer;
   };
 
+  const editLecturer = (id: string, updated: Partial<Lecturer>) => {
+    setLecturers(prev =>
+      prev.map(l => (l.id === id ? { ...l, ...updated } : l))
+    );
+    showToast(`Faculty member details updated.`, 'success');
+  };
+
+  const deleteLecturer = (id: string) => {
+    const target = lecturers.find(l => l.id === id);
+    setLecturers(prev => prev.filter(l => l.id !== id));
+    showToast(`Faculty member "${target?.name || id}" removed.`, 'info');
+  };
+
+  // 3. Class / Module Management
   const addClassModule = (moduleName: string) => {
     const trimmed = moduleName.trim();
     if (!trimmed) return;
@@ -463,6 +501,36 @@ export const LabProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     setModules(prev => [...prev, trimmed]);
     showToast(`Module "${trimmed}" added to active curriculum!`, 'success');
+  };
+
+  const editClassModule = (oldName: string, newName: string) => {
+    const trimmed = newName.trim();
+    if (!trimmed) return;
+    setModules(prev => prev.map(m => (m === oldName ? trimmed : m)));
+    showToast(`Module updated to "${trimmed}".`, 'success');
+  };
+
+  const deleteClassModule = (moduleName: string) => {
+    setModules(prev => prev.filter(m => m !== moduleName));
+    showToast(`Module "${moduleName}" removed from curriculum.`, 'info');
+  };
+
+  // 4. Booking Request Deletion / Cancellation
+  const deleteRequest = (id: string) => {
+    const target = requests.find(r => r.id === id);
+    if (target) {
+      // Free up machines if in use or reserved
+      setMachines(prev =>
+        prev.map(m => {
+          if (target.requestDetails.machineIds.includes(m.id) && m.currentBookingId === id) {
+            return { ...m, status: 'AVAILABLE', currentBookingId: undefined };
+          }
+          return m;
+        })
+      );
+    }
+    setRequests(prev => prev.filter(r => r.id !== id));
+    showToast(`Request ${id} deleted from logs.`, 'info');
   };
 
   // =========================================================================
@@ -677,8 +745,15 @@ export const LabProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         resolveMaintenanceLog,
         resetDemoData,
         addMachine,
+        editMachine,
+        deleteMachine,
         addLecturer,
+        editLecturer,
+        deleteLecturer,
         addClassModule,
+        editClassModule,
+        deleteClassModule,
+        deleteRequest,
         exportRequestsToCSV,
         exportMachinesToCSV,
         exportStudentSummaryToCSV

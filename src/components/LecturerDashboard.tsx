@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLab } from '../context/LabContext';
-import type { BookingRequest, Machine } from '../types/lab';
+import type { BookingRequest, Machine, Lecturer } from '../types/lab';
 import { 
   Check, 
   X, 
@@ -22,7 +22,8 @@ import {
   Settings,
   UserPlus,
   BookPlus,
-  Cpu
+  Cpu,
+  Trash2
 } from 'lucide-react';
 import { formatDate, getStatusBadge } from '../utils/helpers';
 import { SignaturePad } from './SignaturePad';
@@ -37,10 +38,16 @@ export const LecturerDashboard: React.FC = () => {
     machines, 
     approveRequest, 
     rejectRequest, 
-    updateMachineStatus,
     addMachine,
+    editMachine,
+    deleteMachine,
     addLecturer,
+    editLecturer,
+    deleteLecturer,
     addClassModule,
+    editClassModule,
+    deleteClassModule,
+    deleteRequest,
     exportRequestsToCSV,
     exportMachinesToCSV,
     exportStudentSummaryToCSV,
@@ -59,34 +66,34 @@ export const LecturerDashboard: React.FC = () => {
   const [activeSubTab, setActiveSubTab] = useState<'VERIFY' | 'MACHINE_REPORTS' | 'STUDENT_REPORTS' | 'HISTORY' | 'MANAGE'>('VERIFY');
   const [selectedLecturer, setSelectedLecturer] = useState<string>('ALL');
 
-  // Modals
+  // Modals for Actions
   const [modalRequest, setModalRequest] = useState<BookingRequest | null>(null);
   const [actionType, setActionType] = useState<'APPROVE' | 'REJECT'>('APPROVE');
   const [feedbackNote, setFeedbackNote] = useState('');
   const [rejectionReason, setRejectionReason] = useState('');
   const [lecturerSig, setLecturerSig] = useState('');
 
-  // Add Machine Modal State
-  const [showAddMachineModal, setShowAddMachineModal] = useState(false);
-  const [newMachineCode, setNewMachineCode] = useState('');
-  const [newMachineType, setNewMachineType] = useState<'SEWING' | 'OVERLOCKING' | 'CUSTOM'>('SEWING');
-  const [newMachineRoom, setNewMachineRoom] = useState<'719' | '721' | '724'>('719');
-  const [newMachineModel, setNewMachineModel] = useState('');
-  const [newMachineNotes, setNewMachineNotes] = useState('');
+  // Add & Edit Machine Modal State
+  const [showMachineModal, setShowMachineModal] = useState(false);
+  const [editingMachine, setEditingMachine] = useState<Machine | null>(null);
+  const [machineFormCode, setMachineFormCode] = useState('');
+  const [machineFormType, setMachineFormType] = useState<'SEWING' | 'OVERLOCKING' | 'CUSTOM'>('SEWING');
+  const [machineFormRoom, setMachineFormRoom] = useState<'719' | '721' | '724'>('719');
+  const [machineFormModel, setMachineFormModel] = useState('');
+  const [machineFormStatus, setMachineFormStatus] = useState<'AVAILABLE' | 'IN_USE' | 'MAINTENANCE'>('AVAILABLE');
+  const [machineFormNotes, setMachineFormNotes] = useState('');
 
-  // Add Lecturer Modal State
-  const [showAddLecturerModal, setShowAddLecturerModal] = useState(false);
-  const [newLecturerName, setNewLecturerName] = useState('');
-  const [newLecturerEmail, setNewLecturerEmail] = useState('');
-  const [newLecturerDept, setNewLecturerDept] = useState('Textile & Apparel Design');
+  // Add & Edit Lecturer Modal State
+  const [showLecturerModal, setShowLecturerModal] = useState(false);
+  const [editingLecturer, setEditingLecturer] = useState<Lecturer | null>(null);
+  const [lecturerFormName, setLecturerFormName] = useState('');
+  const [lecturerFormEmail, setLecturerFormEmail] = useState('');
+  const [lecturerFormDept, setLecturerFormDept] = useState('Textile & Apparel Design');
 
-  // Add Module Modal State
-  const [showAddModuleModal, setShowAddModuleModal] = useState(false);
-  const [newModuleName, setNewModuleName] = useState('');
-
-  // Machine note editing state
-  const [editingMachineId, setEditingMachineId] = useState<string | null>(null);
-  const [machineNoteText, setMachineNoteText] = useState('');
+  // Add & Edit Module Modal State
+  const [showModuleModal, setShowModuleModal] = useState(false);
+  const [editingModuleOldName, setEditingModuleOldName] = useState<string | null>(null);
+  const [moduleFormName, setModuleFormName] = useState('');
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,64 +149,153 @@ export const LecturerDashboard: React.FC = () => {
     setModalRequest(null);
   };
 
-  const handleSaveMachineNote = (m: Machine) => {
-    updateMachineStatus(m.id, m.status, machineNoteText);
-    setEditingMachineId(null);
-    setMachineNoteText('');
+  // Open Machine Add / Edit
+  const handleOpenAddMachine = () => {
+    setEditingMachine(null);
+    setMachineFormCode('');
+    setMachineFormType('SEWING');
+    setMachineFormRoom('719');
+    setMachineFormModel('');
+    setMachineFormStatus('AVAILABLE');
+    setMachineFormNotes('');
+    setShowMachineModal(true);
   };
 
-  const handleCreateMachine = (e: React.FormEvent) => {
+  const handleOpenEditMachine = (m: Machine) => {
+    setEditingMachine(m);
+    setMachineFormCode(m.code);
+    setMachineFormType(m.type as any);
+    setMachineFormRoom(m.room as any);
+    setMachineFormModel(m.model);
+    setMachineFormStatus(m.status as any);
+    setMachineFormNotes(m.notes || '');
+    setShowMachineModal(true);
+  };
+
+  const handleSaveMachine = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMachineCode.trim()) {
+    if (!machineFormCode.trim()) {
       showToast('Please enter a machine code.', 'error');
       return;
     }
 
-    addMachine({
-      code: newMachineCode.trim(),
-      name: `${newMachineType === 'SEWING' ? 'Lockstitch' : newMachineType === 'OVERLOCKING' ? 'Overlocker' : 'Equipment'} #${newMachineCode}`,
-      type: newMachineType,
-      room: newMachineRoom,
-      status: 'AVAILABLE',
-      model: newMachineModel || (newMachineType === 'SEWING' ? 'Juki DDL-8700 Industrial' : 'Pegasus M900 Overlocker'),
-      notes: newMachineNotes || 'Newly registered workstation equipment.'
-    });
+    if (editingMachine) {
+      editMachine(editingMachine.id, {
+        code: machineFormCode.trim(),
+        type: machineFormType,
+        room: machineFormRoom,
+        model: machineFormModel,
+        status: machineFormStatus,
+        notes: machineFormNotes
+      });
+    } else {
+      addMachine({
+        code: machineFormCode.trim(),
+        name: `${machineFormType === 'SEWING' ? 'Lockstitch' : machineFormType === 'OVERLOCKING' ? 'Overlocker' : 'Equipment'} #${machineFormCode}`,
+        type: machineFormType,
+        room: machineFormRoom,
+        status: machineFormStatus,
+        model: machineFormModel || (machineFormType === 'SEWING' ? 'Juki DDL-8700 Industrial' : 'Pegasus M900 Overlocker'),
+        notes: machineFormNotes || 'Newly registered workstation equipment.'
+      });
+    }
 
-    setNewMachineCode('');
-    setNewMachineModel('');
-    setNewMachineNotes('');
-    setShowAddMachineModal(false);
+    setShowMachineModal(false);
   };
 
-  const handleCreateLecturer = (e: React.FormEvent) => {
+  const handleDeleteMachine = (m: Machine) => {
+    if (window.confirm(`Are you sure you want to delete Machine #${m.code} from Room ${m.room}?`)) {
+      deleteMachine(m.id);
+    }
+  };
+
+  // Open Lecturer Add / Edit
+  const handleOpenAddLecturer = () => {
+    setEditingLecturer(null);
+    setLecturerFormName('');
+    setLecturerFormEmail('');
+    setLecturerFormDept('Textile & Apparel Design');
+    setShowLecturerModal(true);
+  };
+
+  const handleOpenEditLecturer = (l: Lecturer) => {
+    setEditingLecturer(l);
+    setLecturerFormName(l.name);
+    setLecturerFormEmail(l.email);
+    setLecturerFormDept(l.department);
+    setShowLecturerModal(true);
+  };
+
+  const handleSaveLecturer = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newLecturerName.trim()) {
+    if (!lecturerFormName.trim()) {
       showToast('Please enter faculty name.', 'error');
       return;
     }
 
-    addLecturer({
-      name: newLecturerName.trim(),
-      email: newLecturerEmail || `${newLecturerName.toLowerCase().replace(/\s+/g, '.')}@fashion-institute.edu`,
-      department: newLecturerDept,
-      modules: []
-    });
+    if (editingLecturer) {
+      editLecturer(editingLecturer.id, {
+        name: lecturerFormName.trim(),
+        email: lecturerFormEmail.trim(),
+        department: lecturerFormDept.trim()
+      });
+    } else {
+      addLecturer({
+        name: lecturerFormName.trim(),
+        email: lecturerFormEmail || `${lecturerFormName.toLowerCase().replace(/\s+/g, '.')}@fashion-institute.edu`,
+        department: lecturerFormDept,
+        modules: []
+      });
+    }
 
-    setNewLecturerName('');
-    setNewLecturerEmail('');
-    setShowAddLecturerModal(false);
+    setShowLecturerModal(false);
   };
 
-  const handleCreateModule = (e: React.FormEvent) => {
+  const handleDeleteLecturer = (l: Lecturer) => {
+    if (window.confirm(`Are you sure you want to delete faculty member "${l.name}"?`)) {
+      deleteLecturer(l.id);
+    }
+  };
+
+  // Open Module Add / Edit
+  const handleOpenAddModule = () => {
+    setEditingModuleOldName(null);
+    setModuleFormName('');
+    setShowModuleModal(true);
+  };
+
+  const handleOpenEditModule = (modName: string) => {
+    setEditingModuleOldName(modName);
+    setModuleFormName(modName);
+    setShowModuleModal(true);
+  };
+
+  const handleSaveModule = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newModuleName.trim()) {
+    if (!moduleFormName.trim()) {
       showToast('Please enter module title.', 'error');
       return;
     }
 
-    addClassModule(newModuleName.trim());
-    setNewModuleName('');
-    setShowAddModuleModal(false);
+    if (editingModuleOldName) {
+      editClassModule(editingModuleOldName, moduleFormName.trim());
+    } else {
+      addClassModule(moduleFormName.trim());
+    }
+
+    setShowModuleModal(false);
+  };
+
+  const handleDeleteModule = (modName: string) => {
+    if (window.confirm(`Are you sure you want to delete module "${modName}"?`)) {
+      deleteClassModule(modName);
+    }
+  };
+
+  const handleDeleteRequest = (id: string) => {
+    if (window.confirm(`Are you sure you want to delete/cancel Request ${id}?`)) {
+      deleteRequest(id);
+    }
   };
 
   // Compute student tracking statistics
@@ -318,9 +414,8 @@ export const LecturerDashboard: React.FC = () => {
           <p className="page-intro-desc">Review student applications, maintain machine logs, and track compliance</p>
         </div>
 
-        {/* Right Controls: Export, Filter & Lock (Strict Black & White) */}
+        {/* Right Controls: Export, Filter & Lock */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-          {/* 1-Click Excel Export Button */}
           <button
             type="button"
             onClick={exportRequestsToCSV}
@@ -398,7 +493,6 @@ export const LecturerDashboard: React.FC = () => {
           <span>Track History</span>
         </button>
 
-        {/* Manage & Add Items */}
         <button
           type="button"
           className={`subnav-btn-minimal ${activeSubTab === 'MANAGE' ? 'active' : ''}`}
@@ -452,23 +546,36 @@ export const LecturerDashboard: React.FC = () => {
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', paddingTop: '0.65rem', borderTop: '1px solid var(--border-light)' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.65rem', borderTop: '1px solid var(--border-light)' }}>
                     <button
                       type="button"
-                      onClick={() => handleOpenAction(req, 'REJECT')}
-                      className="btn-action-reject"
+                      onClick={() => handleDeleteRequest(req.id)}
+                      className="room-chip"
+                      style={{ border: '1px solid var(--border-medium)', color: 'var(--text-muted)', background: '#ffffff', padding: '0.35rem 0.65rem', fontSize: '0.75rem' }}
+                      title="Cancel / Delete Application"
                     >
-                      <X size={13} />
-                      <span>Reject</span>
+                      <Trash2 size={12} style={{ display: 'inline', marginRight: '0.2rem' }} />
+                      Delete
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => handleOpenAction(req, 'APPROVE')}
-                      className="btn-action-approve"
-                    >
-                      <Check size={13} />
-                      <span>Approve</span>
-                    </button>
+
+                    <div style={{ display: 'flex', gap: '0.4rem' }}>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenAction(req, 'REJECT')}
+                        className="btn-action-reject"
+                      >
+                        <X size={13} />
+                        <span>Reject</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleOpenAction(req, 'APPROVE')}
+                        className="btn-action-approve"
+                      >
+                        <Check size={13} />
+                        <span>Approve</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -489,7 +596,7 @@ export const LecturerDashboard: React.FC = () => {
             <div style={{ display: 'flex', gap: '0.4rem' }}>
               <button
                 type="button"
-                onClick={() => setShowAddMachineModal(true)}
+                onClick={handleOpenAddMachine}
                 className="room-chip"
                 style={{ border: '1px solid var(--text-primary)', color: '#ffffff', background: 'var(--text-primary)', fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
               >
@@ -519,7 +626,7 @@ export const LecturerDashboard: React.FC = () => {
                   <th>Status</th>
                   <th>Usage Hours</th>
                   <th>Feedback & Notes</th>
-                  <th>Action</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -534,43 +641,31 @@ export const LecturerDashboard: React.FC = () => {
                       </span>
                     </td>
                     <td className="text-xs">{m.totalUsageHours} hrs</td>
-                    <td style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', maxWidth: '280px' }}>
-                      {editingMachineId === m.id ? (
-                        <input
-                          type="text"
-                          value={machineNoteText}
-                          onChange={e => setMachineNoteText(e.target.value)}
-                          className="form-input"
-                          style={{ minHeight: '32px', padding: '0.25rem 0.65rem', fontSize: '0.8rem' }}
-                        />
-                      ) : (
-                        <span>"{m.notes || 'In standard working order.'}"</span>
-                      )}
+                    <td style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', maxWidth: '240px' }}>
+                      "{m.notes || 'In standard working order.'}"
                     </td>
                     <td>
-                      {editingMachineId === m.id ? (
+                      <div style={{ display: 'flex', gap: '0.35rem' }}>
                         <button
                           type="button"
-                          onClick={() => handleSaveMachineNote(m)}
-                          className="btn-action-approve"
-                          style={{ padding: '0.25rem 0.65rem', fontSize: '0.75rem' }}
-                        >
-                          Save
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setEditingMachineId(m.id);
-                            setMachineNoteText(m.notes || '');
-                          }}
+                          onClick={() => handleOpenEditMachine(m)}
                           className="room-chip"
-                          style={{ border: '1px solid var(--border-medium)', color: 'var(--text-primary)', background: '#ffffff', fontSize: '0.75rem' }}
+                          style={{ border: '1px solid var(--border-medium)', color: 'var(--text-primary)', background: '#ffffff', fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
+                          title="Edit Machine Details"
                         >
                           <Edit3 size={11} style={{ display: 'inline', marginRight: '0.2rem' }} />
                           Edit
                         </button>
-                      )}
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteMachine(m)}
+                          className="room-chip"
+                          style={{ border: '1px solid var(--border-medium)', color: 'var(--text-secondary)', background: '#ffffff', fontSize: '0.75rem', padding: '0.2rem 0.5rem' }}
+                          title="Delete Machine from Fleet"
+                        >
+                          <Trash2 size={11} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -666,6 +761,7 @@ export const LecturerDashboard: React.FC = () => {
                   <th>Date & Time</th>
                   <th>Approval Status</th>
                   <th>Return Status</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -694,6 +790,17 @@ export const LecturerDashboard: React.FC = () => {
                           <span style={{ color: 'var(--text-light)' }}>-</span>
                         )}
                       </td>
+                      <td>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteRequest(r.id)}
+                          className="room-chip"
+                          style={{ border: '1px solid var(--border-medium)', color: 'var(--text-muted)', padding: '0.2rem 0.45rem', fontSize: '0.72rem' }}
+                          title="Delete Record"
+                        >
+                          <Trash2 size={11} />
+                        </button>
+                      </td>
                     </tr>
                   );
                 })}
@@ -715,7 +822,7 @@ export const LecturerDashboard: React.FC = () => {
               </div>
               <button
                 type="button"
-                onClick={() => setShowAddMachineModal(true)}
+                onClick={handleOpenAddMachine}
                 className="room-chip"
                 style={{ border: '1px solid var(--text-primary)', background: 'var(--text-primary)', color: '#ffffff', fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
               >
@@ -724,7 +831,7 @@ export const LecturerDashboard: React.FC = () => {
               </button>
             </div>
 
-            <div style={{ maxHeight: '300px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+            <div style={{ maxHeight: '320px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
               {machines.map(m => (
                 <div key={m.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.65rem 0.85rem', background: 'var(--bg-card-subtle)', borderRadius: '6px', fontSize: '0.85rem' }}>
                   <div>
@@ -732,9 +839,27 @@ export const LecturerDashboard: React.FC = () => {
                     <span className="text-muted ml-2">Studio {m.room}</span>
                     <span className="text-muted ml-2">({m.type})</span>
                   </div>
-                  <span className={`status-pill-subtle ${m.status === 'AVAILABLE' ? 'pill-green' : m.status === 'IN_USE' ? 'pill-amber' : 'pill-rose'}`}>
-                    {m.status}
-                  </span>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenEditMachine(m)}
+                      className="room-chip"
+                      style={{ border: '1px solid var(--border-medium)', background: '#ffffff', padding: '0.2rem 0.45rem', fontSize: '0.72rem' }}
+                      title="Edit Machine"
+                    >
+                      <Edit3 size={11} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteMachine(m)}
+                      className="room-chip"
+                      style={{ border: '1px solid var(--border-medium)', background: '#ffffff', padding: '0.2rem 0.45rem', fontSize: '0.72rem' }}
+                      title="Delete Machine"
+                    >
+                      <Trash2 size={11} />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -749,7 +874,7 @@ export const LecturerDashboard: React.FC = () => {
               </div>
               <button
                 type="button"
-                onClick={() => setShowAddLecturerModal(true)}
+                onClick={handleOpenAddLecturer}
                 className="room-chip"
                 style={{ border: '1px solid var(--text-primary)', background: 'var(--text-primary)', color: '#ffffff', fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
               >
@@ -758,14 +883,34 @@ export const LecturerDashboard: React.FC = () => {
               </button>
             </div>
 
-            <div style={{ maxHeight: '300px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+            <div style={{ maxHeight: '320px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
               {lecturers.map(l => (
                 <div key={l.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.65rem 0.85rem', background: 'var(--bg-card-subtle)', borderRadius: '6px', fontSize: '0.85rem' }}>
                   <div>
                     <span className="font-bold text-slate-900">{l.name}</span>
                     <div className="text-xs text-muted">{l.department}</div>
                   </div>
-                  <span className="status-pill-subtle pill-green">Active</span>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenEditLecturer(l)}
+                      className="room-chip"
+                      style={{ border: '1px solid var(--border-medium)', background: '#ffffff', padding: '0.2rem 0.45rem', fontSize: '0.72rem' }}
+                      title="Edit Lecturer"
+                    >
+                      <Edit3 size={11} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteLecturer(l)}
+                      className="room-chip"
+                      style={{ border: '1px solid var(--border-medium)', background: '#ffffff', padding: '0.2rem 0.45rem', fontSize: '0.72rem' }}
+                      title="Delete Lecturer"
+                    >
+                      <Trash2 size={11} />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -780,7 +925,7 @@ export const LecturerDashboard: React.FC = () => {
               </div>
               <button
                 type="button"
-                onClick={() => setShowAddModuleModal(true)}
+                onClick={handleOpenAddModule}
                 className="room-chip"
                 style={{ border: '1px solid var(--text-primary)', background: 'var(--text-primary)', color: '#ffffff', fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
               >
@@ -789,10 +934,31 @@ export const LecturerDashboard: React.FC = () => {
               </button>
             </div>
 
-            <div style={{ maxHeight: '300px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+            <div style={{ maxHeight: '320px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
               {modules.map(mod => (
-                <div key={mod} style={{ padding: '0.65rem 0.85rem', background: 'var(--bg-card-subtle)', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 600 }}>
-                  {mod}
+                <div key={mod} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.65rem 0.85rem', background: 'var(--bg-card-subtle)', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 600 }}>
+                  <span>{mod}</span>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenEditModule(mod)}
+                      className="room-chip"
+                      style={{ border: '1px solid var(--border-medium)', background: '#ffffff', padding: '0.2rem 0.45rem', fontSize: '0.72rem' }}
+                      title="Edit Module"
+                    >
+                      <Edit3 size={11} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteModule(mod)}
+                      className="room-chip"
+                      style={{ border: '1px solid var(--border-medium)', background: '#ffffff', padding: '0.2rem 0.45rem', fontSize: '0.72rem' }}
+                      title="Delete Module"
+                    >
+                      <Trash2 size={11} />
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -801,19 +967,21 @@ export const LecturerDashboard: React.FC = () => {
       )}
 
       {/* ========================================================
-          MODAL: ADD MACHINE
+          MODAL: ADD / EDIT MACHINE
          ======================================================== */}
-      {showAddMachineModal && (
-        <div className="clean-modal-backdrop" onClick={() => setShowAddMachineModal(false)}>
+      {showMachineModal && (
+        <div className="clean-modal-backdrop" onClick={() => setShowMachineModal(false)}>
           <div className="clean-modal-dialog" onClick={e => e.stopPropagation()}>
             <div className="clean-modal-header">
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-primary)' }}>Add New Studio Machine</h3>
-              <button type="button" onClick={() => setShowAddMachineModal(false)} className="btn-close">
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                {editingMachine ? `Edit Machine #${editingMachine.code}` : 'Add New Studio Machine'}
+              </h3>
+              <button type="button" onClick={() => setShowMachineModal(false)} className="btn-close">
                 <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleCreateMachine} style={{ padding: '1.25rem' }}>
+            <form onSubmit={handleSaveMachine} style={{ padding: '1.25rem' }}>
               <div className="grid-2">
                 <div className="form-field">
                   <label className="field-label">
@@ -821,8 +989,8 @@ export const LecturerDashboard: React.FC = () => {
                   </label>
                   <input
                     type="text"
-                    value={newMachineCode}
-                    onChange={e => setNewMachineCode(e.target.value)}
+                    value={machineFormCode}
+                    onChange={e => setMachineFormCode(e.target.value)}
                     placeholder="e.g. 2417 or 2103"
                     className="form-input"
                     required
@@ -834,8 +1002,8 @@ export const LecturerDashboard: React.FC = () => {
                     Machine Type <span className="required-dot">*</span>
                   </label>
                   <select
-                    value={newMachineType}
-                    onChange={e => setNewMachineType(e.target.value as any)}
+                    value={machineFormType}
+                    onChange={e => setMachineFormType(e.target.value as any)}
                     className="form-select"
                   >
                     <option value="SEWING">Sewing Machine</option>
@@ -851,8 +1019,8 @@ export const LecturerDashboard: React.FC = () => {
                     Assigned Studio Room <span className="required-dot">*</span>
                   </label>
                   <select
-                    value={newMachineRoom}
-                    onChange={e => setNewMachineRoom(e.target.value as any)}
+                    value={machineFormRoom}
+                    onChange={e => setMachineFormRoom(e.target.value as any)}
                     className="form-select"
                   >
                     <option value="719">Studio 719</option>
@@ -862,22 +1030,35 @@ export const LecturerDashboard: React.FC = () => {
                 </div>
 
                 <div className="form-field">
-                  <label className="field-label">Model / Manufacturer</label>
-                  <input
-                    type="text"
-                    value={newMachineModel}
-                    onChange={e => setNewMachineModel(e.target.value)}
-                    placeholder="e.g. Juki DDL-8700 Industrial"
-                    className="form-input"
-                  />
+                  <label className="field-label">Current Status</label>
+                  <select
+                    value={machineFormStatus}
+                    onChange={e => setMachineFormStatus(e.target.value as any)}
+                    className="form-select"
+                  >
+                    <option value="AVAILABLE">Available</option>
+                    <option value="IN_USE">In Use</option>
+                    <option value="MAINTENANCE">Maintenance</option>
+                  </select>
                 </div>
               </div>
 
               <div className="form-field">
-                <label className="field-label">Initial Notes & Setup Info</label>
+                <label className="field-label">Model / Manufacturer</label>
+                <input
+                  type="text"
+                  value={machineFormModel}
+                  onChange={e => setMachineFormModel(e.target.value)}
+                  placeholder="e.g. Juki DDL-8700 Industrial"
+                  className="form-input"
+                />
+              </div>
+
+              <div className="form-field">
+                <label className="field-label">Notes & Setup Info</label>
                 <textarea
-                  value={newMachineNotes}
-                  onChange={e => setNewMachineNotes(e.target.value)}
+                  value={machineFormNotes}
+                  onChange={e => setMachineFormNotes(e.target.value)}
                   placeholder="e.g. Teflon foot installed, standard bobbin case."
                   rows={2}
                   className="form-textarea"
@@ -885,11 +1066,11 @@ export const LecturerDashboard: React.FC = () => {
               </div>
 
               <div className="clean-modal-footer" style={{ margin: '1.25rem -1.25rem -1.25rem -1.25rem' }}>
-                <button type="button" onClick={() => setShowAddMachineModal(false)} className="btn-action-reject">
+                <button type="button" onClick={() => setShowMachineModal(false)} className="btn-action-reject">
                   Cancel
                 </button>
                 <button type="submit" className="btn-action-approve">
-                  Add Machine to Fleet
+                  {editingMachine ? 'Save Changes' : 'Add Machine to Fleet'}
                 </button>
               </div>
             </form>
@@ -898,27 +1079,29 @@ export const LecturerDashboard: React.FC = () => {
       )}
 
       {/* ========================================================
-          MODAL: ADD LECTURER
+          MODAL: ADD / EDIT LECTURER
          ======================================================== */}
-      {showAddLecturerModal && (
-        <div className="clean-modal-backdrop" onClick={() => setShowAddLecturerModal(false)}>
+      {showLecturerModal && (
+        <div className="clean-modal-backdrop" onClick={() => setShowLecturerModal(false)}>
           <div className="clean-modal-dialog" onClick={e => e.stopPropagation()}>
             <div className="clean-modal-header">
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-primary)' }}>Add Faculty Member</h3>
-              <button type="button" onClick={() => setShowAddLecturerModal(false)} className="btn-close">
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                {editingLecturer ? `Edit Faculty: ${editingLecturer.name}` : 'Add Faculty Member'}
+              </h3>
+              <button type="button" onClick={() => setShowLecturerModal(false)} className="btn-close">
                 <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleCreateLecturer} style={{ padding: '1.25rem' }}>
+            <form onSubmit={handleSaveLecturer} style={{ padding: '1.25rem' }}>
               <div className="form-field">
                 <label className="field-label">
                   Faculty Name <span className="required-dot">*</span>
                 </label>
                 <input
                   type="text"
-                  value={newLecturerName}
-                  onChange={e => setNewLecturerName(e.target.value)}
+                  value={lecturerFormName}
+                  onChange={e => setLecturerFormName(e.target.value)}
                   placeholder="e.g. Prof. Samantha Reed"
                   className="form-input"
                   required
@@ -929,8 +1112,8 @@ export const LecturerDashboard: React.FC = () => {
                 <label className="field-label">Email Address</label>
                 <input
                   type="email"
-                  value={newLecturerEmail}
-                  onChange={e => setNewLecturerEmail(e.target.value)}
+                  value={lecturerFormEmail}
+                  onChange={e => setLecturerFormEmail(e.target.value)}
                   placeholder="e.g. s.reed@fashion-institute.edu"
                   className="form-input"
                 />
@@ -940,19 +1123,19 @@ export const LecturerDashboard: React.FC = () => {
                 <label className="field-label">Department / Discipline</label>
                 <input
                   type="text"
-                  value={newLecturerDept}
-                  onChange={e => setNewLecturerDept(e.target.value)}
+                  value={lecturerFormDept}
+                  onChange={e => setLecturerFormDept(e.target.value)}
                   placeholder="e.g. Textile & Apparel Design"
                   className="form-input"
                 />
               </div>
 
               <div className="clean-modal-footer" style={{ margin: '1.25rem -1.25rem -1.25rem -1.25rem' }}>
-                <button type="button" onClick={() => setShowAddLecturerModal(false)} className="btn-action-reject">
+                <button type="button" onClick={() => setShowLecturerModal(false)} className="btn-action-reject">
                   Cancel
                 </button>
                 <button type="submit" className="btn-action-approve">
-                  Save Faculty Member
+                  {editingLecturer ? 'Save Changes' : 'Save Faculty Member'}
                 </button>
               </div>
             </form>
@@ -961,27 +1144,29 @@ export const LecturerDashboard: React.FC = () => {
       )}
 
       {/* ========================================================
-          MODAL: ADD MODULE
+          MODAL: ADD / EDIT MODULE
          ======================================================== */}
-      {showAddModuleModal && (
-        <div className="clean-modal-backdrop" onClick={() => setShowAddModuleModal(false)}>
+      {showModuleModal && (
+        <div className="clean-modal-backdrop" onClick={() => setShowModuleModal(false)}>
           <div className="clean-modal-dialog" onClick={e => e.stopPropagation()}>
             <div className="clean-modal-header">
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-primary)' }}>Add Class / Module</h3>
-              <button type="button" onClick={() => setShowAddModuleModal(false)} className="btn-close">
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                {editingModuleOldName ? 'Edit Class / Module' : 'Add Class / Module'}
+              </h3>
+              <button type="button" onClick={() => setShowModuleModal(false)} className="btn-close">
                 <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleCreateModule} style={{ padding: '1.25rem' }}>
+            <form onSubmit={handleSaveModule} style={{ padding: '1.25rem' }}>
               <div className="form-field">
                 <label className="field-label">
                   Module Code & Title <span className="required-dot">*</span>
                 </label>
                 <input
                   type="text"
-                  value={newModuleName}
-                  onChange={e => setNewModuleName(e.target.value)}
+                  value={moduleFormName}
+                  onChange={e => setModuleFormName(e.target.value)}
                   placeholder="e.g. FD305 - Tailoring Workshop"
                   className="form-input"
                   required
@@ -989,11 +1174,11 @@ export const LecturerDashboard: React.FC = () => {
               </div>
 
               <div className="clean-modal-footer" style={{ margin: '1.25rem -1.25rem -1.25rem -1.25rem' }}>
-                <button type="button" onClick={() => setShowAddModuleModal(false)} className="btn-action-reject">
+                <button type="button" onClick={() => setShowModuleModal(false)} className="btn-action-reject">
                   Cancel
                 </button>
                 <button type="submit" className="btn-action-approve">
-                  Add to Curriculum
+                  {editingModuleOldName ? 'Save Changes' : 'Add to Curriculum'}
                 </button>
               </div>
             </form>
