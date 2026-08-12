@@ -112,22 +112,23 @@ export const LecturerDashboard: React.FC = () => {
   const studentTrackList = Array.from(studentMap.values());
 
   return (
-    <div className="simple-section-container">
-      {/* Header Banner */}
-      <div className="section-title-card">
+    <div className="main-content-area wide">
+      {/* Intro Header */}
+      <div className="page-intro flex justify-between items-start flex-wrap gap-3">
         <div>
-          <div className="section-badge">LECTURER</div>
-          <h1 className="section-heading">Lecturer Management & Verification Portal</h1>
-          <p className="section-subheading">Verify student applications, manage machine reports, and track history</p>
+          <span className="page-intro-badge">LECTURER</span>
+          <h1 className="page-intro-title">Lecturer Portal & Verification Hub</h1>
+          <p className="page-intro-desc">Review student applications, maintain machine logs, and track compliance</p>
         </div>
 
         {/* Lecturer Filter */}
-        <div className="lecturer-filter-select-box">
-          <span className="text-xs font-bold text-muted mr-2">Lecturer:</span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold text-muted">Filter:</span>
           <select
             value={selectedLecturer}
             onChange={e => setSelectedLecturer(e.target.value)}
-            className="clean-select font-semibold text-xs py-1"
+            className="form-select text-xs py-1"
+            style={{ minHeight: '34px', width: 'auto' }}
           >
             <option value="ALL">All Lecturers</option>
             {lecturers.map(l => (
@@ -137,113 +138,103 @@ export const LecturerDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Sub Tabs (Directly matching the 4 bullet points under LECTURER) */}
-      <div className="lecturer-tabs-bar">
+      {/* Sub Tabs */}
+      <div className="lecturer-subnav-bar">
         <button
           type="button"
-          className={`subtab-pill ${activeSubTab === 'VERIFY' ? 'active' : ''}`}
+          className={`subnav-pill-btn ${activeSubTab === 'VERIFY' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('VERIFY')}
         >
-          <Clock size={15} />
+          <Clock size={14} />
           <span>Verifying Applications ({pendingRequests.length})</span>
         </button>
 
         <button
           type="button"
-          className={`subtab-pill ${activeSubTab === 'MACHINE_REPORTS' ? 'active' : ''}`}
+          className={`subnav-pill-btn ${activeSubTab === 'MACHINE_REPORTS' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('MACHINE_REPORTS')}
         >
-          <Layers size={15} />
-          <span>Reports & Notes: Each Machine</span>
+          <Layers size={14} />
+          <span>Reports: Each Machine</span>
         </button>
 
         <button
           type="button"
-          className={`subtab-pill ${activeSubTab === 'STUDENT_REPORTS' ? 'active' : ''}`}
+          className={`subnav-pill-btn ${activeSubTab === 'STUDENT_REPORTS' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('STUDENT_REPORTS')}
         >
-          <Award size={15} />
-          <span>Reports & Notes: Students Request</span>
+          <Award size={14} />
+          <span>Reports: Students Request</span>
         </button>
 
         <button
           type="button"
-          className={`subtab-pill ${activeSubTab === 'HISTORY' ? 'active' : ''}`}
+          className={`subnav-pill-btn ${activeSubTab === 'HISTORY' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('HISTORY')}
         >
-          <FileText size={15} />
+          <FileText size={14} />
           <span>Track History</span>
         </button>
       </div>
 
-      {/* 1. VERIFYING THE APPLICANT'S APPLICATION */}
+      {/* 1. VERIFYING APPLICATIONS */}
       {activeSubTab === 'VERIFY' && (
-        <div className="lecturer-view-content">
+        <div>
           {pendingRequests.length === 0 ? (
-            <div className="clean-form-card text-center py-10">
-              <ShieldCheck size={40} className="text-emerald-600 mx-auto opacity-70" />
-              <h3 className="font-bold text-base mt-2">No Pending Applications</h3>
-              <p className="text-xs text-muted">All student equipment requests have been verified.</p>
+            <div className="form-card-container text-center py-10">
+              <ShieldCheck size={36} className="text-emerald-600 mx-auto mb-2" />
+              <h3 className="font-bold text-sm text-slate-800">All Applications Verified</h3>
+              <p className="text-xs text-muted">There are currently no pending student equipment requests requiring sign-off.</p>
             </div>
           ) : (
-            <div className="pending-grid">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {pendingRequests.map(req => (
-                <div key={req.id} className="clean-form-card pending-card">
-                  <div className="flex justify-between items-start border-b pb-2 mb-3">
-                    <div>
-                      <span className="text-xs text-muted mono">{req.id}</span>
-                      <h3 className="font-bold text-base">{req.applicant.studentName}</h3>
-                      <div className="text-xs text-muted">{req.applicant.semester} • {req.applicant.classModule}</div>
-                    </div>
-                    <span className="status-pill-amber">Pending Approval</span>
-                  </div>
-
-                  <div className="space-y-1.5 text-xs text-secondary mb-4">
-                    <div className="flex justify-between">
-                      <span className="text-muted">Facility / Room:</span>
-                      <span className="font-bold text-black">Room {req.requestDetails.facilityRoom}</span>
+                <div key={req.id} className="form-card-container p-4 flex flex-col justify-between" style={{ padding: '1.25rem' }}>
+                  <div>
+                    <div className="flex justify-between items-start pb-2 mb-2 border-b border-slate-100">
+                      <div>
+                        <span className="text-xs mono text-muted">{req.id}</span>
+                        <h3 className="font-bold text-sm text-slate-900">{req.applicant.studentName}</h3>
+                        <div className="text-xs text-muted">{req.applicant.semester} • {req.applicant.classModule}</div>
+                      </div>
+                      <span className="status-badge-chip badge-amber">PENDING</span>
                     </div>
 
-                    <div className="flex justify-between">
-                      <span className="text-muted">Date & Time usage:</span>
-                      <span className="font-semibold">
-                        {formatDate(req.requestDetails.date)} ({req.requestDetails.startTime} - {req.requestDetails.endTime})
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between">
-                      <span className="text-muted">Machine types & Code:</span>
-                      <span className="font-bold">{req.requestDetails.machineIds.join(', ')}</span>
-                    </div>
-
-                    <div className="flex justify-between">
-                      <span className="text-muted">Verified by Lecturer:</span>
-                      <span className="font-semibold">{req.applicant.lecturer}</span>
-                    </div>
-
-                    <div className="flex justify-between">
-                      <span className="text-muted">Student's Agreement:</span>
-                      <span className="text-emerald-600 font-semibold">✓ Confirmed & Signed</span>
+                    <div className="space-y-1 text-xs text-slate-600 mb-3">
+                      <div className="flex justify-between">
+                        <span className="text-muted">Facility / Room:</span>
+                        <span className="font-bold text-slate-900">Room {req.requestDetails.facilityRoom}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted">Usage Date & Slot:</span>
+                        <span className="font-semibold">{formatDate(req.requestDetails.date)} ({req.requestDetails.startTime} - {req.requestDetails.endTime})</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted">Machines:</span>
+                        <span className="font-bold">{req.requestDetails.machineIds.join(', ')}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted">Agreement:</span>
+                        <span className="text-emerald-700 font-semibold">✓ Confirmed & Signed</span>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Actions: Approve / Reject */}
-                  <div className="flex gap-2 justify-end pt-2 border-t">
+                  <div className="flex gap-2 justify-end pt-2 border-t border-slate-100">
                     <button
                       type="button"
                       onClick={() => handleOpenAction(req, 'REJECT')}
-                      className="btn-danger-sm"
+                      className="btn-sm-reject"
                     >
-                      <X size={14} />
+                      <X size={13} />
                       <span>Reject</span>
                     </button>
-
                     <button
                       type="button"
                       onClick={() => handleOpenAction(req, 'APPROVE')}
-                      className="btn-success-sm"
+                      className="btn-sm-approve"
                     >
-                      <Check size={14} />
+                      <Check size={13} />
                       <span>Approve</span>
                     </button>
                   </div>
@@ -254,47 +245,47 @@ export const LecturerDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* 2. REPORTS AND FEEDBACK/NOTES: EACH MACHINE */}
+      {/* 2. REPORTS: EACH MACHINE */}
       {activeSubTab === 'MACHINE_REPORTS' && (
-        <div className="clean-form-card">
-          <div className="border-b pb-3 mb-4">
-            <h3 className="font-bold text-base">Each Machine: Reports & Feedback / Notes</h3>
-            <p className="text-xs text-muted">Sewing Machines (2401–2416) & Overlocking Machines (2101–2102) across Rooms 719, 721, 724</p>
+        <div className="form-card-container">
+          <div className="mb-3 pb-2 border-b border-slate-200">
+            <h3 className="font-bold text-sm text-slate-900">Each Machine: Status, Usage & Reports</h3>
+            <p className="text-xs text-muted">Sewing Machines (2401–2416) and Overlocking Machines (2101–2102) across Rooms 719, 721, 724</p>
           </div>
 
-          <div className="table-responsive">
-            <table className="clean-table">
+          <div className="clean-table-responsive">
+            <table className="clean-data-table">
               <thead>
                 <tr>
                   <th>Machine Code</th>
                   <th>Machine Type</th>
                   <th>Room</th>
                   <th>Status</th>
-                  <th>Total Usage</th>
-                  <th>Feedback / Notes</th>
+                  <th>Usage Hours</th>
+                  <th>Feedback & Notes</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody>
                 {machines.map(m => (
                   <tr key={m.id}>
-                    <td className="font-bold mono">#{m.code}</td>
+                    <td className="mono font-bold">#{m.code}</td>
                     <td>{m.type === 'SEWING' ? 'Sewing Machine' : 'Overlocking Machine'}</td>
                     <td className="font-semibold">Room {m.room}</td>
                     <td>
-                      <span className={`status-pill ${m.status === 'AVAILABLE' ? 'status-avail' : m.status === 'IN_USE' ? 'status-inuse' : 'status-maint'}`}>
+                      <span className={`status-badge-chip ${m.status === 'AVAILABLE' ? 'badge-green' : m.status === 'IN_USE' ? 'badge-amber' : 'badge-rose'}`}>
                         {m.status}
                       </span>
                     </td>
                     <td className="text-xs">{m.totalUsageHours} hrs</td>
-                    <td className="text-xs text-secondary max-w-xs">
+                    <td className="text-xs text-slate-600 max-w-xs">
                       {editingMachineId === m.id ? (
                         <input
                           type="text"
                           value={machineNoteText}
                           onChange={e => setMachineNoteText(e.target.value)}
-                          className="clean-input text-xs py-1"
-                          placeholder="Type report or note..."
+                          className="form-input text-xs py-1"
+                          style={{ minHeight: '32px' }}
                         />
                       ) : (
                         <span>"{m.notes || 'In standard working order.'}"</span>
@@ -305,7 +296,7 @@ export const LecturerDashboard: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => handleSaveMachineNote(m)}
-                          className="btn-success-sm text-xs py-0.5 px-2"
+                          className="btn-sm-approve text-xs"
                         >
                           Save
                         </button>
@@ -316,10 +307,11 @@ export const LecturerDashboard: React.FC = () => {
                             setEditingMachineId(m.id);
                             setMachineNoteText(m.notes || '');
                           }}
-                          className="btn-card-action text-xs"
+                          className="room-chip"
+                          style={{ border: '1px solid #e2e8f0', color: '#09090b', background: '#f8fafc', fontSize: '0.72rem' }}
                         >
-                          <Edit3 size={12} />
-                          <span>Edit Note</span>
+                          <Edit3 size={11} className="inline mr-1" />
+                          Edit Note
                         </button>
                       )}
                     </td>
@@ -331,16 +323,16 @@ export const LecturerDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* 3. REPORTS AND FEEDBACK/NOTES: STUDENTS REQUEST */}
+      {/* 3. REPORTS: STUDENTS REQUEST */}
       {activeSubTab === 'STUDENT_REPORTS' && (
-        <div className="clean-form-card">
-          <div className="border-b pb-3 mb-4">
-            <h3 className="font-bold text-base">Students Request: Compliance & History Reports</h3>
-            <p className="text-xs text-muted">Summary of student applications, completed returns, and compliance status</p>
+        <div className="form-card-container">
+          <div className="mb-3 pb-2 border-b border-slate-200">
+            <h3 className="font-bold text-sm text-slate-900">Students Request: Compliance & Activity</h3>
+            <p className="text-xs text-muted">Summary of student applications, completed returns, and compliance standing</p>
           </div>
 
-          <div className="table-responsive">
-            <table className="clean-table">
+          <div className="clean-table-responsive">
+            <table className="clean-data-table">
               <thead>
                 <tr>
                   <th>Student's Name</th>
@@ -355,14 +347,14 @@ export const LecturerDashboard: React.FC = () => {
               <tbody>
                 {studentTrackList.map(st => (
                   <tr key={st.studentId}>
-                    <td className="font-bold">{st.name}</td>
+                    <td className="font-bold text-slate-900">{st.name}</td>
                     <td>{st.semester}</td>
                     <td className="text-xs">{st.classModule}</td>
                     <td className="font-semibold">{st.totalBookings}</td>
                     <td className="text-emerald-700 font-semibold">{st.completedReturns}</td>
                     <td className="text-amber-700 font-semibold">{st.pendingBookings}</td>
                     <td>
-                      <span className="status-pill status-avail">
+                      <span className="status-badge-chip badge-green">
                         Verified Student
                       </span>
                     </td>
@@ -376,14 +368,14 @@ export const LecturerDashboard: React.FC = () => {
 
       {/* 4. TRACK HISTORY */}
       {activeSubTab === 'HISTORY' && (
-        <div className="clean-form-card">
-          <div className="border-b pb-3 mb-4">
-            <h3 className="font-bold text-base">Track History</h3>
-            <p className="text-xs text-muted">Chronological log of all requests, approvals, returns, and rejections</p>
+        <div className="form-card-container">
+          <div className="mb-3 pb-2 border-b border-slate-200">
+            <h3 className="font-bold text-sm text-slate-900">Track History</h3>
+            <p className="text-xs text-muted">Chronological audit log of all facility requests, returns, and approvals</p>
           </div>
 
-          <div className="table-responsive">
-            <table className="clean-table">
+          <div className="clean-table-responsive">
+            <table className="clean-data-table">
               <thead>
                 <tr>
                   <th>Request ID</th>
@@ -391,7 +383,7 @@ export const LecturerDashboard: React.FC = () => {
                   <th>Room</th>
                   <th>Machine Types & Code</th>
                   <th>Date & Time Usage</th>
-                  <th>Lecturer Approval</th>
+                  <th>Approval Status</th>
                   <th>Return Status</th>
                 </tr>
               </thead>
@@ -408,7 +400,7 @@ export const LecturerDashboard: React.FC = () => {
                         {formatDate(r.requestDetails.date)} ({r.requestDetails.startTime} - {r.requestDetails.endTime})
                       </td>
                       <td>
-                        <span className={`status-pill ${badge.bgClass} ${badge.colorClass}`}>
+                        <span className={`status-badge-chip ${badge.bgClass} ${badge.colorClass}`}>
                           {badge.label}
                         </span>
                       </td>
@@ -430,40 +422,42 @@ export const LecturerDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* APPROVE / REJECT MODAL */}
+      {/* Approve / Reject Modal */}
       {modalRequest && (
         <div className="clean-modal-backdrop" onClick={() => setModalRequest(null)}>
           <div className="clean-modal-dialog" onClick={e => e.stopPropagation()}>
             <div className="clean-modal-header">
-              <h3 className="font-bold text-base">
+              <h3 className="font-bold text-sm text-slate-900">
                 {actionType === 'APPROVE' ? 'Approve Student Application' : 'Reject Student Application'}
               </h3>
               <button type="button" onClick={() => setModalRequest(null)} className="btn-close">
-                <X size={18} />
+                <X size={16} />
               </button>
             </div>
 
             <div className="p-4">
-              <div className="info-box mb-3">
-                <div className="font-bold text-sm">{modalRequest.applicant.studentName}</div>
-                <div className="text-xs text-muted">
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md mb-3 text-xs">
+                <div className="font-bold text-slate-900">{modalRequest.applicant.studentName}</div>
+                <div className="text-muted">
                   Room {modalRequest.requestDetails.facilityRoom} • Machines: {modalRequest.requestDetails.machineIds.join(', ')} • {formatDate(modalRequest.requestDetails.date)}
                 </div>
               </div>
 
               {actionType === 'APPROVE' ? (
                 <>
-                  <div className="form-group">
-                    <label className="field-label">Lecturer Feedback / Approval Note</label>
+                  <div className="form-field">
+                    <label className="field-label">
+                      <span className="field-label-text">Lecturer Feedback / Approval Note</span>
+                    </label>
                     <textarea
                       value={feedbackNote}
                       onChange={e => setFeedbackNote(e.target.value)}
                       rows={2}
-                      className="clean-textarea"
+                      className="form-textarea"
                     />
                   </div>
 
-                  <div className="mt-3">
+                  <div className="signature-card">
                     <SignaturePad
                       label="Lecturer Approval Signature"
                       required
@@ -472,13 +466,15 @@ export const LecturerDashboard: React.FC = () => {
                   </div>
                 </>
               ) : (
-                <div className="form-group">
-                  <label className="field-label">Reason for Rejection <span className="req-star">*</span></label>
+                <div className="form-field">
+                  <label className="field-label">
+                    <span className="field-label-text">Reason for Rejection <span className="required-dot">*</span></span>
+                  </label>
                   <textarea
                     value={rejectionReason}
                     onChange={e => setRejectionReason(e.target.value)}
                     rows={3}
-                    className="clean-textarea"
+                    className="form-textarea"
                     required
                   />
                 </div>
@@ -486,13 +482,13 @@ export const LecturerDashboard: React.FC = () => {
             </div>
 
             <div className="clean-modal-footer">
-              <button type="button" onClick={() => setModalRequest(null)} className="btn-secondary-sm">
+              <button type="button" onClick={() => setModalRequest(null)} className="room-chip" style={{ border: '1px solid #e2e8f0', color: '#334155', background: '#ffffff', padding: '0.4rem 0.85rem' }}>
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleConfirmAction}
-                className={actionType === 'APPROVE' ? 'btn-success-sm' : 'btn-danger-sm'}
+                className={actionType === 'APPROVE' ? 'btn-sm-approve' : 'btn-sm-reject'}
               >
                 {actionType === 'APPROVE' ? 'Confirm Approval' : 'Confirm Rejection'}
               </button>

@@ -22,7 +22,6 @@ export const RequestForm: React.FC = () => {
     machines, 
     submitNewRequest, 
     setActivePassRequest,
-    setActiveTab,
     showToast 
   } = useLab();
 
@@ -113,69 +112,52 @@ export const RequestForm: React.FC = () => {
   };
 
   return (
-    <div className="simple-section-container">
-      {/* Header Banner */}
-      <div className="section-title-card">
-        <div>
-          <div className="section-badge">REQUEST</div>
-          <h1 className="section-heading">Equipment & Facility Request Form</h1>
-          <p className="section-subheading">Submit your equipment booking for instructor verification</p>
-        </div>
-
-        {/* Quick Mode Switcher */}
-        <div className="workflow-toggle-box">
-          <span className="text-xs text-muted font-bold mr-1">Switch:</span>
-          <button
-            type="button"
-            className="toggle-chip active"
-          >
-            Request
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('RETURN')}
-            className="toggle-chip"
-          >
-            Return
-          </button>
-        </div>
+    <div className="main-content-area">
+      {/* Intro Header */}
+      <div className="page-intro">
+        <span className="page-intro-badge">REQUEST</span>
+        <h1 className="page-intro-title">Equipment & Facility Requisition</h1>
+        <p className="page-intro-desc">Fill out your studio booking details below for lecturer verification</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="clean-form-card">
+      <form onSubmit={handleSubmit} className="form-card-container">
         {/* ========================================================
-            1. APPLICANT'S INFORMATION
+            SECTION 1: APPLICANT'S INFORMATION
            ======================================================== */}
-        <div className="form-block">
-          <h2 className="block-title">Applicant's Information</h2>
+        <div className="form-section-block">
+          <div className="form-section-header">
+            <div className="form-section-num">1</div>
+            <h2 className="form-section-title">Applicant's Information</h2>
+          </div>
 
-          <div className="form-grid-2">
-            <div className="form-group">
+          <div className="grid-2">
+            <div className="form-field">
               <label className="field-label">
-                Student's Name <span className="req-star">*</span>
+                <span className="field-label-text">Student's Name <span className="required-dot">*</span></span>
               </label>
-              <div className="input-with-icon">
-                <User size={16} className="field-icon" />
+              <div className="input-container">
+                <User size={15} className="input-icon" />
                 <input
                   type="text"
                   value={studentName}
                   onChange={e => setStudentName(e.target.value)}
-                  placeholder="Enter student's full name"
-                  className="clean-input"
+                  placeholder="Enter full name"
+                  className="form-input"
                   required
                 />
               </div>
             </div>
 
-            <div className="form-group">
+            <div className="form-field">
               <label className="field-label">
-                Semester <span className="req-star">*</span>
+                <span className="field-label-text">Semester <span className="required-dot">*</span></span>
               </label>
-              <div className="input-with-icon">
-                <GraduationCap size={16} className="field-icon" />
+              <div className="input-container">
+                <GraduationCap size={15} className="input-icon" />
                 <select
                   value={semester}
                   onChange={e => setSemester(e.target.value)}
-                  className="clean-select"
+                  className="form-select"
                   required
                 >
                   {INITIAL_SEMESTERS.map(s => (
@@ -185,16 +167,16 @@ export const RequestForm: React.FC = () => {
               </div>
             </div>
 
-            <div className="form-group">
+            <div className="form-field">
               <label className="field-label">
-                Class / Module <span className="req-star">*</span>
+                <span className="field-label-text">Class / Module <span className="required-dot">*</span></span>
               </label>
-              <div className="input-with-icon">
-                <BookOpen size={16} className="field-icon" />
+              <div className="input-container">
+                <BookOpen size={15} className="input-icon" />
                 <select
                   value={classModule}
                   onChange={e => setClassModule(e.target.value)}
-                  className="clean-select"
+                  className="form-select"
                   required
                 >
                   {INITIAL_MODULES.map(m => (
@@ -204,14 +186,14 @@ export const RequestForm: React.FC = () => {
               </div>
             </div>
 
-            <div className="form-group">
+            <div className="form-field">
               <label className="field-label">
-                Lecturers (In Charge) <span className="req-star">*</span>
+                <span className="field-label-text">Lecturers (In Charge) <span className="required-dot">*</span></span>
               </label>
               <select
                 value={lecturer}
                 onChange={e => setLecturer(e.target.value)}
-                className="clean-select font-semibold"
+                className="form-select font-semibold"
                 required
               >
                 {lecturers.map(l => (
@@ -225,17 +207,20 @@ export const RequestForm: React.FC = () => {
         </div>
 
         {/* ========================================================
-            2. REQUEST DETAILS
+            SECTION 2: REQUEST DETAILS
            ======================================================== */}
-        <div className="form-block">
-          <h2 className="block-title">Request Details</h2>
+        <div className="form-section-block">
+          <div className="form-section-header">
+            <div className="form-section-num">2</div>
+            <h2 className="form-section-title">Request Details</h2>
+          </div>
 
           {/* Facility / Room: 719, 721, 724 */}
-          <div className="form-group">
+          <div className="form-field">
             <label className="field-label">
-              Facility / Room <span className="req-star">*</span>
+              <span className="field-label-text">Facility / Room <span className="required-dot">*</span></span>
             </label>
-            <div className="room-pills-row">
+            <div className="room-cards-grid">
               {(['719', '721', '724'] as RoomId[]).map(room => (
                 <button
                   key={room}
@@ -244,124 +229,104 @@ export const RequestForm: React.FC = () => {
                     setSelectedRoom(room);
                     setSelectedMachineIds([]);
                   }}
-                  className={`room-pill-btn ${selectedRoom === room ? 'active' : ''}`}
+                  className={`room-card-btn ${selectedRoom === room ? 'active' : ''}`}
                 >
-                  <MapPin size={16} />
-                  <span>Room {room}</span>
+                  <MapPin size={18} />
+                  <div>
+                    <div className="room-card-title">Studio {room}</div>
+                    <div className="room-card-sub">
+                      {room === '719' ? 'Sewing & Overlocking' : room === '721' ? 'Apparel Workshop' : 'Creative Studio'}
+                    </div>
+                  </div>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Date & Time Usage */}
-          <div className="form-grid-3">
-            <div className="form-group">
+          <div className="grid-3">
+            <div className="form-field">
               <label className="field-label">
-                Usage Date <span className="req-star">*</span>
+                <span className="field-label-text">Usage Date <span className="required-dot">*</span></span>
               </label>
-              <div className="input-with-icon">
-                <Calendar size={16} className="field-icon" />
+              <div className="input-container">
+                <Calendar size={15} className="input-icon" />
                 <input
                   type="date"
                   value={date}
                   onChange={e => setDate(e.target.value)}
-                  className="clean-input"
+                  className="form-input"
                   required
                 />
               </div>
             </div>
 
-            <div className="form-group">
+            <div className="form-field">
               <label className="field-label">
-                Start Time <span className="req-star">*</span>
+                <span className="field-label-text">Start Time <span className="required-dot">*</span></span>
               </label>
-              <div className="input-with-icon">
-                <Clock size={16} className="field-icon" />
+              <div className="input-container">
+                <Clock size={15} className="input-icon" />
                 <input
                   type="time"
                   value={startTime}
                   onChange={e => setStartTime(e.target.value)}
-                  className="clean-input"
+                  className="form-input"
                   required
                 />
               </div>
             </div>
 
-            <div className="form-group">
+            <div className="form-field">
               <label className="field-label">
-                End Time <span className="req-star">*</span>
+                <span className="field-label-text">End Time <span className="required-dot">*</span></span>
               </label>
-              <div className="input-with-icon">
-                <Clock size={16} className="field-icon" />
+              <div className="input-container">
+                <Clock size={15} className="input-icon" />
                 <input
                   type="time"
                   value={endTime}
                   onChange={e => setEndTime(e.target.value)}
-                  className="clean-input"
+                  className="form-input"
                   required
                 />
               </div>
             </div>
           </div>
 
-          {/* Duration Shortcut Chips */}
-          <div className="duration-row">
-            <span className="text-xs text-muted font-semibold">Duration:</span>
-            {[2, 3, 4, 6].map(hours => (
-              <button
-                key={hours}
-                type="button"
-                onClick={() => handleDurationPreset(hours)}
-                className={`duration-chip ${durationHours === hours ? 'active' : ''}`}
-              >
-                {hours} Hours
-              </button>
-            ))}
+          {/* Duration Chips */}
+          <div className="form-field">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-muted">Preset Duration:</span>
+              {[2, 3, 4, 6].map(hours => (
+                <button
+                  key={hours}
+                  type="button"
+                  onClick={() => handleDurationPreset(hours)}
+                  className={`room-chip ${durationHours === hours ? 'active' : ''}`}
+                  style={{ border: '1px solid #e2e8f0', color: durationHours === hours ? '#ffffff' : '#334155', background: durationHours === hours ? '#09090b' : '#f8fafc' }}
+                >
+                  {hours} hrs
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Machine types & Code: Sewing (2401-2416) & Overlocking (2101-2102) */}
-          <div className="form-group mt-4">
+          <div className="form-field mt-2">
             <label className="field-label">
-              Machine Types & Code (Room {selectedRoom}) <span className="req-star">*</span>
+              <span className="field-label-text">Machine Types & Code (Studio {selectedRoom}) <span className="required-dot">*</span></span>
             </label>
 
-            {/* Sewing Machines */}
-            <div className="machine-group-box">
-              <div className="machine-group-header">
-                <span className="machine-group-title">🧵 Sewing Machine (Codes 2401 – 2416)</span>
-                <span className="text-xs text-muted">{sewingMachines.length} stations in Room {selectedRoom}</span>
-              </div>
-              <div className="machines-grid">
-                {sewingMachines.map(m => {
-                  const isSelected = selectedMachineIds.includes(m.id);
-                  const isAvail = m.status === 'AVAILABLE';
-                  return (
-                    <button
-                      key={m.id}
-                      type="button"
-                      disabled={!isAvail && !isSelected}
-                      onClick={() => handleMachineToggle(m.id)}
-                      className={`machine-code-btn ${isSelected ? 'selected' : ''} ${!isAvail && !isSelected ? 'disabled' : ''}`}
-                    >
-                      <span className="machine-code-num">#{m.code}</span>
-                      <span className="machine-status-tag">
-                        {isSelected ? 'Selected' : isAvail ? 'Available' : m.status}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Overlocking Machines */}
-            {overlockingMachines.length > 0 && (
-              <div className="machine-group-box mt-3">
-                <div className="machine-group-header">
-                  <span className="machine-group-title">⚙️ Overlocking Machine (Codes 2101 – 2102)</span>
-                  <span className="text-xs text-muted">{overlockingMachines.length} stations in Room {selectedRoom}</span>
+            <div className="machine-selector-box">
+              {/* Sewing Machine Group */}
+              <div className="mb-3">
+                <div className="machine-group-heading">
+                  <span>🧵 Sewing Machine (Codes 2401 – 2416)</span>
+                  <span className="text-xs text-muted font-normal">{sewingMachines.length} stations in Room {selectedRoom}</span>
                 </div>
-                <div className="machines-grid">
-                  {overlockingMachines.map(m => {
+                <div className="machine-grid-chips">
+                  {sewingMachines.map(m => {
                     const isSelected = selectedMachineIds.includes(m.id);
                     const isAvail = m.status === 'AVAILABLE';
                     return (
@@ -370,10 +335,10 @@ export const RequestForm: React.FC = () => {
                         type="button"
                         disabled={!isAvail && !isSelected}
                         onClick={() => handleMachineToggle(m.id)}
-                        className={`machine-code-btn ${isSelected ? 'selected' : ''} ${!isAvail && !isSelected ? 'disabled' : ''}`}
+                        className={`machine-chip-btn ${isSelected ? 'selected' : ''} ${!isAvail && !isSelected ? 'disabled' : ''}`}
                       >
-                        <span className="machine-code-num">#{m.code}</span>
-                        <span className="machine-status-tag">
+                        <span className="chip-code">#{m.code}</span>
+                        <span className="chip-status">
                           {isSelected ? 'Selected' : isAvail ? 'Available' : m.status}
                         </span>
                       </button>
@@ -381,41 +346,76 @@ export const RequestForm: React.FC = () => {
                   })}
                 </div>
               </div>
-            )}
+
+              {/* Overlocking Machine Group */}
+              {overlockingMachines.length > 0 && (
+                <div className="pt-3 border-t border-slate-200">
+                  <div className="machine-group-heading">
+                    <span>⚙️ Overlocking Machine (Codes 2101 – 2102)</span>
+                    <span className="text-xs text-muted font-normal">{overlockingMachines.length} stations in Room {selectedRoom}</span>
+                  </div>
+                  <div className="machine-grid-chips">
+                    {overlockingMachines.map(m => {
+                      const isSelected = selectedMachineIds.includes(m.id);
+                      const isAvail = m.status === 'AVAILABLE';
+                      return (
+                        <button
+                          key={m.id}
+                          type="button"
+                          disabled={!isAvail && !isSelected}
+                          onClick={() => handleMachineToggle(m.id)}
+                          className={`machine-chip-btn ${isSelected ? 'selected' : ''} ${!isAvail && !isSelected ? 'disabled' : ''}`}
+                        >
+                          <span className="chip-code">#{m.code}</span>
+                          <span className="chip-status">
+                            {isSelected ? 'Selected' : isAvail ? 'Available' : m.status}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Verified by: Lecturer's name */}
-          <div className="form-group mt-3">
-            <label className="field-label">Verified by Lecturer</label>
-            <div className="verified-by-display">
-              <span className="font-semibold">{lecturer}</span>
-              <span className="text-xs text-muted">Designated faculty reviewer</span>
+          <div className="form-field mt-3">
+            <label className="field-label">
+              <span className="field-label-text">Verified by Lecturer</span>
+            </label>
+            <div className="p-3 bg-slate-50 border border-slate-200 rounded-md flex justify-between items-center text-xs">
+              <span className="font-bold text-slate-800 text-sm">{lecturer}</span>
+              <span className="text-muted">Designated faculty reviewer</span>
             </div>
           </div>
         </div>
 
         {/* ========================================================
-            3. STUDENT'S AGREEMENT & LECTURER APPROVAL
+            SECTION 3: STUDENT'S AGREEMENT & LECTURER APPROVAL
            ======================================================== */}
-        <div className="form-block">
-          <h2 className="block-title">Student's Agreement & Lecturer Approval</h2>
+        <div className="form-section-block">
+          <div className="form-section-header">
+            <div className="form-section-num">3</div>
+            <h2 className="form-section-title">Student's Agreement & Lecturer Approval</h2>
+          </div>
 
-          <div className="agreement-clean-box">
+          <div className="agreement-container">
             <label className="agreement-label">
               <input
                 type="checkbox"
                 checked={agreedToSafety}
                 onChange={e => setAgreedToSafety(e.target.checked)}
-                className="clean-checkbox"
+                className="checkbox-clean"
                 required
               />
-              <span className="agreement-text">
-                <strong>Student's agreement:</strong> I confirm that I will follow all laboratory safety rules, operate the allocated machine carefully, clean the station after usage, and return the equipment on time for verification.
+              <span className="agreement-statement">
+                <strong>Student's Agreement:</strong> I confirm that I will abide by all studio laboratory safety protocols, handle the allocated machine with care, maintain needle & thread cleanliness, and return the equipment on schedule for condition verification.
               </span>
             </label>
           </div>
 
-          <div className="mt-3">
+          <div className="signature-card">
             <SignaturePad
               label="Student's Digital Signature"
               required
@@ -423,37 +423,29 @@ export const RequestForm: React.FC = () => {
             />
           </div>
 
-          {/* Lecturer Approval Info Box */}
-          <div className="lecturer-approval-status-box mt-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-muted">Lecturer Approval Workflow</span>
-              <span className="status-pill-amber">Pending Lecturer Verification</span>
+          {/* Lecturer Approval Status */}
+          <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-md flex items-center justify-between text-xs">
+            <div>
+              <span className="font-bold text-amber-900 block">Lecturer Approval Status</span>
+              <span className="text-amber-800">Pending review by <strong>{lecturer}</strong></span>
             </div>
-            <p className="text-xs text-muted mt-1">
-              Upon submission, your application will be routed to <strong>{lecturer}</strong> for review and approval.
-            </p>
+            <span className="status-badge-chip badge-amber">PENDING APPROVAL</span>
           </div>
         </div>
 
-        {/* Error List */}
+        {/* Error Banner */}
         {formErrors.length > 0 && (
-          <div className="error-banner">
-            <AlertCircle size={18} />
-            <div>
-              {formErrors.map((err, i) => (
-                <div key={i}>{err}</div>
-              ))}
-            </div>
+          <div className="mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-md flex items-start gap-2 text-xs">
+            <AlertCircle size={16} className="text-rose-600 flex-shrink-0 mt-0.5" />
+            <div>{formErrors[0]}</div>
           </div>
         )}
 
-        {/* Submit Action */}
-        <div className="form-submit-block">
-          <button type="submit" className="btn-submit-main">
-            <Send size={18} />
-            <span>SUBMIT REQUEST</span>
-          </button>
-        </div>
+        {/* Submit Button */}
+        <button type="submit" className="btn-primary-action">
+          <Send size={16} />
+          <span>SUBMIT REQUEST</span>
+        </button>
       </form>
     </div>
   );

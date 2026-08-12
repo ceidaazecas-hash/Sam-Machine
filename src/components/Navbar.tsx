@@ -4,7 +4,7 @@ import {
   FileEdit, 
   RotateCcw, 
   UserCheck, 
-  RefreshCw
+  RefreshCw 
 } from 'lucide-react';
 import type { RoomId } from '../types/lab';
 
@@ -26,55 +26,53 @@ export const Navbar: React.FC = () => {
       <div className="header-inner">
         {/* Brand / Title */}
         <div className="brand-group" onClick={() => setActiveTab('REQUEST')} style={{ cursor: 'pointer' }}>
-          <div className="brand-badge-square">LAB</div>
+          <div className="brand-badge">ATELIER</div>
           <div>
-            <div className="brand-title">FACILITY & EQUIPMENT</div>
-            <div className="brand-subtitle">Rooms 719 • 721 • 724</div>
+            <div className="brand-title">EQUIPMENT & FACILITY LAB</div>
+            <div className="brand-subtitle">Studios 719 • 721 • 724</div>
           </div>
         </div>
 
-        {/* 3 Main Navigation Tabs (Horizontally scrollable on mobile) */}
-        <div className="header-nav-scroll-wrapper">
-          <nav className="header-nav">
-            <button
-              type="button"
-              className={`nav-tab-btn ${activeTab === 'REQUEST' ? 'active' : ''}`}
-              onClick={() => setActiveTab('REQUEST')}
-            >
-              <FileEdit size={15} />
-              <span>1. REQUEST</span>
-            </button>
+        {/* 3 Main Navigation Tabs */}
+        <nav className="header-nav">
+          <button
+            type="button"
+            className={`nav-tab-btn ${activeTab === 'REQUEST' ? 'active' : ''}`}
+            onClick={() => setActiveTab('REQUEST')}
+          >
+            <FileEdit size={14} />
+            <span>1. REQUEST</span>
+          </button>
 
-            <button
-              type="button"
-              className={`nav-tab-btn ${activeTab === 'RETURN' ? 'active' : ''}`}
-              onClick={() => setActiveTab('RETURN')}
-            >
-              <RotateCcw size={15} />
-              <span>2. RETURN</span>
-              {activeInUseCount > 0 && (
-                <span className="tab-pill-badge">{activeInUseCount}</span>
-              )}
-            </button>
+          <button
+            type="button"
+            className={`nav-tab-btn ${activeTab === 'RETURN' ? 'active' : ''}`}
+            onClick={() => setActiveTab('RETURN')}
+          >
+            <RotateCcw size={14} />
+            <span>2. RETURN</span>
+            {activeInUseCount > 0 && (
+              <span className="tab-badge">{activeInUseCount}</span>
+            )}
+          </button>
 
-            <button
-              type="button"
-              className={`nav-tab-btn ${activeTab === 'LECTURER' ? 'active' : ''}`}
-              onClick={() => setActiveTab('LECTURER')}
-            >
-              <UserCheck size={15} />
-              <span>3. LECTURER</span>
-              {pendingRequestsCount > 0 && (
-                <span className="tab-pill-badge amber">{pendingRequestsCount}</span>
-              )}
-            </button>
-          </nav>
-        </div>
+          <button
+            type="button"
+            className={`nav-tab-btn ${activeTab === 'LECTURER' ? 'active' : ''}`}
+            onClick={() => setActiveTab('LECTURER')}
+          >
+            <UserCheck size={14} />
+            <span>3. LECTURER</span>
+            {pendingRequestsCount > 0 && (
+              <span className="tab-badge amber">{pendingRequestsCount}</span>
+            )}
+          </button>
+        </nav>
 
         {/* Right Actions: Room Selector & Reset */}
         <div className="header-actions">
-          <div className="room-selector-pill">
-            <span className="room-label">Room:</span>
+          <div className="room-chip-group">
+            <span className="room-chip-label">Room:</span>
             {(['719', '721', '724'] as RoomId[]).map(room => (
               <button
                 key={room}
@@ -90,10 +88,10 @@ export const Navbar: React.FC = () => {
           <button
             type="button"
             onClick={resetDemoData}
-            className="action-icon-btn"
-            title="Reset Demo Data"
+            className="icon-button"
+            title="Reset to Initial Demo Data"
           >
-            <RefreshCw size={14} />
+            <RefreshCw size={13} />
           </button>
         </div>
       </div>

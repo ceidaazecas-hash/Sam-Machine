@@ -13,7 +13,7 @@ import {
 import { formatDate } from '../utils/helpers';
 
 export const ReturnForm: React.FC = () => {
-  const { requests, lecturers, submitReturnInspection, setActiveTab, showToast } = useLab();
+  const { requests, lecturers, submitReturnInspection, showToast } = useLab();
 
   // Active bookings eligible for return (IN_USE or APPROVED)
   const activeBookings = requests.filter(
@@ -94,57 +94,39 @@ export const ReturnForm: React.FC = () => {
   });
 
   return (
-    <div className="simple-section-container">
-      {/* Header Banner */}
-      <div className="section-title-card">
-        <div>
-          <div className="section-badge">RETURN</div>
-          <h1 className="section-heading">Equipment Return & Condition Verification</h1>
-          <p className="section-subheading">Review original booking details and complete lecturer return inspection</p>
-        </div>
-
-        <div className="workflow-toggle-box">
-          <span className="text-xs text-muted font-bold mr-1">Switch:</span>
-          <button
-            type="button"
-            onClick={() => setActiveTab('REQUEST')}
-            className="toggle-chip"
-          >
-            Request
-          </button>
-          <button
-            type="button"
-            className="toggle-chip active"
-          >
-            Return
-          </button>
-        </div>
+    <div className="main-content-area wide">
+      {/* Intro Header */}
+      <div className="page-intro">
+        <span className="page-intro-badge">RETURN</span>
+        <h1 className="page-intro-title">Equipment Return & Condition Verification</h1>
+        <p className="page-intro-desc">Review original request details and complete physical machine inspection</p>
       </div>
 
-      <div className="return-layout-grid">
-        {/* Left Column: Select Active Request */}
-        <div className="clean-sidebar-card">
-          <div className="sidebar-header">
-            <h3 className="sidebar-title">Select Active Session</h3>
-            <span className="sidebar-count">{activeBookings.length} Active</span>
+      <div className="return-view-grid">
+        {/* Left Column: Select Active Session */}
+        <div className="sidebar-list-card">
+          <div className="sidebar-list-title">
+            <span>Active Sessions</span>
+            <span className="pill-tag">{activeBookings.length} In Use</span>
           </div>
 
-          <div className="clean-search-box">
-            <Search size={15} className="search-icon" />
+          <div className="input-container mb-3">
+            <Search size={14} className="input-icon" />
             <input
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search by student, room, or machine..."
-              className="clean-search-input"
+              placeholder="Search student or room..."
+              className="form-input"
+              style={{ fontSize: '0.8rem', paddingLeft: '2.1rem', minHeight: '36px' }}
             />
           </div>
 
-          <div className="active-requests-list">
+          <div className="sidebar-sessions-list">
             {filteredBookings.length === 0 ? (
-              <div className="empty-state-mini">
-                <FileCheck size={24} className="text-muted" />
-                <p className="text-xs text-muted mt-2">No active sessions matching search.</p>
+              <div className="p-4 text-center text-xs text-muted">
+                <FileCheck size={24} className="mx-auto mb-1 opacity-40" />
+                <span>No active sessions found</span>
               </div>
             ) : (
               filteredBookings.map(b => {
@@ -153,11 +135,11 @@ export const ReturnForm: React.FC = () => {
                   <div
                     key={b.id}
                     onClick={() => handleSelectBooking(b)}
-                    className={`request-select-card ${isSelected ? 'active' : ''}`}
+                    className={`session-card-item ${isSelected ? 'active' : ''}`}
                   >
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold text-sm">{b.applicant.studentName}</span>
-                      <span className="text-xs mono font-bold">Room {b.requestDetails.facilityRoom}</span>
+                    <div className="flex justify-between items-center text-xs font-bold">
+                      <span>{b.applicant.studentName}</span>
+                      <span className="mono">Room {b.requestDetails.facilityRoom}</span>
                     </div>
 
                     <div className="text-xs text-muted mt-1">
@@ -166,7 +148,7 @@ export const ReturnForm: React.FC = () => {
 
                     <div className="text-xs text-muted mt-1 flex justify-between">
                       <span>Machines: <strong>{b.requestDetails.machineIds.join(', ')}</strong></span>
-                      <span>Slot: {b.requestDetails.startTime} - {b.requestDetails.endTime}</span>
+                      <span>{b.requestDetails.startTime} - {b.requestDetails.endTime}</span>
                     </div>
                   </div>
                 );
@@ -175,120 +157,133 @@ export const ReturnForm: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Column: Return Form with Display and Condition Verification */}
-        <div className="clean-form-card">
+        {/* Right Column: Return Form */}
+        <div className="form-card-container">
           {!activeRequest ? (
             <div className="empty-selection-placeholder">
-              <RotateCcw size={40} className="text-muted opacity-40" />
-              <h3 className="font-bold text-base mt-2">Select a Session to Process Return</h3>
-              <p className="text-xs text-muted">Choose an active student booking from the left list.</p>
+              <RotateCcw size={36} className="text-muted opacity-40" />
+              <h3 className="font-bold text-sm mt-2 text-slate-800">Select an Active Session to Process Return</h3>
+              <p className="text-xs text-muted">Choose a student booking from the left sidebar to verify equipment condition.</p>
             </div>
           ) : (
             <form onSubmit={handleSubmitReturn}>
               {/* ========================================================
-                  1. APPLICANT'S INFORMATION DISPLAY
+                  SECTION 1: APPLICANT'S INFORMATION DISPLAY
                  ======================================================== */}
-              <div className="form-block">
-                <h2 className="block-title">Applicant's Information</h2>
-                <div className="info-display-grid">
-                  <div className="info-box">
-                    <span className="info-label">Student's Name</span>
-                    <span className="info-value font-bold">{activeRequest.applicant.studentName}</span>
+              <div className="form-section-block">
+                <div className="form-section-header">
+                  <div className="form-section-num">1</div>
+                  <h2 className="form-section-title">Applicant's Information</h2>
+                </div>
+
+                <div className="grid-2">
+                  <div className="p-3 bg-slate-50 border border-slate-200 rounded-md">
+                    <span className="summary-item-label">Student's Name</span>
+                    <span className="summary-item-value">{activeRequest.applicant.studentName}</span>
                   </div>
 
-                  <div className="info-box">
-                    <span className="info-label">Semester</span>
-                    <span className="info-value">{activeRequest.applicant.semester}</span>
+                  <div className="p-3 bg-slate-50 border border-slate-200 rounded-md">
+                    <span className="summary-item-label">Semester</span>
+                    <span className="summary-item-value">{activeRequest.applicant.semester}</span>
                   </div>
 
-                  <div className="info-box">
-                    <span className="info-label">Class / Module</span>
-                    <span className="info-value">{activeRequest.applicant.classModule}</span>
+                  <div className="p-3 bg-slate-50 border border-slate-200 rounded-md">
+                    <span className="summary-item-label">Class / Module</span>
+                    <span className="summary-item-value">{activeRequest.applicant.classModule}</span>
                   </div>
 
-                  <div className="info-box">
-                    <span className="info-label">Lecturers</span>
-                    <span className="info-value font-semibold">{activeRequest.applicant.lecturer}</span>
+                  <div className="p-3 bg-slate-50 border border-slate-200 rounded-md">
+                    <span className="summary-item-label">Lecturers</span>
+                    <span className="summary-item-value">{activeRequest.applicant.lecturer}</span>
                   </div>
                 </div>
               </div>
 
               {/* ========================================================
-                  2. REQUEST DETAILS DISPLAY
+                  SECTION 2: REQUEST DETAILS DISPLAY
                  ======================================================== */}
-              <div className="form-block">
-                <h2 className="block-title">Request (Original Application Display)</h2>
+              <div className="form-section-block">
+                <div className="form-section-header">
+                  <div className="form-section-num">2</div>
+                  <h2 className="form-section-title">Request Details (Original Application)</h2>
+                </div>
 
-                <div className="display-box-card">
-                  <div className="display-row">
-                    <span className="display-row-label">• Facility / Room:</span>
-                    <span className="display-row-val font-bold">Room {activeRequest.requestDetails.facilityRoom}</span>
-                  </div>
+                <div className="details-summary-card">
+                  <div className="details-summary-grid">
+                    <div className="summary-item">
+                      <span className="summary-item-label">Facility / Room</span>
+                      <span className="summary-item-value font-bold">Room {activeRequest.requestDetails.facilityRoom}</span>
+                    </div>
 
-                  <div className="display-row">
-                    <span className="display-row-label">• Date & Time Usage:</span>
-                    <span className="display-row-val">
-                      {formatDate(activeRequest.requestDetails.date)} ({activeRequest.requestDetails.startTime} – {activeRequest.requestDetails.endTime})
-                    </span>
-                  </div>
+                    <div className="summary-item">
+                      <span className="summary-item-label">Date & Time Usage</span>
+                      <span className="summary-item-value">
+                        {formatDate(activeRequest.requestDetails.date)} ({activeRequest.requestDetails.startTime} - {activeRequest.requestDetails.endTime})
+                      </span>
+                    </div>
 
-                  <div className="display-row">
-                    <span className="display-row-label">• Machine Types & Code:</span>
-                    <span className="display-row-val">
-                      {activeRequest.requestDetails.machineIds.map(mId => (
-                        <span key={mId} className="machine-pill-tag mr-1">
-                          #{mId}
-                        </span>
-                      ))}
-                    </span>
-                  </div>
+                    <div className="summary-item">
+                      <span className="summary-item-label">Machine Types & Code</span>
+                      <div className="flex gap-1 mt-0.5">
+                        {activeRequest.requestDetails.machineIds.map(mId => (
+                          <span key={mId} className="pill-tag">#{mId}</span>
+                        ))}
+                      </div>
+                    </div>
 
-                  <div className="display-row">
-                    <span className="display-row-label">• Verified by:</span>
-                    <span className="display-row-val font-semibold">{activeRequest.applicant.lecturer}</span>
-                  </div>
+                    <div className="summary-item">
+                      <span className="summary-item-label">Verified by Lecturer</span>
+                      <span className="summary-item-value">{activeRequest.applicant.lecturer}</span>
+                    </div>
 
-                  <div className="display-row">
-                    <span className="display-row-label">• Student's Agreement:</span>
-                    <span className="display-row-val text-emerald-600 font-semibold flex items-center gap-1">
-                      <Check size={14} /> Confirmed & Signed
-                    </span>
-                  </div>
+                    <div className="summary-item">
+                      <span className="summary-item-label">Student's Agreement</span>
+                      <span className="summary-item-value text-emerald-700 font-semibold flex items-center gap-1">
+                        <Check size={13} /> Confirmed & Signed
+                      </span>
+                    </div>
 
-                  <div className="display-row">
-                    <span className="display-row-label">• Lecturer Approval:</span>
-                    <span className="display-row-val text-emerald-600 font-semibold flex items-center gap-1">
-                      <ShieldCheck size={14} /> Approved for Studio Usage
-                    </span>
+                    <div className="summary-item">
+                      <span className="summary-item-label">Lecturer Approval</span>
+                      <span className="summary-item-value text-emerald-700 font-semibold flex items-center gap-1">
+                        <ShieldCheck size={13} /> Approved for Studio Use
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
 
               {/* ========================================================
-                  3. RETURN VERIFICATION & LECTURER APPROVAL
+                  SECTION 3: RETURN CONDITION & LECTURER ACCEPTANCE
                  ======================================================== */}
-              <div className="form-block">
-                <h2 className="block-title">Return Details & Lecturer Verification</h2>
+              <div className="form-section-block">
+                <div className="form-section-header">
+                  <div className="form-section-num">3</div>
+                  <h2 className="form-section-title">Return Details & Condition Verification</h2>
+                </div>
 
-                {/* Return Date & Time */}
-                <div className="form-grid-2">
-                  <div className="form-group">
-                    <label className="field-label">Return Date & Time <span className="req-star">*</span></label>
+                <div className="grid-2">
+                  <div className="form-field">
+                    <label className="field-label">
+                      <span className="field-label-text">Return Date & Time <span className="required-dot">*</span></span>
+                    </label>
                     <input
                       type="datetime-local"
                       value={returnDateTime}
                       onChange={e => setReturnDateTime(e.target.value)}
-                      className="clean-input"
+                      className="form-input"
                       required
                     />
                   </div>
 
-                  <div className="form-group">
-                    <label className="field-label">Verified by (Same Lecturer) <span className="req-star">*</span></label>
+                  <div className="form-field">
+                    <label className="field-label">
+                      <span className="field-label-text">Verified by (Same Lecturer) <span className="required-dot">*</span></span>
+                    </label>
                     <select
                       value={verifiedLecturer}
                       onChange={e => setVerifiedLecturer(e.target.value)}
-                      className="clean-select font-semibold"
+                      className="form-select font-semibold"
                       required
                     >
                       {lecturers.map(l => (
@@ -298,21 +293,24 @@ export const ReturnForm: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Condition Selection */}
-                <div className="form-group mt-2">
-                  <label className="field-label">Condition Assessment</label>
-                  <div className="flex gap-2">
+                {/* Condition Rating */}
+                <div className="form-field">
+                  <label className="field-label">
+                    <span className="field-label-text">Condition Rating</span>
+                  </label>
+                  <div className="flex gap-2 flex-wrap">
                     {[
                       { id: 'EXCELLENT', label: 'Excellent Condition' },
-                      { id: 'GOOD', label: 'Good Working Condition' },
-                      { id: 'MINOR_ISSUES', label: 'Minor Issues / Lint' },
-                      { id: 'DAMAGED', label: 'Damaged / Needs Service' }
+                      { id: 'GOOD', label: 'Good Working Order' },
+                      { id: 'MINOR_ISSUES', label: 'Minor Lint / Adjustment' },
+                      { id: 'DAMAGED', label: 'Damaged / Needs Tech' }
                     ].map(cond => (
                       <button
                         key={cond.id}
                         type="button"
                         onClick={() => setReturnCondition(cond.id as any)}
-                        className={`duration-chip ${returnCondition === cond.id ? 'active' : ''}`}
+                        className={`room-chip ${returnCondition === cond.id ? 'active' : ''}`}
+                        style={{ border: '1px solid #e2e8f0', color: returnCondition === cond.id ? '#ffffff' : '#334155', background: returnCondition === cond.id ? '#09090b' : '#f8fafc' }}
                       >
                         {cond.label}
                       </button>
@@ -320,91 +318,93 @@ export const ReturnForm: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Condition & Verification Checklist */}
-                <div className="form-group mt-3">
-                  <label className="field-label">Condition & Verification Checklist</label>
-                  <div className="checklist-container">
-                    <label className="checklist-item">
+                {/* 5-Point Condition Checklist */}
+                <div className="form-field">
+                  <label className="field-label">
+                    <span className="field-label-text">5-Point Condition Checklist</span>
+                  </label>
+                  <div className="condition-checklist-grid">
+                    <label className="condition-check-label">
                       <input
                         type="checkbox"
                         checked={checklist.needleIntact}
                         onChange={() => handleChecklistToggle('needleIntact')}
-                        className="clean-checkbox"
+                        className="checkbox-clean"
                       />
                       <span>Needle intact & presser foot secured</span>
                     </label>
 
-                    <label className="checklist-item">
+                    <label className="condition-check-label">
                       <input
                         type="checkbox"
                         checked={checklist.bobbinCaseClean}
                         onChange={() => handleChecklistToggle('bobbinCaseClean')}
-                        className="clean-checkbox"
+                        className="checkbox-clean"
                       />
-                      <span>Bobbin case and feed dog cleaned of lint</span>
+                      <span>Bobbin case and feed dog clean</span>
                     </label>
 
-                    <label className="checklist-item">
+                    <label className="condition-check-label">
                       <input
                         type="checkbox"
                         checked={checklist.tensionCalibrated}
                         onChange={() => handleChecklistToggle('tensionCalibrated')}
-                        className="clean-checkbox"
+                        className="checkbox-clean"
                       />
-                      <span>Thread tension calibrated to standard dial</span>
+                      <span>Thread tension dials calibrated</span>
                     </label>
 
-                    <label className="checklist-item">
+                    <label className="condition-check-label">
                       <input
                         type="checkbox"
                         checked={checklist.accessoriesReturned}
                         onChange={() => handleChecklistToggle('accessoriesReturned')}
-                        className="clean-checkbox"
+                        className="checkbox-clean"
                       />
-                      <span>All accessories, foot pedal, and cords returned</span>
+                      <span>All accessories & pedal returned</span>
                     </label>
 
-                    <label className="checklist-item col-span-2">
+                    <label className="condition-check-label col-span-2" style={{ gridColumn: 'span 2' }}>
                       <input
                         type="checkbox"
                         checked={checklist.workspaceCleaned}
                         onChange={() => handleChecklistToggle('workspaceCleaned')}
-                        className="clean-checkbox"
+                        className="checkbox-clean"
                       />
-                      <span>Workstation table and floor swept</span>
+                      <span>Station table and floor cleaned</span>
                     </label>
                   </div>
                 </div>
 
-                {/* Condition Notes */}
-                <div className="form-group">
-                  <label className="field-label">Condition & Verification Notes</label>
+                {/* Verification Notes */}
+                <div className="form-field">
+                  <label className="field-label">
+                    <span className="field-label-text">Condition Notes & Feedback</span>
+                  </label>
                   <textarea
                     value={conditionNotes}
                     onChange={e => setConditionNotes(e.target.value)}
                     rows={2}
-                    placeholder="Enter condition notes (e.g. Clean, undamaged, ready for next student)..."
-                    className="clean-textarea"
+                    className="form-textarea"
+                    placeholder="Enter return notes..."
                   />
                 </div>
 
                 {/* Lecturer Signature */}
-                <div className="mt-3">
+                <div className="signature-card">
                   <SignaturePad
-                    label="Lecturer's Approval & Return Sign-Off Signature"
+                    label="Lecturer Sign-Off & Approval Signature"
                     required
                     onSave={sig => setLecturerSignature(sig)}
                   />
                 </div>
               </div>
 
-              {/* Submit Return */}
-              <div className="form-submit-block">
-                <button type="submit" className="btn-submit-main">
-                  <CheckCircle2 size={18} />
-                  <span>LECTURER'S APPROVAL / ACCEPT RETURN</span>
-                </button>
-              </div>
+              {/* Submit Button */}
+              <button type="submit" className="btn-primary-action">
+                <CheckCircle2 size={16} />
+                <span>LECTURER'S APPROVAL / ACCEPT RETURN</span>
+              </button>
             </form>
           )}
         </div>
