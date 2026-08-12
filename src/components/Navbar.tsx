@@ -24,12 +24,11 @@ export const Navbar: React.FC = () => {
   return (
     <header className="site-header">
       <div className="header-inner">
-        {/* Brand / Title (ATELIER badge removed as requested) */}
+        {/* Brand / Title */}
         <div className="brand-group" onClick={() => setActiveTab('REQUEST')} style={{ cursor: 'pointer' }}>
-          <div>
-            <div className="brand-title">EQUIPMENT & FACILITY LAB</div>
-            <div className="brand-subtitle">Studios 719 • 721 • 724</div>
-          </div>
+          <span className="brand-title">EQUIPMENT & FACILITY LAB</span>
+          <span className="brand-dot" />
+          <span className="brand-subtitle">Studios 719 • 721 • 724</span>
         </div>
 
         {/* 3 Main Navigation Tabs */}
@@ -39,7 +38,7 @@ export const Navbar: React.FC = () => {
             className={`nav-tab-btn ${activeTab === 'REQUEST' ? 'active' : ''}`}
             onClick={() => setActiveTab('REQUEST')}
           >
-            <FileEdit size={14} />
+            <FileEdit size={13} />
             <span>1. REQUEST</span>
           </button>
 
@@ -48,7 +47,7 @@ export const Navbar: React.FC = () => {
             className={`nav-tab-btn ${activeTab === 'RETURN' ? 'active' : ''}`}
             onClick={() => setActiveTab('RETURN')}
           >
-            <RotateCcw size={14} />
+            <RotateCcw size={13} />
             <span>2. RETURN</span>
             {activeInUseCount > 0 && (
               <span className="tab-badge">{activeInUseCount}</span>
@@ -60,7 +59,7 @@ export const Navbar: React.FC = () => {
             className={`nav-tab-btn ${activeTab === 'LECTURER' ? 'active' : ''}`}
             onClick={() => setActiveTab('LECTURER')}
           >
-            <UserCheck size={14} />
+            <UserCheck size={13} />
             <span>3. LECTURER</span>
             {pendingRequestsCount > 0 && (
               <span className="tab-badge amber">{pendingRequestsCount}</span>

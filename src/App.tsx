@@ -21,11 +21,11 @@ const MainContent: React.FC = () => {
         {activeTab === 'LECTURER' && <LecturerDashboard />}
       </main>
 
-      {/* Simple Clean Footer */}
+      {/* Clean Minimal Footer */}
       <footer className="site-footer">
-        <div className="footer-inner-simple">
-          <span>Facility & Equipment System • Rooms 719, 721, 724</span>
-          <span>Sewing Machines: 2401–2416 • Overlocking Machines: 2101–2102</span>
+        <div className="footer-inner-layout">
+          <span>Equipment & Facility Management System • Studios 719, 721, 724</span>
+          <span>Sewing: 2401–2416 • Overlocking: 2101–2102</span>
         </div>
       </footer>
 

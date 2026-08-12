@@ -155,24 +155,25 @@ export const LecturerDashboard: React.FC = () => {
   if (!isAuthenticated) {
     return (
       <div className="fluid-page-wrapper flex items-center justify-center py-12" style={{ minHeight: '60vh' }}>
-        <div className="form-card-container" style={{ maxWidth: '440px', margin: '0 auto', textAlign: 'center' }}>
-          <div className="w-12 h-12 rounded-full bg-slate-900 text-white flex items-center justify-center mx-auto mb-3" style={{ width: '48px', height: '48px', margin: '0 auto 1rem auto' }}>
-            <Lock size={22} />
+        <div className="form-card-container" style={{ maxWidth: '400px', margin: '0 auto', textAlign: 'center' }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--text-primary)', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 0.75rem auto' }}>
+            <Lock size={18} />
           </div>
 
-          <span className="page-intro-badge">FACULTY ACCESS ONLY</span>
-          <h2 className="text-xl font-bold text-slate-900 mt-1 mb-1">Lecturer Verification Portal</h2>
-          <p className="text-xs text-muted mb-5">
-            Please enter your faculty passcode to access approvals, machine reports, and student logs.
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '0.25rem' }}>
+            Lecturer Verification Portal
+          </h2>
+          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
+            Enter your faculty passcode to access verification & reports
           </p>
 
-          <form onSubmit={handleLogin} className="space-y-4 text-left">
+          <form onSubmit={handleLogin} style={{ textAlign: 'left' }}>
             <div className="form-field">
               <label className="field-label">
-                <span className="field-label-text">Faculty Passcode <span className="required-dot">*</span></span>
+                Faculty Passcode <span className="required-dot">*</span>
               </label>
               <div className="input-container">
-                <KeyRound size={15} className="input-icon" />
+                <KeyRound size={14} className="input-icon" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={enteredPasscode}
@@ -180,7 +181,7 @@ export const LecturerDashboard: React.FC = () => {
                     setEnteredPasscode(e.target.value);
                     if (authError) setAuthError('');
                   }}
-                  placeholder="Enter passcode"
+                  placeholder="Enter passcode (SamSam22)"
                   className="form-input"
                   autoFocus
                   required
@@ -188,31 +189,29 @@ export const LecturerDashboard: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 text-slate-400 hover:text-slate-700 bg-transparent border-none cursor-pointer"
-                  style={{ position: 'absolute', right: '0.75rem', background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b' }}
+                  style={{ position: 'absolute', right: '0.75rem', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
                 >
-                  {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                  {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
               </div>
             </div>
 
             {authError && (
-              <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-md flex items-center gap-2 text-xs" style={{ marginBottom: '1rem' }}>
-                <AlertCircle size={15} className="text-rose-600 flex-shrink-0" />
+              <div style={{ padding: '0.65rem', background: 'var(--accent-rose-bg)', border: '1px solid #fecdd3', color: '#be123c', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', marginBottom: '0.85rem' }}>
+                <AlertCircle size={14} />
                 <span>{authError}</span>
               </div>
             )}
 
-            <button type="submit" className="btn-primary-action">
-              <Unlock size={16} />
+            <button type="submit" className="btn-submit-primary">
+              <Unlock size={14} />
               <span>UNLOCK LECTURER PORTAL</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab('REQUEST')}
-              className="w-full text-center text-xs text-muted hover:text-slate-900 bg-transparent border-none cursor-pointer pt-2 block"
-              style={{ width: '100%', textAlign: 'center', marginTop: '0.75rem', background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b' }}
+              style={{ width: '100%', textAlign: 'center', marginTop: '0.75rem', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '0.75rem' }}
             >
               ← Return to Student Request Form
             </button>
@@ -228,22 +227,21 @@ export const LecturerDashboard: React.FC = () => {
   return (
     <div className="fluid-page-wrapper">
       {/* Intro Header */}
-      <div className="page-intro flex justify-between items-start flex-wrap gap-3">
+      <div className="page-intro">
         <div>
-          <span className="page-intro-badge">LECTURER</span>
           <h1 className="page-intro-title">Lecturer Portal & Verification Hub</h1>
           <p className="page-intro-desc">Review student applications, maintain machine logs, and track compliance</p>
         </div>
 
-        {/* Right Controls: Filter & Lock/Sign Out */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs font-bold text-muted">Filter:</span>
+        {/* Right Controls: Filter & Lock */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>Filter:</span>
             <select
               value={selectedLecturer}
               onChange={e => setSelectedLecturer(e.target.value)}
-              className="form-select text-xs py-1"
-              style={{ minHeight: '34px', width: 'auto' }}
+              className="form-select"
+              style={{ minHeight: '30px', padding: '0.2rem 0.5rem', fontSize: '0.75rem', width: 'auto' }}
             >
               <option value="ALL">All Lecturers</option>
               {lecturers.map(l => (
@@ -255,51 +253,51 @@ export const LecturerDashboard: React.FC = () => {
           <button
             type="button"
             onClick={handleLogout}
-            className="room-chip flex items-center gap-1"
-            style={{ border: '1px solid #e2e8f0', color: '#be123c', background: '#fff1f2', padding: '0.4rem 0.75rem', fontSize: '0.75rem', fontWeight: 700 }}
+            className="room-chip"
+            style={{ border: '1px solid #fecdd3', color: '#be123c', background: '#fff1f2', padding: '0.25rem 0.65rem', fontSize: '0.72rem', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
             title="Lock Lecturer Portal"
           >
-            <LogOut size={13} />
+            <LogOut size={12} />
             <span>Lock Portal</span>
           </button>
         </div>
       </div>
 
       {/* Sub Tabs */}
-      <div className="lecturer-subnav-bar">
+      <div className="lecturer-subnav-row">
         <button
           type="button"
-          className={`subnav-pill-btn ${activeSubTab === 'VERIFY' ? 'active' : ''}`}
+          className={`subnav-btn-minimal ${activeSubTab === 'VERIFY' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('VERIFY')}
         >
-          <Clock size={14} />
+          <Clock size={13} />
           <span>Verifying Applications ({pendingRequests.length})</span>
         </button>
 
         <button
           type="button"
-          className={`subnav-pill-btn ${activeSubTab === 'MACHINE_REPORTS' ? 'active' : ''}`}
+          className={`subnav-btn-minimal ${activeSubTab === 'MACHINE_REPORTS' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('MACHINE_REPORTS')}
         >
-          <Layers size={14} />
+          <Layers size={13} />
           <span>Reports: Each Machine</span>
         </button>
 
         <button
           type="button"
-          className={`subnav-pill-btn ${activeSubTab === 'STUDENT_REPORTS' ? 'active' : ''}`}
+          className={`subnav-btn-minimal ${activeSubTab === 'STUDENT_REPORTS' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('STUDENT_REPORTS')}
         >
-          <Award size={14} />
+          <Award size={13} />
           <span>Reports: Students Request</span>
         </button>
 
         <button
           type="button"
-          className={`subnav-pill-btn ${activeSubTab === 'HISTORY' ? 'active' : ''}`}
+          className={`subnav-btn-minimal ${activeSubTab === 'HISTORY' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('HISTORY')}
         >
-          <FileText size={14} />
+          <FileText size={13} />
           <span>Track History</span>
         </button>
       </div>
@@ -308,60 +306,60 @@ export const LecturerDashboard: React.FC = () => {
       {activeSubTab === 'VERIFY' && (
         <div>
           {pendingRequests.length === 0 ? (
-            <div className="form-card-container text-center py-10">
-              <ShieldCheck size={36} className="text-emerald-600 mx-auto mb-2" />
+            <div className="form-card-container text-center py-8">
+              <ShieldCheck size={32} className="mx-auto mb-2 text-emerald-600 opacity-60" />
               <h3 className="font-bold text-sm text-slate-800">All Applications Verified</h3>
-              <p className="text-xs text-muted">There are currently no pending student equipment requests requiring sign-off.</p>
+              <p className="text-xs text-muted mt-0.5">There are currently no pending student equipment requests requiring review.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1rem' }}>
               {pendingRequests.map(req => (
-                <div key={req.id} className="form-card-container p-4 flex flex-col justify-between" style={{ padding: '1.25rem' }}>
+                <div key={req.id} className="form-card-container" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
-                    <div className="flex justify-between items-start pb-2 mb-2 border-b border-slate-100">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '0.5rem', marginBottom: '0.65rem', borderBottom: '1px solid var(--border-light)' }}>
                       <div>
-                        <span className="text-xs mono text-muted">{req.id}</span>
-                        <h3 className="font-bold text-sm text-slate-900">{req.applicant.studentName}</h3>
-                        <div className="text-xs text-muted">{req.applicant.semester} • {req.applicant.classModule}</div>
+                        <span className="mono" style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>{req.id}</span>
+                        <h3 style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-primary)' }}>{req.applicant.studentName}</h3>
+                        <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{req.applicant.semester} • {req.applicant.classModule}</div>
                       </div>
-                      <span className="status-badge-chip badge-amber">PENDING</span>
+                      <span className="status-pill-subtle pill-amber">PENDING</span>
                     </div>
 
-                    <div className="space-y-1 text-xs text-slate-600 mb-3">
-                      <div className="flex justify-between">
-                        <span className="text-muted">Facility / Room:</span>
-                        <span className="font-bold text-slate-900">Room {req.requestDetails.facilityRoom}</span>
+                    <div className="detail-card-grid" style={{ marginBottom: '0.85rem' }}>
+                      <div className="detail-item">
+                        <span className="detail-label">Facility / Room</span>
+                        <span className="detail-value">Room {req.requestDetails.facilityRoom}</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted">Usage Date & Slot:</span>
-                        <span className="font-semibold">{formatDate(req.requestDetails.date)} ({req.requestDetails.startTime} - {req.requestDetails.endTime})</span>
+                      <div className="detail-item">
+                        <span className="detail-label">Machines</span>
+                        <span className="detail-value font-bold">{req.requestDetails.machineIds.join(', ')}</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted">Machines:</span>
-                        <span className="font-bold">{req.requestDetails.machineIds.join(', ')}</span>
+                      <div className="detail-item">
+                        <span className="detail-label">Usage Date</span>
+                        <span className="detail-value">{formatDate(req.requestDetails.date)}</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted">Agreement:</span>
-                        <span className="text-emerald-700 font-semibold">✓ Confirmed & Signed</span>
+                      <div className="detail-item">
+                        <span className="detail-label">Time Slot</span>
+                        <span className="detail-value">{req.requestDetails.startTime} - {req.requestDetails.endTime}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex gap-2 justify-end pt-2 border-t border-slate-100">
+                  <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', paddingTop: '0.5rem', borderTop: '1px solid var(--border-light)' }}>
                     <button
                       type="button"
                       onClick={() => handleOpenAction(req, 'REJECT')}
-                      className="btn-sm-reject"
+                      className="btn-action-reject"
                     >
-                      <X size={13} />
+                      <X size={12} />
                       <span>Reject</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => handleOpenAction(req, 'APPROVE')}
-                      className="btn-sm-approve"
+                      className="btn-action-approve"
                     >
-                      <Check size={13} />
+                      <Check size={12} />
                       <span>Approve</span>
                     </button>
                   </div>
@@ -375,17 +373,17 @@ export const LecturerDashboard: React.FC = () => {
       {/* 2. REPORTS: EACH MACHINE */}
       {activeSubTab === 'MACHINE_REPORTS' && (
         <div className="form-card-container">
-          <div className="mb-3 pb-2 border-b border-slate-200">
-            <h3 className="font-bold text-sm text-slate-900">Each Machine: Status, Usage & Reports</h3>
-            <p className="text-xs text-muted">Sewing Machines (2401–2416) and Overlocking Machines (2101–2102) across Rooms 719, 721, 724</p>
+          <div style={{ marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-light)' }}>
+            <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>Machine Telemetry & Notes</h3>
+            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Sewing Machines (2401–2416) & Overlocking Machines (2101–2102) in Rooms 719, 721, 724</p>
           </div>
 
-          <div className="clean-table-responsive">
-            <table className="clean-data-table">
+          <div className="table-responsive-wrapper">
+            <table className="minimal-data-table">
               <thead>
                 <tr>
                   <th>Machine Code</th>
-                  <th>Machine Type</th>
+                  <th>Type</th>
                   <th>Room</th>
                   <th>Status</th>
                   <th>Usage Hours</th>
@@ -400,19 +398,19 @@ export const LecturerDashboard: React.FC = () => {
                     <td>{m.type === 'SEWING' ? 'Sewing Machine' : 'Overlocking Machine'}</td>
                     <td className="font-semibold">Room {m.room}</td>
                     <td>
-                      <span className={`status-badge-chip ${m.status === 'AVAILABLE' ? 'badge-green' : m.status === 'IN_USE' ? 'badge-amber' : 'badge-rose'}`}>
+                      <span className={`status-pill-subtle ${m.status === 'AVAILABLE' ? 'pill-green' : m.status === 'IN_USE' ? 'pill-amber' : 'pill-rose'}`}>
                         {m.status}
                       </span>
                     </td>
                     <td className="text-xs">{m.totalUsageHours} hrs</td>
-                    <td className="text-xs text-slate-600 max-w-xs">
+                    <td style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', maxWidth: '280px' }}>
                       {editingMachineId === m.id ? (
                         <input
                           type="text"
                           value={machineNoteText}
                           onChange={e => setMachineNoteText(e.target.value)}
-                          className="form-input text-xs py-1"
-                          style={{ minHeight: '32px' }}
+                          className="form-input"
+                          style={{ minHeight: '28px', padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}
                         />
                       ) : (
                         <span>"{m.notes || 'In standard working order.'}"</span>
@@ -423,7 +421,8 @@ export const LecturerDashboard: React.FC = () => {
                         <button
                           type="button"
                           onClick={() => handleSaveMachineNote(m)}
-                          className="btn-sm-approve text-xs"
+                          className="btn-action-approve"
+                          style={{ padding: '0.2rem 0.5rem', fontSize: '0.7rem' }}
                         >
                           Save
                         </button>
@@ -435,10 +434,10 @@ export const LecturerDashboard: React.FC = () => {
                             setMachineNoteText(m.notes || '');
                           }}
                           className="room-chip"
-                          style={{ border: '1px solid #e2e8f0', color: '#09090b', background: '#f8fafc', fontSize: '0.72rem' }}
+                          style={{ border: '1px solid var(--border-light)', color: 'var(--text-primary)', background: 'var(--bg-card-subtle)', fontSize: '0.7rem' }}
                         >
-                          <Edit3 size={11} className="inline mr-1" />
-                          Edit Note
+                          <Edit3 size={10} style={{ display: 'inline', marginRight: '0.2rem' }} />
+                          Edit
                         </button>
                       )}
                     </td>
@@ -453,13 +452,13 @@ export const LecturerDashboard: React.FC = () => {
       {/* 3. REPORTS: STUDENTS REQUEST */}
       {activeSubTab === 'STUDENT_REPORTS' && (
         <div className="form-card-container">
-          <div className="mb-3 pb-2 border-b border-slate-200">
-            <h3 className="font-bold text-sm text-slate-900">Students Request: Compliance & Activity</h3>
-            <p className="text-xs text-muted">Summary of student applications, completed returns, and compliance standing</p>
+          <div style={{ marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-light)' }}>
+            <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>Student Requisition & Compliance Log</h3>
+            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Summary of applicant history and completed returns</p>
           </div>
 
-          <div className="clean-table-responsive">
-            <table className="clean-data-table">
+          <div className="table-responsive-wrapper">
+            <table className="minimal-data-table">
               <thead>
                 <tr>
                   <th>Student's Name</th>
@@ -468,20 +467,20 @@ export const LecturerDashboard: React.FC = () => {
                   <th>Total Bookings</th>
                   <th>Completed Returns</th>
                   <th>Pending Requests</th>
-                  <th>Status</th>
+                  <th>Compliance Status</th>
                 </tr>
               </thead>
               <tbody>
                 {studentTrackList.map(st => (
                   <tr key={st.studentId}>
-                    <td className="font-bold text-slate-900">{st.name}</td>
+                    <td className="font-bold">{st.name}</td>
                     <td>{st.semester}</td>
-                    <td className="text-xs">{st.classModule}</td>
+                    <td style={{ fontSize: '0.75rem' }}>{st.classModule}</td>
                     <td className="font-semibold">{st.totalBookings}</td>
-                    <td className="text-emerald-700 font-semibold">{st.completedReturns}</td>
-                    <td className="text-amber-700 font-semibold">{st.pendingBookings}</td>
+                    <td style={{ color: '#059669', fontWeight: 600 }}>{st.completedReturns}</td>
+                    <td style={{ color: '#d97706', fontWeight: 600 }}>{st.pendingBookings}</td>
                     <td>
-                      <span className="status-badge-chip badge-green">
+                      <span className="status-pill-subtle pill-green">
                         Verified Student
                       </span>
                     </td>
@@ -496,20 +495,20 @@ export const LecturerDashboard: React.FC = () => {
       {/* 4. TRACK HISTORY */}
       {activeSubTab === 'HISTORY' && (
         <div className="form-card-container">
-          <div className="mb-3 pb-2 border-b border-slate-200">
-            <h3 className="font-bold text-sm text-slate-900">Track History</h3>
-            <p className="text-xs text-muted">Chronological audit log of all facility requests, returns, and approvals</p>
+          <div style={{ marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-light)' }}>
+            <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>Full Activity Audit Log</h3>
+            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Chronological record of all equipment allocations and returns</p>
           </div>
 
-          <div className="clean-table-responsive">
-            <table className="clean-data-table">
+          <div className="table-responsive-wrapper">
+            <table className="minimal-data-table">
               <thead>
                 <tr>
                   <th>Request ID</th>
                   <th>Student's Name</th>
                   <th>Room</th>
-                  <th>Machine Types & Code</th>
-                  <th>Date & Time Usage</th>
+                  <th>Machines</th>
+                  <th>Date & Time</th>
                   <th>Approval Status</th>
                   <th>Return Status</th>
                 </tr>
@@ -523,21 +522,21 @@ export const LecturerDashboard: React.FC = () => {
                       <td className="font-semibold">{r.applicant.studentName}</td>
                       <td>Room {r.requestDetails.facilityRoom}</td>
                       <td>{r.requestDetails.machineIds.join(', ')}</td>
-                      <td className="text-xs">
+                      <td style={{ fontSize: '0.75rem' }}>
                         {formatDate(r.requestDetails.date)} ({r.requestDetails.startTime} - {r.requestDetails.endTime})
                       </td>
                       <td>
-                        <span className={`status-badge-chip ${badge.bgClass} ${badge.colorClass}`}>
+                        <span className={`status-pill-subtle ${badge.bgClass} ${badge.colorClass}`}>
                           {badge.label}
                         </span>
                       </td>
-                      <td className="text-xs">
+                      <td style={{ fontSize: '0.75rem' }}>
                         {r.returnInfo ? (
-                          <span className="text-emerald-700 font-bold">
+                          <span style={{ color: '#059669', fontWeight: 600 }}>
                             ✓ Returned ({r.returnInfo.returnCondition})
                           </span>
                         ) : (
-                          <span className="text-muted">-</span>
+                          <span style={{ color: 'var(--text-light)' }}>-</span>
                         )}
                       </td>
                     </tr>
@@ -554,28 +553,30 @@ export const LecturerDashboard: React.FC = () => {
         <div className="clean-modal-backdrop" onClick={() => setModalRequest(null)}>
           <div className="clean-modal-dialog" onClick={e => e.stopPropagation()}>
             <div className="clean-modal-header">
-              <h3 className="font-bold text-sm text-slate-900">
+              <h3 style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                 {actionType === 'APPROVE' ? 'Approve Student Application' : 'Reject Student Application'}
               </h3>
               <button type="button" onClick={() => setModalRequest(null)} className="btn-close">
-                <X size={16} />
+                <X size={15} />
               </button>
             </div>
 
-            <div className="p-4">
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-md mb-3 text-xs">
-                <div className="font-bold text-slate-900">{modalRequest.applicant.studentName}</div>
-                <div className="text-muted">
-                  Room {modalRequest.requestDetails.facilityRoom} • Machines: {modalRequest.requestDetails.machineIds.join(', ')} • {formatDate(modalRequest.requestDetails.date)}
+            <div style={{ padding: '1rem' }}>
+              <div className="detail-card-grid" style={{ marginBottom: '0.85rem' }}>
+                <div className="detail-item">
+                  <span className="detail-label">Student</span>
+                  <span className="detail-value">{modalRequest.applicant.studentName}</span>
+                </div>
+                <div className="detail-item">
+                  <span className="detail-label">Room & Machines</span>
+                  <span className="detail-value">Room {modalRequest.requestDetails.facilityRoom} (#{modalRequest.requestDetails.machineIds.join(', ')})</span>
                 </div>
               </div>
 
               {actionType === 'APPROVE' ? (
                 <>
                   <div className="form-field">
-                    <label className="field-label">
-                      <span className="field-label-text">Lecturer Feedback / Approval Note</span>
-                    </label>
+                    <label className="field-label">Lecturer Approval Note</label>
                     <textarea
                       value={feedbackNote}
                       onChange={e => setFeedbackNote(e.target.value)}
@@ -584,7 +585,7 @@ export const LecturerDashboard: React.FC = () => {
                     />
                   </div>
 
-                  <div className="signature-card">
+                  <div className="signature-wrapper">
                     <SignaturePad
                       label="Lecturer Approval Signature"
                       required
@@ -594,9 +595,7 @@ export const LecturerDashboard: React.FC = () => {
                 </>
               ) : (
                 <div className="form-field">
-                  <label className="field-label">
-                    <span className="field-label-text">Reason for Rejection <span className="required-dot">*</span></span>
-                  </label>
+                  <label className="field-label">Reason for Rejection <span className="required-dot">*</span></label>
                   <textarea
                     value={rejectionReason}
                     onChange={e => setRejectionReason(e.target.value)}
@@ -609,13 +608,14 @@ export const LecturerDashboard: React.FC = () => {
             </div>
 
             <div className="clean-modal-footer">
-              <button type="button" onClick={() => setModalRequest(null)} className="room-chip" style={{ border: '1px solid #e2e8f0', color: '#334155', background: '#ffffff', padding: '0.4rem 0.85rem' }}>
+              <button type="button" onClick={() => setModalRequest(null)} className="room-chip" style={{ border: '1px solid var(--border-light)', padding: '0.35rem 0.75rem' }}>
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleConfirmAction}
-                className={actionType === 'APPROVE' ? 'btn-sm-approve' : 'btn-sm-reject'}
+                className={actionType === 'APPROVE' ? 'btn-action-approve' : 'btn-action-reject'}
+                style={{ padding: '0.4rem 0.9rem', fontSize: '0.78rem' }}
               >
                 {actionType === 'APPROVE' ? 'Confirm Approval' : 'Confirm Rejection'}
               </button>

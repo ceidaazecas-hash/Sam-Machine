@@ -7,7 +7,6 @@ import {
   Send, 
   Calendar, 
   Clock, 
-  MapPin, 
   User, 
   BookOpen, 
   GraduationCap, 
@@ -115,9 +114,10 @@ export const RequestForm: React.FC = () => {
     <div className="fluid-page-wrapper">
       {/* Intro Header */}
       <div className="page-intro">
-        <span className="page-intro-badge">REQUEST</span>
-        <h1 className="page-intro-title">Equipment & Facility Requisition</h1>
-        <p className="page-intro-desc">Submit your laboratory and workstation booking for lecturer verification</p>
+        <div>
+          <h1 className="page-intro-title">Equipment & Facility Requisition</h1>
+          <p className="page-intro-desc">Submit your laboratory and workstation booking for lecturer verification</p>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="request-dashboard-layout">
@@ -125,20 +125,22 @@ export const RequestForm: React.FC = () => {
             COLUMN 1: APPLICANT'S INFO & REQUEST DETAILS
            ======================================================== */}
         <div className="dashboard-col">
-          {/* Block 1: Applicant's Information */}
+          {/* Card 1: Applicant's Information */}
           <div className="form-card-container">
-            <div className="form-section-header">
-              <div className="form-section-num">1</div>
-              <h2 className="form-section-title">Applicant's Information</h2>
+            <div className="card-header-minimal">
+              <div className="card-title-minimal">
+                <span className="card-step-badge">01</span>
+                <span>Applicant's Information</span>
+              </div>
             </div>
 
             <div className="grid-2">
               <div className="form-field">
                 <label className="field-label">
-                  <span className="field-label-text">Student's Name <span className="required-dot">*</span></span>
+                  Student's Name <span className="required-dot">*</span>
                 </label>
                 <div className="input-container">
-                  <User size={15} className="input-icon" />
+                  <User size={14} className="input-icon" />
                   <input
                     type="text"
                     value={studentName}
@@ -152,10 +154,10 @@ export const RequestForm: React.FC = () => {
 
               <div className="form-field">
                 <label className="field-label">
-                  <span className="field-label-text">Semester <span className="required-dot">*</span></span>
+                  Semester <span className="required-dot">*</span>
                 </label>
                 <div className="input-container">
-                  <GraduationCap size={15} className="input-icon" />
+                  <GraduationCap size={14} className="input-icon" />
                   <select
                     value={semester}
                     onChange={e => setSemester(e.target.value)}
@@ -171,10 +173,10 @@ export const RequestForm: React.FC = () => {
 
               <div className="form-field">
                 <label className="field-label">
-                  <span className="field-label-text">Class / Module <span className="required-dot">*</span></span>
+                  Class / Module <span className="required-dot">*</span>
                 </label>
                 <div className="input-container">
-                  <BookOpen size={15} className="input-icon" />
+                  <BookOpen size={14} className="input-icon" />
                   <select
                     value={classModule}
                     onChange={e => setClassModule(e.target.value)}
@@ -190,7 +192,7 @@ export const RequestForm: React.FC = () => {
 
               <div className="form-field">
                 <label className="field-label">
-                  <span className="field-label-text">Lecturers (In Charge) <span className="required-dot">*</span></span>
+                  Lecturers (In Charge) <span className="required-dot">*</span>
                 </label>
                 <select
                   value={lecturer}
@@ -208,19 +210,21 @@ export const RequestForm: React.FC = () => {
             </div>
           </div>
 
-          {/* Block 2: Request Details (Room, Date, Time) */}
+          {/* Card 2: Request Details & Schedule */}
           <div className="form-card-container">
-            <div className="form-section-header">
-              <div className="form-section-num">2</div>
-              <h2 className="form-section-title">Request Details & Schedule</h2>
+            <div className="card-header-minimal">
+              <div className="card-title-minimal">
+                <span className="card-step-badge">02</span>
+                <span>Request Details & Schedule</span>
+              </div>
             </div>
 
             {/* Facility / Room: 719, 721, 724 */}
             <div className="form-field">
               <label className="field-label">
-                <span className="field-label-text">Facility / Room <span className="required-dot">*</span></span>
+                Facility / Room <span className="required-dot">*</span>
               </label>
-              <div className="room-cards-grid">
+              <div className="room-selection-row">
                 {(['719', '721', '724'] as RoomId[]).map(room => (
                   <button
                     key={room}
@@ -229,15 +233,12 @@ export const RequestForm: React.FC = () => {
                       setSelectedRoom(room);
                       setSelectedMachineIds([]);
                     }}
-                    className={`room-card-btn ${selectedRoom === room ? 'active' : ''}`}
+                    className={`room-select-btn ${selectedRoom === room ? 'active' : ''}`}
                   >
-                    <MapPin size={18} />
-                    <div>
-                      <div className="room-card-title">Studio {room}</div>
-                      <div className="room-card-sub">
-                        {room === '719' ? 'Sewing & Overlocking' : room === '721' ? 'Apparel Workshop' : 'Creative Studio'}
-                      </div>
-                    </div>
+                    <span className="room-select-name">Studio {room}</span>
+                    <span className="room-select-desc">
+                      {room === '719' ? 'Sewing & Overlocking' : room === '721' ? 'Apparel Workshop' : 'Creative Studio'}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -247,10 +248,10 @@ export const RequestForm: React.FC = () => {
             <div className="grid-3">
               <div className="form-field">
                 <label className="field-label">
-                  <span className="field-label-text">Usage Date <span className="required-dot">*</span></span>
+                  Usage Date <span className="required-dot">*</span>
                 </label>
                 <div className="input-container">
-                  <Calendar size={15} className="input-icon" />
+                  <Calendar size={14} className="input-icon" />
                   <input
                     type="date"
                     value={date}
@@ -263,10 +264,10 @@ export const RequestForm: React.FC = () => {
 
               <div className="form-field">
                 <label className="field-label">
-                  <span className="field-label-text">Start Time <span className="required-dot">*</span></span>
+                  Start Time <span className="required-dot">*</span>
                 </label>
                 <div className="input-container">
-                  <Clock size={15} className="input-icon" />
+                  <Clock size={14} className="input-icon" />
                   <input
                     type="time"
                     value={startTime}
@@ -279,10 +280,10 @@ export const RequestForm: React.FC = () => {
 
               <div className="form-field">
                 <label className="field-label">
-                  <span className="field-label-text">End Time <span className="required-dot">*</span></span>
+                  End Time <span className="required-dot">*</span>
                 </label>
                 <div className="input-container">
-                  <Clock size={15} className="input-icon" />
+                  <Clock size={14} className="input-icon" />
                   <input
                     type="time"
                     value={endTime}
@@ -297,14 +298,14 @@ export const RequestForm: React.FC = () => {
             {/* Duration Shortcut Chips */}
             <div className="form-field">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-bold text-muted">Preset Duration:</span>
+                <span className="text-xs font-semibold text-muted">Preset Duration:</span>
                 {[2, 3, 4, 6].map(hours => (
                   <button
                     key={hours}
                     type="button"
                     onClick={() => handleDurationPreset(hours)}
                     className={`room-chip ${durationHours === hours ? 'active' : ''}`}
-                    style={{ border: '1px solid #e2e8f0', color: durationHours === hours ? '#ffffff' : '#334155', background: durationHours === hours ? '#09090b' : '#f8fafc' }}
+                    style={{ border: '1px solid var(--border-light)', color: durationHours === hours ? '#ffffff' : 'var(--text-secondary)', background: durationHours === hours ? 'var(--text-primary)' : 'var(--bg-card-subtle)' }}
                   >
                     {hours} Hours
                   </button>
@@ -312,13 +313,16 @@ export const RequestForm: React.FC = () => {
               </div>
             </div>
 
-            {/* Verified by: Lecturer's name */}
-            <div className="p-3 bg-slate-50 border border-slate-200 rounded-md flex justify-between items-center text-xs mt-2">
-              <div>
-                <span className="text-muted block text-[11px]">VERIFIED BY FACULTY LECTURER</span>
-                <span className="font-bold text-slate-800 text-sm">{lecturer}</span>
+            {/* Verified by Lecturer Display */}
+            <div className="detail-card-grid mt-2 mb-0">
+              <div className="detail-item">
+                <span className="detail-label">Verified by Lecturer</span>
+                <span className="detail-value">{lecturer}</span>
               </div>
-              <span className="status-badge-chip badge-amber">ASSIGNED REVIEWER</span>
+              <div className="detail-item">
+                <span className="detail-label">Role / Status</span>
+                <span className="detail-value text-muted">Designated Faculty Reviewer</span>
+              </div>
             </div>
           </div>
         </div>
@@ -327,20 +331,22 @@ export const RequestForm: React.FC = () => {
             COLUMN 2: MACHINES MATRIX & AGREEMENT SIGNATURE
            ======================================================== */}
         <div className="dashboard-col">
-          {/* Block 3: Machine Types & Code */}
+          {/* Card 3: Machine Types & Code */}
           <div className="form-card-container">
-            <div className="form-section-header">
-              <div className="form-section-num">3</div>
-              <h2 className="form-section-title">Machine Types & Code (Studio {selectedRoom})</h2>
+            <div className="card-header-minimal">
+              <div className="card-title-minimal">
+                <span className="card-step-badge">03</span>
+                <span>Machine Types & Code (Studio {selectedRoom})</span>
+              </div>
             </div>
 
             {/* Sewing Machine Group */}
-            <div className="mb-4">
-              <div className="machine-group-heading">
+            <div className="machine-group-container">
+              <div className="machine-group-header">
                 <span>🧵 Sewing Machine (Codes 2401 – 2416)</span>
                 <span className="text-xs text-muted font-normal">{sewingMachines.length} stations in Room {selectedRoom}</span>
               </div>
-              <div className="machine-grid-chips">
+              <div className="machine-chips-grid">
                 {sewingMachines.map(m => {
                   const isSelected = selectedMachineIds.includes(m.id);
                   const isAvail = m.status === 'AVAILABLE';
@@ -350,10 +356,10 @@ export const RequestForm: React.FC = () => {
                       type="button"
                       disabled={!isAvail && !isSelected}
                       onClick={() => handleMachineToggle(m.id)}
-                      className={`machine-chip-btn ${isSelected ? 'selected' : ''} ${!isAvail && !isSelected ? 'disabled' : ''}`}
+                      className={`machine-chip-card ${isSelected ? 'selected' : ''} ${!isAvail && !isSelected ? 'disabled' : ''}`}
                     >
                       <span className="chip-code">#{m.code}</span>
-                      <span className="chip-status">
+                      <span className="chip-status-text">
                         {isSelected ? 'Selected' : isAvail ? 'Available' : m.status}
                       </span>
                     </button>
@@ -364,12 +370,12 @@ export const RequestForm: React.FC = () => {
 
             {/* Overlocking Machine Group */}
             {overlockingMachines.length > 0 && (
-              <div className="pt-3 border-t border-slate-200">
-                <div className="machine-group-heading">
+              <div className="machine-group-container">
+                <div className="machine-group-header">
                   <span>⚙️ Overlocking Machine (Codes 2101 – 2102)</span>
                   <span className="text-xs text-muted font-normal">{overlockingMachines.length} stations in Room {selectedRoom}</span>
                 </div>
-                <div className="machine-grid-chips">
+                <div className="machine-chips-grid">
                   {overlockingMachines.map(m => {
                     const isSelected = selectedMachineIds.includes(m.id);
                     const isAvail = m.status === 'AVAILABLE';
@@ -379,10 +385,10 @@ export const RequestForm: React.FC = () => {
                         type="button"
                         disabled={!isAvail && !isSelected}
                         onClick={() => handleMachineToggle(m.id)}
-                        className={`machine-chip-btn ${isSelected ? 'selected' : ''} ${!isAvail && !isSelected ? 'disabled' : ''}`}
+                        className={`machine-chip-card ${isSelected ? 'selected' : ''} ${!isAvail && !isSelected ? 'disabled' : ''}`}
                       >
                         <span className="chip-code">#{m.code}</span>
-                        <span className="chip-status">
+                        <span className="chip-status-text">
                           {isSelected ? 'Selected' : isAvail ? 'Available' : m.status}
                         </span>
                       </button>
@@ -393,29 +399,31 @@ export const RequestForm: React.FC = () => {
             )}
           </div>
 
-          {/* Block 4: Agreement, Signature & Submit */}
+          {/* Card 4: Agreement, Signature & Submit */}
           <div className="form-card-container">
-            <div className="form-section-header">
-              <div className="form-section-num">4</div>
-              <h2 className="form-section-title">Student's Agreement & Sign-Off</h2>
+            <div className="card-header-minimal">
+              <div className="card-title-minimal">
+                <span className="card-step-badge">04</span>
+                <span>Student's Agreement & Sign-Off</span>
+              </div>
             </div>
 
-            <div className="agreement-container">
+            <div className="agreement-card">
               <label className="agreement-label">
                 <input
                   type="checkbox"
                   checked={agreedToSafety}
                   onChange={e => setAgreedToSafety(e.target.checked)}
-                  className="checkbox-clean"
+                  className="checkbox-minimal"
                   required
                 />
-                <span className="agreement-statement">
-                  <strong>Student's Agreement:</strong> I confirm that I will abide by all studio laboratory safety protocols, handle the allocated machine with care, maintain needle & thread cleanliness, and return the equipment on schedule for condition verification.
+                <span className="agreement-text">
+                  <strong>Student's Agreement:</strong> I confirm that I will follow all laboratory safety rules, operate the allocated machine carefully, clean the station after usage, and return the equipment on time for verification.
                 </span>
               </label>
             </div>
 
-            <div className="signature-card">
+            <div className="signature-wrapper">
               <SignaturePad
                 label="Student's Digital Signature"
                 required
@@ -423,26 +431,26 @@ export const RequestForm: React.FC = () => {
               />
             </div>
 
-            {/* Lecturer Approval Status Box */}
-            <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-md flex items-center justify-between text-xs">
+            {/* Lecturer Approval Status */}
+            <div className="status-banner-subtle">
               <div>
-                <span className="font-bold text-amber-900 block">Lecturer Approval Workflow</span>
-                <span className="text-amber-800">Pending review by <strong>{lecturer}</strong></span>
+                <span className="font-bold text-slate-800 block">Lecturer Approval Workflow</span>
+                <span className="text-slate-600">Pending verification by <strong>{lecturer}</strong></span>
               </div>
-              <span className="status-badge-chip badge-amber">PENDING APPROVAL</span>
+              <span className="status-tag-amber">PENDING APPROVAL</span>
             </div>
 
             {/* Error Banner */}
             {formErrors.length > 0 && (
-              <div className="mt-3 p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-md flex items-start gap-2 text-xs">
-                <AlertCircle size={16} className="text-rose-600 flex-shrink-0 mt-0.5" />
-                <div>{formErrors[0]}</div>
+              <div className="mt-2.5 p-2.5 bg-rose-50 border border-rose-200 text-rose-800 rounded flex items-center gap-2 text-xs">
+                <AlertCircle size={14} className="text-rose-600 flex-shrink-0" />
+                <span>{formErrors[0]}</span>
               </div>
             )}
 
             {/* Submit Button */}
-            <button type="submit" className="btn-primary-action mt-4">
-              <Send size={16} />
+            <button type="submit" className="btn-submit-primary">
+              <Send size={14} />
               <span>SUBMIT REQUEST</span>
             </button>
           </div>
