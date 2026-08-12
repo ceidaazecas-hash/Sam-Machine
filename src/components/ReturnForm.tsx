@@ -6,7 +6,8 @@ import {
   CheckCircle2, 
   Search, 
   RotateCcw, 
-  FileCheck 
+  FileCheck,
+  Clock
 } from 'lucide-react';
 import { formatDate } from '../utils/helpers';
 
@@ -52,6 +53,14 @@ export const ReturnForm: React.FC = () => {
   const handleSelectBooking = (req: BookingRequest) => {
     setSelectedRequestId(req.id);
     setVerifiedLecturer(req.applicant.lecturer);
+  };
+
+  const handleSetCurrentTime = () => {
+    const now = new Date();
+    const tzOffset = now.getTimezoneOffset() * 60000;
+    const localISOTime = new Date(now.getTime() - tzOffset).toISOString().slice(0, 16);
+    setReturnDateTime(localISOTime);
+    showToast('Return timestamp updated to current local time.', 'info');
   };
 
   const handleSubmitReturn = (e: React.FormEvent) => {
@@ -260,9 +269,22 @@ export const ReturnForm: React.FC = () => {
 
               <div className="grid-2">
                 <div className="form-field">
-                  <label className="field-label">
-                    Return Date & Time <span className="required-dot">*</span>
-                  </label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                    <label className="field-label" style={{ marginBottom: 0 }}>
+                      Return Date & Time <span className="required-dot">*</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleSetCurrentTime}
+                      className="room-chip"
+                      style={{ border: '1px solid var(--border-medium)', background: '#ffffff', color: 'var(--text-primary)', padding: '0.15rem 0.5rem', fontSize: '0.72rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}
+                      title="Set to Current Time"
+                    >
+                      <Clock size={10} />
+                      <span>Now</span>
+                    </button>
+                  </div>
+
                   <input
                     type="datetime-local"
                     value={returnDateTime}

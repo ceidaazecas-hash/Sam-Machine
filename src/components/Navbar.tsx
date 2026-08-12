@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLab } from '../context/LabContext';
 import { 
   FileEdit, 
   RotateCcw, 
   Search,
   UserCheck, 
-  RefreshCw 
+  RefreshCw,
+  Clock
 } from 'lucide-react';
 import type { RoomId } from '../types/lab';
 
@@ -19,13 +20,35 @@ export const Navbar: React.FC = () => {
     requests
   } = useLab();
 
+  const [currentTimeStr, setCurrentTimeStr] = useState<string>('');
+
+  useEffect(() => {
+    const updateTime = () => {
+      const now = new Date();
+      const formatted = now.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric'
+      }) + ' • ' + now.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      setCurrentTimeStr(formatted);
+    };
+
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   const pendingRequestsCount = requests.filter(r => r.approval.status === 'PENDING').length;
   const activeInUseCount = requests.filter(r => r.approval.status === 'IN_USE' || r.approval.status === 'APPROVED').length;
 
   return (
     <header className="site-header">
       <div className="header-inner">
-        {/* Brand / Title */}
+        {/* Brand / Title & Live Date/Time */}
         <div className="brand-group" onClick={() => setActiveTab('REQUEST')} style={{ cursor: 'pointer' }}>
           <span className="brand-title">EQUIPMENT & FACILITY LAB</span>
           <span className="brand-dot" />
@@ -77,8 +100,15 @@ export const Navbar: React.FC = () => {
           </button>
         </nav>
 
-        {/* Right Actions: Room Selector & Reset */}
+        {/* Right Actions: Live Date & Time, Room Selector & Reset */}
         <div className="header-actions">
+          {currentTimeStr && (
+            <div className="room-chip" style={{ border: '1px solid var(--border-light)', background: 'var(--bg-card-subtle)', color: 'var(--text-secondary)', fontSize: '0.78rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.35rem', cursor: 'default' }}>
+              <Clock size={12} className="text-muted" />
+              <span>{currentTimeStr}</span>
+            </div>
+          )}
+
           <div className="room-chip-group">
             <span className="room-chip-label">Room:</span>
             {(['719', '721', '724'] as RoomId[]).map(room => (

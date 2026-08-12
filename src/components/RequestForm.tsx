@@ -57,6 +57,12 @@ export const RequestForm: React.FC = () => {
     );
   };
 
+  const handleTimeSlotPreset = (start: string, end: string, hours: number) => {
+    setStartTime(start);
+    setEndTime(end);
+    setDurationHours(hours);
+  };
+
   const handleDurationPreset = (hours: number) => {
     setDurationHours(hours);
     const [h, m] = startTime.split(':').map(Number);
@@ -268,11 +274,37 @@ export const RequestForm: React.FC = () => {
               </div>
             </div>
 
-            {/* Date & Time Usage */}
+            {/* Quick Time Slot Presets */}
+            <div className="form-field">
+              <label className="field-label">Select Time Slot Preset</label>
+              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '0.65rem' }}>
+                {[
+                  { label: 'Morning (09:00 - 12:00)', start: '09:00', end: '12:00', hrs: 3 },
+                  { label: 'Afternoon (14:00 - 18:00)', start: '14:00', end: '18:00', hrs: 4 },
+                  { label: 'Evening (17:00 - 20:00)', start: '17:00', end: '20:00', hrs: 3 },
+                  { label: 'Full Day (09:00 - 17:00)', start: '09:00', end: '17:00', hrs: 8 }
+                ].map(slot => {
+                  const isMatch = startTime === slot.start && endTime === slot.end;
+                  return (
+                    <button
+                      key={slot.label}
+                      type="button"
+                      onClick={() => handleTimeSlotPreset(slot.start, slot.end, slot.hrs)}
+                      className={`room-chip ${isMatch ? 'active' : ''}`}
+                      style={{ border: isMatch ? '1px solid var(--text-primary)' : '1px solid var(--border-medium)', color: isMatch ? '#ffffff' : 'var(--text-primary)', background: isMatch ? 'var(--text-primary)' : '#ffffff', padding: '0.35rem 0.75rem', fontSize: '0.8rem', fontWeight: 700 }}
+                    >
+                      {slot.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Custom Date & Time Usage */}
             <div className="grid-3">
               <div className="form-field">
                 <label className="field-label">
-                  Custom Date <span className="required-dot">*</span>
+                  Usage Date <span className="required-dot">*</span>
                 </label>
                 <div className="input-container">
                   <Calendar size={16} className="input-icon" />
