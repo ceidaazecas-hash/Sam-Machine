@@ -3,7 +3,6 @@ import { LabProvider, useLab } from './context/LabContext';
 import { Navbar } from './components/Navbar';
 import { RequestForm } from './components/RequestForm';
 import { ReturnForm } from './components/ReturnForm';
-import { TrackStatus } from './components/TrackStatus';
 import { LecturerDashboard } from './components/LecturerDashboard';
 import { BookingPassModal } from './components/BookingPassModal';
 import { ToastContainer } from './components/Toast';
@@ -19,7 +18,6 @@ const MainContent: React.FC = () => {
       <main className="main-content-area">
         {activeTab === 'REQUEST' && <RequestForm />}
         {activeTab === 'RETURN' && <ReturnForm />}
-        {activeTab === 'TRACK' && <TrackStatus />}
         {activeTab === 'LECTURER' && <LecturerDashboard />}
       </main>
 

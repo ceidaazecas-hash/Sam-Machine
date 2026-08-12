@@ -3,7 +3,6 @@ import { useLab } from '../context/LabContext';
 import { 
   FileEdit, 
   RotateCcw, 
-  Search,
   UserCheck, 
   RefreshCw,
   Clock
@@ -55,7 +54,7 @@ export const Navbar: React.FC = () => {
           <span className="brand-subtitle">Studios 719 • 721 • 724</span>
         </div>
 
-        {/* 4 Main Navigation Tabs (Strict Black & White) */}
+        {/* 3 Main Navigation Tabs (Strict Black & White) */}
         <nav className="header-nav">
           <button
             type="button"
@@ -80,20 +79,11 @@ export const Navbar: React.FC = () => {
 
           <button
             type="button"
-            className={`nav-tab-btn ${activeTab === 'TRACK' ? 'active' : ''}`}
-            onClick={() => setActiveTab('TRACK')}
-          >
-            <Search size={14} />
-            <span>3. TRACK</span>
-          </button>
-
-          <button
-            type="button"
             className={`nav-tab-btn ${activeTab === 'LECTURER' ? 'active' : ''}`}
             onClick={() => setActiveTab('LECTURER')}
           >
             <UserCheck size={14} />
-            <span>4. LECTURER</span>
+            <span>3. LECTURER</span>
             {pendingRequestsCount > 0 && (
               <span className="tab-badge">{pendingRequestsCount}</span>
             )}

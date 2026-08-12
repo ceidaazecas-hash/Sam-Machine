@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { useLab } from '../context/LabContext';
-import type { BookingRequest, Machine, Lecturer } from '../types/lab';
+import type { BookingRequest, Machine, Lecturer, RequestStatus } from '../types/lab';
 import { 
   Check, 
   X, 
   Clock, 
   Layers, 
   Award, 
-  FileText, 
   ShieldCheck, 
   Edit3,
   Lock,
@@ -23,9 +22,14 @@ import {
   UserPlus,
   BookPlus,
   Cpu,
-  Trash2
+  Trash2,
+  Search,
+  CheckCircle2,
+  Ticket,
+  FileCheck,
+  Filter
 } from 'lucide-react';
-import { formatDate, getStatusBadge } from '../utils/helpers';
+import { formatDate } from '../utils/helpers';
 import { SignaturePad } from './SignaturePad';
 
 const LECTURER_PASSCODE = 'SamSam22';
@@ -52,6 +56,7 @@ export const LecturerDashboard: React.FC = () => {
     exportMachinesToCSV,
     exportStudentSummaryToCSV,
     setActiveTab,
+    setActivePassRequest,
     showToast 
   } = useLab();
 
@@ -63,8 +68,14 @@ export const LecturerDashboard: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState('');
 
-  const [activeSubTab, setActiveSubTab] = useState<'VERIFY' | 'MACHINE_REPORTS' | 'STUDENT_REPORTS' | 'HISTORY' | 'MANAGE'>('VERIFY');
+  const [activeSubTab, setActiveSubTab] = useState<'VERIFY' | 'MACHINE_REPORTS' | 'STUDENT_REPORTS' | 'TRACK_HISTORY' | 'MANAGE'>('VERIFY');
   const [selectedLecturer, setSelectedLecturer] = useState<string>('ALL');
+
+  // Track History & Request Status sub-states
+  const [trackSearchQuery, setTrackSearchQuery] = useState('');
+  const [trackStatusFilter, setTrackStatusFilter] = useState<'ALL' | RequestStatus>('ALL');
+  const [trackDateFilter, setTrackDateFilter] = useState<'ALL' | 'TODAY' | 'UPCOMING' | 'PAST'>('ALL');
+  const [selectedTrackReqId, setSelectedTrackReqId] = useState<string>('');
 
   // Modals for Actions
   const [modalRequest, setModalRequest] = useState<BookingRequest | null>(null);
@@ -121,6 +132,38 @@ export const LecturerDashboard: React.FC = () => {
   });
 
   const pendingRequests = filteredRequests.filter(r => r.approval.status === 'PENDING');
+
+  // Filtered requests for the Track History tab
+  const trackedRequests = filteredRequests.filter(r => {
+    const q = trackSearchQuery.toLowerCase().trim();
+    const matchesQuery = 
+      !q ||
+      r.id.toLowerCase().includes(q) ||
+      r.applicant.studentName.toLowerCase().includes(q) ||
+      r.applicant.studentId.toLowerCase().includes(q) ||
+      r.applicant.classModule.toLowerCase().includes(q) ||
+      r.applicant.lecturer.toLowerCase().includes(q) ||
+      r.requestDetails.facilityRoom.includes(q) ||
+      r.requestDetails.machineIds.some(m => m.includes(q));
+
+    const matchesStatus = trackStatusFilter === 'ALL' || r.approval.status === trackStatusFilter;
+
+    const reqDate = r.requestDetails.date;
+    const todayStr = '2026-08-12';
+    let matchesDate = true;
+    if (trackDateFilter === 'TODAY') {
+      matchesDate = reqDate === todayStr;
+    } else if (trackDateFilter === 'UPCOMING') {
+      matchesDate = reqDate > todayStr;
+    } else if (trackDateFilter === 'PAST') {
+      matchesDate = reqDate < todayStr || r.approval.status === 'RETURNED';
+    }
+
+    return matchesQuery && matchesStatus && matchesDate;
+  });
+
+  const activeTrackRequest: BookingRequest | undefined = 
+    requests.find(r => r.id === selectedTrackReqId) || trackedRequests[0];
 
   const handleOpenAction = (req: BookingRequest, type: 'APPROVE' | 'REJECT') => {
     setModalRequest(req);
@@ -298,6 +341,27 @@ export const LecturerDashboard: React.FC = () => {
     }
   };
 
+  // Stepper helper
+  const getStepState = (req: BookingRequest, step: 1 | 2 | 3 | 4) => {
+    const status = req.approval.status;
+    if (step === 1) return 'completed';
+    if (step === 2) {
+      if (status === 'REJECTED') return 'rejected';
+      if (status === 'PENDING') return 'current';
+      return 'completed';
+    }
+    if (step === 3) {
+      if (status === 'PENDING' || status === 'REJECTED') return 'upcoming';
+      if (status === 'IN_USE' || status === 'APPROVED') return 'current';
+      return 'completed';
+    }
+    if (step === 4) {
+      if (status === 'RETURNED') return 'completed';
+      return 'upcoming';
+    }
+    return 'upcoming';
+  };
+
   // Compute student tracking statistics
   const studentMap = new Map<string, {
     name: string;
@@ -468,6 +532,15 @@ export const LecturerDashboard: React.FC = () => {
 
         <button
           type="button"
+          className={`subnav-btn-minimal ${activeSubTab === 'TRACK_HISTORY' ? 'active' : ''}`}
+          onClick={() => setActiveSubTab('TRACK_HISTORY')}
+        >
+          <Search size={14} />
+          <span>Track History & Status</span>
+        </button>
+
+        <button
+          type="button"
           className={`subnav-btn-minimal ${activeSubTab === 'MACHINE_REPORTS' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('MACHINE_REPORTS')}
         >
@@ -482,15 +555,6 @@ export const LecturerDashboard: React.FC = () => {
         >
           <Award size={14} />
           <span>Reports: Students Request</span>
-        </button>
-
-        <button
-          type="button"
-          className={`subnav-btn-minimal ${activeSubTab === 'HISTORY' ? 'active' : ''}`}
-          onClick={() => setActiveSubTab('HISTORY')}
-        >
-          <FileText size={14} />
-          <span>Track History</span>
         </button>
 
         <button
@@ -584,7 +648,278 @@ export const LecturerDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* 2. REPORTS: EACH MACHINE */}
+      {/* 2. TRACK HISTORY & REQUEST STATUS (INTEGRATED FULL TRACKER) */}
+      {activeSubTab === 'TRACK_HISTORY' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          {/* Filter & Search Bar */}
+          <div className="form-card-container" style={{ padding: '1rem 1.25rem' }}>
+            <div style={{ display: 'flex', gap: '0.85rem', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div className="input-container" style={{ maxWidth: '360px', flex: 1 }}>
+                <Search size={16} className="input-icon" />
+                <input
+                  type="text"
+                  value={trackSearchQuery}
+                  onChange={e => setTrackSearchQuery(e.target.value)}
+                  placeholder="Search by Student, ID (REQ-2026-...), or Room..."
+                  className="form-input"
+                  style={{ minHeight: '40px', paddingLeft: '2.4rem' }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                  <Filter size={12} /> Status:
+                </span>
+                {[
+                  { id: 'ALL', label: 'All Requests' },
+                  { id: 'IN_USE', label: 'In Studio Usage' },
+                  { id: 'PENDING', label: 'Pending' },
+                  { id: 'APPROVED', label: 'Approved' },
+                  { id: 'RETURNED', label: 'Returned' }
+                ].map(tab => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setTrackStatusFilter(tab.id as any)}
+                    className={`room-chip ${trackStatusFilter === tab.id ? 'active' : ''}`}
+                    style={{ border: trackStatusFilter === tab.id ? '1px solid var(--text-primary)' : '1px solid var(--border-medium)', color: trackStatusFilter === tab.id ? '#ffffff' : 'var(--text-primary)', background: trackStatusFilter === tab.id ? 'var(--text-primary)' : '#ffffff', padding: '0.25rem 0.65rem', fontSize: '0.78rem', fontWeight: 700 }}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center' }}>
+                <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)' }}>Date:</span>
+                <select
+                  value={trackDateFilter}
+                  onChange={e => setTrackDateFilter(e.target.value as any)}
+                  className="form-select"
+                  style={{ minHeight: '34px', padding: '0.2rem 0.65rem', fontSize: '0.78rem', width: 'auto' }}
+                >
+                  <option value="ALL">All Available Dates</option>
+                  <option value="TODAY">Today (Aug 12)</option>
+                  <option value="UPCOMING">Upcoming Dates (Aug 13 - 18)</option>
+                  <option value="PAST">Past & Completed Sessions</option>
+                </select>
+
+                <button
+                  type="button"
+                  onClick={exportRequestsToCSV}
+                  className="room-chip"
+                  style={{ border: '1px solid var(--border-dark)', color: 'var(--text-primary)', background: '#ffffff', fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.35rem 0.65rem' }}
+                >
+                  <Download size={12} />
+                  <span>CSV</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* 2-Column Track & Stepper View */}
+          <div className="return-layout-container">
+            {/* Left: Request List */}
+            <div className="sidebar-sessions-box">
+              <div className="card-header-minimal" style={{ marginBottom: '0.75rem' }}>
+                <span className="card-title-minimal" style={{ fontSize: '0.88rem' }}>Requisition Records</span>
+                <span className="tab-badge">{trackedRequests.length} Listed</span>
+              </div>
+
+              <div className="sidebar-sessions-list">
+                {trackedRequests.length === 0 ? (
+                  <div className="p-8 text-center text-xs text-muted">
+                    <FileCheck size={28} className="mx-auto mb-1 opacity-40" />
+                    <span>No matching requests found</span>
+                  </div>
+                ) : (
+                  trackedRequests.map(r => {
+                    const isSelected = activeTrackRequest?.id === r.id;
+                    return (
+                      <div
+                        key={r.id}
+                        onClick={() => setSelectedTrackReqId(r.id)}
+                        className={`session-select-item ${isSelected ? 'active' : ''}`}
+                      >
+                        <div className="session-item-row">
+                          <span className="session-item-title">{r.applicant.studentName}</span>
+                          <span className="mono font-bold text-xs">#{r.id}</span>
+                        </div>
+
+                        <div className="session-item-sub">
+                          Studio {r.requestDetails.facilityRoom} • {formatDate(r.requestDetails.date)}
+                        </div>
+
+                        <div className="session-item-row mt-1 text-xs">
+                          <span>Machines: <strong>{r.requestDetails.machineIds.join(', ')}</strong></span>
+                          <span className="font-bold">{r.approval.status}</span>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+
+            {/* Right: Live Stepper & Full Requisition Audit */}
+            <div className="form-card-container">
+              {!activeTrackRequest ? (
+                <div className="p-12 text-center text-muted">
+                  <Search size={36} className="mx-auto mb-2 opacity-30 text-slate-900" />
+                  <h3 className="font-bold text-sm text-slate-800">Select a Request to Track</h3>
+                  <p className="text-xs text-muted mt-1">Choose a student booking to view live progress & return details.</p>
+                </div>
+              ) : (
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '0.75rem', marginBottom: '1.25rem', borderBottom: '1px solid var(--border-light)', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                        <span className="mono font-bold" style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                          {activeTrackRequest.id}
+                        </span>
+                        <span className="status-pill-subtle pill-green font-bold">
+                          {activeTrackRequest.approval.status}
+                        </span>
+                      </div>
+                      <h2 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-primary)', marginTop: '0.15rem' }}>
+                        {activeTrackRequest.applicant.studentName}
+                      </h2>
+                      <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                        {activeTrackRequest.applicant.semester} • {activeTrackRequest.applicant.classModule}
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteRequest(activeTrackRequest.id)}
+                        className="room-chip"
+                        style={{ border: '1px solid var(--border-medium)', background: '#ffffff', color: 'var(--text-muted)', padding: '0.45rem 0.75rem', fontSize: '0.82rem' }}
+                        title="Delete Record"
+                      >
+                        <Trash2 size={13} style={{ display: 'inline', marginRight: '0.2rem' }} />
+                        Delete
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setActivePassRequest(activeTrackRequest)}
+                        className="room-chip"
+                        style={{ border: '1px solid var(--text-primary)', background: 'var(--text-primary)', color: '#ffffff', padding: '0.45rem 0.95rem', fontSize: '0.82rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                      >
+                        <Ticket size={14} />
+                        <span>View Pass</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Visual 4-Step Progress Stepper */}
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <span className="detail-label" style={{ marginBottom: '0.65rem' }}>Requisition Progress</span>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
+                      {[
+                        { step: 1, label: '1. Submitted', sub: formatDate(activeTrackRequest.requestDetails.date) },
+                        { step: 2, label: '2. Lecturer Verified', sub: activeTrackRequest.applicant.lecturer },
+                        { step: 3, label: '3. In Studio Usage', sub: `Studio ${activeTrackRequest.requestDetails.facilityRoom}` },
+                        { step: 4, label: '4. Returned & Checked', sub: activeTrackRequest.returnInfo ? activeTrackRequest.returnInfo.returnCondition : 'Pending Return' }
+                      ].map(s => {
+                        const state = getStepState(activeTrackRequest, s.step as any);
+                        const isDone = state === 'completed';
+                        const isCurr = state === 'current';
+                        return (
+                          <div
+                            key={s.step}
+                            style={{
+                              background: isDone || isCurr ? 'var(--text-primary)' : 'var(--bg-card-subtle)',
+                              color: isDone || isCurr ? '#ffffff' : 'var(--text-muted)',
+                              borderRadius: '8px',
+                              padding: '0.75rem 0.65rem',
+                              border: '1px solid var(--border-light)',
+                              textAlign: 'left'
+                            }}
+                          >
+                            <div style={{ fontSize: '0.75rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                              {isDone ? <CheckCircle2 size={12} /> : isCurr ? <Clock size={12} /> : null}
+                              <span>{s.label}</span>
+                            </div>
+                            <div style={{ fontSize: '0.68rem', opacity: 0.8, marginTop: '0.2rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {s.sub}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Requisition Details */}
+                  <div className="card-header-minimal">
+                    <span className="card-title-minimal" style={{ fontSize: '0.85rem' }}>Requisition & Equipment Parameters</span>
+                  </div>
+
+                  <div className="detail-card-grid">
+                    <div className="detail-item">
+                      <span className="detail-label">Facility / Room</span>
+                      <span className="detail-value">Studio {activeTrackRequest.requestDetails.facilityRoom}</span>
+                    </div>
+
+                    <div className="detail-item">
+                      <span className="detail-label">Allocated Machines</span>
+                      <div className="flex gap-1.5 mt-0.5">
+                        {activeTrackRequest.requestDetails.machineIds.map(mId => (
+                          <span key={mId} className="mono text-xs font-bold bg-slate-900 text-white px-2 py-0.5 rounded">
+                            #{mId}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="detail-item">
+                      <span className="detail-label">Usage Date & Time Slot</span>
+                      <span className="detail-value">
+                        {formatDate(activeTrackRequest.requestDetails.date)} ({activeTrackRequest.requestDetails.startTime} - {activeTrackRequest.requestDetails.endTime})
+                      </span>
+                    </div>
+
+                    <div className="detail-item">
+                      <span className="detail-label">Allocated Duration</span>
+                      <span className="detail-value">{activeTrackRequest.requestDetails.durationHours} Hours</span>
+                    </div>
+
+                    <div className="detail-item">
+                      <span className="detail-label">Designated Faculty</span>
+                      <span className="detail-value">{activeTrackRequest.applicant.lecturer}</span>
+                    </div>
+
+                    <div className="detail-item">
+                      <span className="detail-label">Student Agreement</span>
+                      <span className="detail-value font-bold text-slate-900">✓ Confirmed & Digitally Signed</span>
+                    </div>
+                  </div>
+
+                  {/* Return Inspection Record (if returned) */}
+                  {activeTrackRequest.returnInfo && (
+                    <div style={{ marginTop: '1rem', padding: '1rem', background: 'var(--bg-card-subtle)', borderRadius: '8px', border: '1px solid var(--border-light)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                        <span style={{ fontSize: '0.85rem', fontWeight: 800, color: 'var(--text-primary)' }}>
+                          ✓ Return Inspection Completed ({activeTrackRequest.returnInfo.returnCondition})
+                        </span>
+                        <span className="mono text-xs font-bold text-muted">
+                          {activeTrackRequest.returnInfo.returnedAt ? formatDate(activeTrackRequest.returnInfo.returnedAt) : '-'}
+                        </span>
+                      </div>
+
+                      <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>
+                        <strong>Inspector Notes:</strong> "{activeTrackRequest.returnInfo.lecturerNotes}"
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 3. REPORTS: EACH MACHINE */}
       {activeSubTab === 'MACHINE_REPORTS' && (
         <div className="form-card-container">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-light)', flexWrap: 'wrap', gap: '0.5rem' }}>
@@ -675,7 +1010,7 @@ export const LecturerDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* 3. REPORTS: STUDENTS REQUEST */}
+      {/* 4. REPORTS: STUDENTS REQUEST */}
       {activeSubTab === 'STUDENT_REPORTS' && (
         <div className="form-card-container">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-light)', flexWrap: 'wrap', gap: '0.5rem' }}>
@@ -724,86 +1059,6 @@ export const LecturerDashboard: React.FC = () => {
                     </td>
                   </tr>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      {/* 4. TRACK HISTORY */}
-      {activeSubTab === 'HISTORY' && (
-        <div className="form-card-container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-light)', flexWrap: 'wrap', gap: '0.5rem' }}>
-            <div>
-              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-primary)' }}>Full Activity Audit Log</h3>
-              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Chronological record of all equipment allocations and returns</p>
-            </div>
-
-            <button
-              type="button"
-              onClick={exportRequestsToCSV}
-              className="room-chip"
-              style={{ border: '1px solid var(--border-dark)', color: 'var(--text-primary)', background: '#ffffff', fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
-            >
-              <Download size={12} />
-              <span>Export Full Audit (.csv)</span>
-            </button>
-          </div>
-
-          <div className="table-responsive-wrapper">
-            <table className="minimal-data-table">
-              <thead>
-                <tr>
-                  <th>Request ID</th>
-                  <th>Student's Name</th>
-                  <th>Room</th>
-                  <th>Machines</th>
-                  <th>Date & Time</th>
-                  <th>Approval Status</th>
-                  <th>Return Status</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredRequests.map(r => {
-                  const badge = getStatusBadge(r.approval.status);
-                  return (
-                    <tr key={r.id}>
-                      <td className="mono font-bold text-xs">{r.id}</td>
-                      <td className="font-semibold">{r.applicant.studentName}</td>
-                      <td>Room {r.requestDetails.facilityRoom}</td>
-                      <td>{r.requestDetails.machineIds.join(', ')}</td>
-                      <td style={{ fontSize: '0.8rem' }}>
-                        {formatDate(r.requestDetails.date)} ({r.requestDetails.startTime} - {r.requestDetails.endTime})
-                      </td>
-                      <td>
-                        <span className={`status-pill-subtle ${badge.bgClass} ${badge.colorClass}`}>
-                          {badge.label}
-                        </span>
-                      </td>
-                      <td style={{ fontSize: '0.8rem' }}>
-                        {r.returnInfo ? (
-                          <span className="font-bold text-slate-900">
-                            ✓ Returned ({r.returnInfo.returnCondition})
-                          </span>
-                        ) : (
-                          <span style={{ color: 'var(--text-light)' }}>-</span>
-                        )}
-                      </td>
-                      <td>
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteRequest(r.id)}
-                          className="room-chip"
-                          style={{ border: '1px solid var(--border-medium)', color: 'var(--text-muted)', padding: '0.2rem 0.45rem', fontSize: '0.72rem' }}
-                          title="Delete Record"
-                        >
-                          <Trash2 size={11} />
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
               </tbody>
             </table>
           </div>
