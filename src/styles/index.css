@@ -1,6 +1,6 @@
 /* ==========================================================================
-   STUDIOCRAFT • ULTRA-CLEAN & POLISHED DESIGN SYSTEM
-   Modern Black & White Atelier UI • Perfectly Balanced Layout
+   STUDIOCRAFT • 100% FLUID & FULLY RESPONSIVE DESIGN SYSTEM
+   Fits 100% Screen Width on All Screens (Mobile, iPad, Laptop & 4K Displays)
    ========================================================================== */
 
 :root {
@@ -12,7 +12,6 @@
   --bg-page: #f8fafc;
   --bg-card: #ffffff;
   --bg-input: #ffffff;
-  --bg-input-focus: #ffffff;
   --bg-subtle: #f1f5f9;
 
   --color-black: #09090b;
@@ -37,10 +36,9 @@
   --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 10px;
-  --radius-lg: 16px;
+  --radius-lg: 14px;
   --radius-pill: 9999px;
 
-  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
   --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
   --shadow-modal: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
@@ -53,18 +51,16 @@
   -webkit-font-smoothing: antialiased;
 }
 
-html {
-  font-size: 16px;
-  scroll-behavior: smooth;
-}
-
-body {
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
   font-family: var(--font-main);
   background-color: var(--bg-page);
   color: var(--text-body);
   line-height: 1.5;
   overflow-x: hidden;
-  width: 100%;
 }
 
 .mono {
@@ -79,21 +75,21 @@ body {
 }
 
 /* ==========================================================================
-   NAVIGATION BAR (CLEAN, MINIMALIST BLACK HEADER)
+   NAVIGATION BAR (100% WIDTH FLUID)
    ========================================================================== */
 .site-header {
   background: var(--color-black);
   color: #ffffff;
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem clamp(1rem, 2.5vw, 2.5rem);
   position: sticky;
   top: 0;
   z-index: 100;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
 }
 
 .header-inner {
-  max-width: 1100px;
-  margin: 0 auto;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -105,6 +101,7 @@ body {
   display: flex;
   align-items: center;
   gap: 0.65rem;
+  flex-shrink: 0;
 }
 
 .brand-badge {
@@ -131,7 +128,7 @@ body {
   color: var(--text-light);
 }
 
-/* Navigation Segmented Tabs (Linear / Apple style) */
+/* Navigation Segmented Tabs */
 .header-nav {
   display: flex;
   align-items: center;
@@ -139,6 +136,7 @@ body {
   padding: 0.25rem;
   border-radius: var(--radius-pill);
   border: 1px solid rgba(255, 255, 255, 0.15);
+  flex-shrink: 0;
 }
 
 .nav-tab-btn {
@@ -192,6 +190,7 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .room-chip-group {
@@ -245,6 +244,7 @@ body {
   justify-content: center;
   cursor: pointer;
   transition: all 0.15s ease;
+  flex-shrink: 0;
 }
 
 .icon-button:hover {
@@ -253,23 +253,26 @@ body {
 }
 
 /* ==========================================================================
-   MAIN CONTENT & CONTAINER
+   MAIN CONTENT (100% FLUID FULL WIDTH)
    ========================================================================== */
 .main-content-area {
   flex: 1;
-  max-width: 900px;
-  margin: 0 auto;
   width: 100%;
-  padding: 2.25rem 1.25rem 4rem 1.25rem;
+  max-width: 100%;
+  margin: 0;
+  padding: 1.5rem clamp(1rem, 2.5vw, 2.5rem) 3.5rem clamp(1rem, 2.5vw, 2.5rem);
 }
 
-.main-content-area.wide {
-  max-width: 1100px;
+.fluid-page-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
-/* Page Title Banner */
+/* Page Title Intro */
 .page-intro {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .page-intro-badge {
@@ -288,7 +291,7 @@ body {
 
 .page-intro-title {
   font-family: var(--font-display);
-  font-size: 1.65rem;
+  font-size: clamp(1.35rem, 2.5vw, 1.75rem);
   font-weight: 800;
   color: var(--text-title);
   line-height: 1.2;
@@ -301,29 +304,46 @@ body {
 }
 
 /* ==========================================================================
-   UNIFIED CLEAN FORM CARD
+   REQUEST DASHBOARD 2-COLUMN FULL-WIDTH LAYOUT
    ========================================================================== */
+.request-dashboard-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  width: 100%;
+  align-items: start;
+}
+
+.dashboard-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+/* Form Card Container (100% Width) */
 .form-card-container {
   background: var(--bg-card);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-lg);
-  padding: 2rem 2.25rem;
+  padding: 1.5rem 1.75rem;
   box-shadow: var(--shadow-card);
+  width: 100%;
 }
 
 /* Section Header Dividers */
 .form-section-header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1.25rem;
-  padding-bottom: 0.65rem;
+  gap: 0.65rem;
+  margin-bottom: 1.15rem;
+  padding-bottom: 0.55rem;
   border-bottom: 2px solid var(--border-light);
 }
 
 .form-section-num {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   background: var(--color-black);
   color: #ffffff;
@@ -331,42 +351,34 @@ body {
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   flex-shrink: 0;
 }
 
 .form-section-title {
   font-family: var(--font-display);
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 800;
   color: var(--text-title);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
-.form-section-block {
-  margin-bottom: 2rem;
-}
-
-.form-section-block:last-child {
-  margin-bottom: 0;
-}
-
 /* Form Grids & Groups */
 .grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
 .grid-3 {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 1rem;
+  gap: 0.85rem;
 }
 
 .form-field {
-  margin-bottom: 1.1rem;
+  margin-bottom: 1rem;
 }
 
 .field-label {
@@ -376,7 +388,7 @@ body {
   font-size: 0.8rem;
   font-weight: 700;
   color: var(--text-title);
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.35rem;
   text-align: left;
 }
 
@@ -430,7 +442,7 @@ body {
 }
 
 .form-textarea {
-  min-height: 80px;
+  min-height: 75px;
   resize: vertical;
   padding-top: 0.65rem;
 }
@@ -439,17 +451,17 @@ body {
 .room-cards-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
+  gap: 0.65rem;
 }
 
 .room-card-btn {
   background: var(--bg-subtle);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
-  padding: 0.85rem 1rem;
+  padding: 0.75rem 0.85rem;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
   cursor: pointer;
   text-align: left;
   transition: all 0.15s ease;
@@ -476,13 +488,13 @@ body {
 }
 
 .room-card-title {
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   font-weight: 800;
   color: var(--text-title);
 }
 
 .room-card-sub {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
 }
 
@@ -491,8 +503,7 @@ body {
   background: var(--bg-subtle);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
-  padding: 1.15rem;
-  margin-top: 0.5rem;
+  padding: 1rem;
 }
 
 .machine-group-heading {
@@ -502,27 +513,27 @@ body {
   font-size: 0.82rem;
   font-weight: 800;
   color: var(--text-title);
-  margin-bottom: 0.65rem;
+  margin-bottom: 0.6rem;
 }
 
 .machine-grid-chips {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
-  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+  gap: 0.45rem;
 }
 
 .machine-chip-btn {
   background: #ffffff;
   border: 1px solid var(--border-light);
   border-radius: var(--radius-sm);
-  padding: 0.5rem;
+  padding: 0.45rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.15s ease;
-  min-height: 48px;
+  min-height: 46px;
 }
 
 .machine-chip-btn:hover:not(.disabled) {
@@ -549,7 +560,7 @@ body {
 
 .chip-code {
   font-family: var(--font-mono);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 800;
   color: var(--text-title);
 }
@@ -560,18 +571,18 @@ body {
   margin-top: 0.1rem;
 }
 
-/* Agreement Box & Checklist */
+/* Agreement Box */
 .agreement-container {
   background: var(--bg-subtle);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
-  padding: 1rem 1.15rem;
+  padding: 0.85rem 1rem;
 }
 
 .agreement-label {
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
+  gap: 0.65rem;
   cursor: pointer;
 }
 
@@ -587,16 +598,16 @@ body {
 .agreement-statement {
   font-size: 0.82rem;
   color: var(--text-body);
-  line-height: 1.5;
+  line-height: 1.45;
 }
 
 /* Digital Signature Canvas */
 .signature-card {
-  margin-top: 1rem;
+  margin-top: 0.85rem;
 }
 
 .signature-pad-container {
-  margin-top: 0.5rem;
+  margin-top: 0.4rem;
 }
 
 .signature-header {
@@ -611,7 +622,7 @@ body {
   background: #ffffff;
   border: 1.5px dashed var(--border-medium);
   border-radius: var(--radius-sm);
-  height: 110px;
+  height: 105px;
   width: 100%;
   overflow: hidden;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.02);
@@ -702,13 +713,14 @@ body {
 }
 
 /* ==========================================================================
-   RETURN VIEW (CLEAN 2-COLUMN & SUMMARY BOX)
+   RETURN VIEW (100% FLUID RESPONSIVE)
    ========================================================================== */
 .return-view-grid {
   display: grid;
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: 340px 1fr;
   gap: 1.5rem;
-  align-items: flex-start;
+  width: 100%;
+  align-items: start;
 }
 
 .sidebar-list-card {
@@ -717,6 +729,7 @@ body {
   border-radius: var(--radius-lg);
   padding: 1.25rem;
   box-shadow: var(--shadow-card);
+  width: 100%;
 }
 
 .sidebar-list-title {
@@ -734,7 +747,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  max-height: 460px;
+  max-height: 520px;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -763,23 +776,13 @@ body {
   color: #ffffff !important;
 }
 
-/* Original Request Details Display Box */
+/* Details Summary Card */
 .details-summary-card {
   background: var(--bg-subtle);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
   padding: 1rem 1.25rem;
-  margin-bottom: 1.5rem;
-}
-
-.details-summary-title {
-  font-size: 0.82rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  color: var(--text-title);
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.4rem;
-  border-bottom: 1px solid var(--border-light);
+  margin-bottom: 1.25rem;
 }
 
 .details-summary-grid {
@@ -844,7 +847,7 @@ body {
 }
 
 /* ==========================================================================
-   LECTURER DASHBOARD & TABLES
+   LECTURER DASHBOARD & FULL-WIDTH TABLES
    ========================================================================== */
 .lecturer-subnav-bar {
   display: flex;
@@ -854,6 +857,7 @@ body {
   margin-bottom: 1.5rem;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  width: 100%;
 }
 
 .subnav-pill-btn {
@@ -1206,9 +1210,7 @@ body {
   text-align: center;
 }
 
-/* ==========================================================================
-   TOAST NOTIFICATIONS
-   ========================================================================== */
+/* Toast */
 .toast-container {
   position: fixed;
   bottom: 1.5rem;
@@ -1230,32 +1232,24 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  animation: slideUp 0.2s ease;
 }
 
 .toast-success { border-left: 4px solid #10b981; }
 .toast-error { border-left: 4px solid #f43f5e; }
 .toast-info { border-left: 4px solid #3b82f6; }
 
-@keyframes slideUp {
-  from { transform: translateY(10px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-/* ==========================================================================
-   FOOTER
-   ========================================================================== */
+/* Footer */
 .site-footer {
   background: var(--color-black);
   color: #ffffff;
-  padding: 1.5rem 1.5rem;
+  padding: 1.25rem clamp(1rem, 2.5vw, 2.5rem);
   margin-top: auto;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
 }
 
 .footer-inner-layout {
-  max-width: 1100px;
-  margin: 0 auto;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1266,9 +1260,22 @@ body {
 }
 
 /* ==========================================================================
-   RESPONSIVE BREAKPOINTS
+   RESPONSIVE BREAKPOINTS (MOBILE, IPAD PORTRAIT, IPAD LANDSCAPE, DESKTOP)
    ========================================================================== */
-@media (max-width: 900px) {
+
+/* TABLETS & IPADS (PORTRAIT & SMALLER LAPTOPS: <= 1024px) */
+@media (max-width: 1024px) {
+  .request-dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .return-view-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* PHONES & MOBILE SCREENS (<= 768px) */
+@media (max-width: 768px) {
   .header-inner {
     flex-direction: column;
     align-items: stretch;
@@ -1278,18 +1285,15 @@ body {
   .header-nav {
     overflow-x: auto;
     justify-content: flex-start;
+    -webkit-overflow-scrolling: touch;
   }
 
   .header-actions {
     justify-content: space-between;
   }
 
-  .return-view-grid {
-    grid-template-columns: 1fr;
-  }
-
   .form-card-container {
-    padding: 1.5rem;
+    padding: 1.25rem 1rem;
   }
 
   .grid-2, .grid-3 {
@@ -1304,17 +1308,11 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .pass-signatures-row {
+  .details-summary-grid {
     grid-template-columns: 1fr;
   }
-}
 
-@media (max-width: 480px) {
-  .form-card-container {
-    padding: 1.15rem;
-  }
-
-  .main-content-area {
-    padding: 1.25rem 0.85rem 3rem 0.85rem;
+  .pass-signatures-row {
+    grid-template-columns: 1fr;
   }
 }

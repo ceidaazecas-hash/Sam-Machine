@@ -112,221 +112,265 @@ export const RequestForm: React.FC = () => {
   };
 
   return (
-    <div className="main-content-area">
+    <div className="fluid-page-wrapper">
       {/* Intro Header */}
       <div className="page-intro">
         <span className="page-intro-badge">REQUEST</span>
         <h1 className="page-intro-title">Equipment & Facility Requisition</h1>
-        <p className="page-intro-desc">Fill out your studio booking details below for lecturer verification</p>
+        <p className="page-intro-desc">Submit your laboratory and workstation booking for lecturer verification</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="form-card-container">
+      <form onSubmit={handleSubmit} className="request-dashboard-layout">
         {/* ========================================================
-            SECTION 1: APPLICANT'S INFORMATION
+            COLUMN 1: APPLICANT'S INFO & REQUEST DETAILS
            ======================================================== */}
-        <div className="form-section-block">
-          <div className="form-section-header">
-            <div className="form-section-num">1</div>
-            <h2 className="form-section-title">Applicant's Information</h2>
+        <div className="dashboard-col">
+          {/* Block 1: Applicant's Information */}
+          <div className="form-card-container">
+            <div className="form-section-header">
+              <div className="form-section-num">1</div>
+              <h2 className="form-section-title">Applicant's Information</h2>
+            </div>
+
+            <div className="grid-2">
+              <div className="form-field">
+                <label className="field-label">
+                  <span className="field-label-text">Student's Name <span className="required-dot">*</span></span>
+                </label>
+                <div className="input-container">
+                  <User size={15} className="input-icon" />
+                  <input
+                    type="text"
+                    value={studentName}
+                    onChange={e => setStudentName(e.target.value)}
+                    placeholder="Enter student's full name"
+                    className="form-input"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-field">
+                <label className="field-label">
+                  <span className="field-label-text">Semester <span className="required-dot">*</span></span>
+                </label>
+                <div className="input-container">
+                  <GraduationCap size={15} className="input-icon" />
+                  <select
+                    value={semester}
+                    onChange={e => setSemester(e.target.value)}
+                    className="form-select"
+                    required
+                  >
+                    {INITIAL_SEMESTERS.map(s => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-field">
+                <label className="field-label">
+                  <span className="field-label-text">Class / Module <span className="required-dot">*</span></span>
+                </label>
+                <div className="input-container">
+                  <BookOpen size={15} className="input-icon" />
+                  <select
+                    value={classModule}
+                    onChange={e => setClassModule(e.target.value)}
+                    className="form-select"
+                    required
+                  >
+                    {INITIAL_MODULES.map(m => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-field">
+                <label className="field-label">
+                  <span className="field-label-text">Lecturers (In Charge) <span className="required-dot">*</span></span>
+                </label>
+                <select
+                  value={lecturer}
+                  onChange={e => setLecturer(e.target.value)}
+                  className="form-select font-semibold"
+                  required
+                >
+                  {lecturers.map(l => (
+                    <option key={l.id} value={l.name}>
+                      {l.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </div>
 
-          <div className="grid-2">
-            <div className="form-field">
-              <label className="field-label">
-                <span className="field-label-text">Student's Name <span className="required-dot">*</span></span>
-              </label>
-              <div className="input-container">
-                <User size={15} className="input-icon" />
-                <input
-                  type="text"
-                  value={studentName}
-                  onChange={e => setStudentName(e.target.value)}
-                  placeholder="Enter full name"
-                  className="form-input"
-                  required
-                />
-              </div>
+          {/* Block 2: Request Details (Room, Date, Time) */}
+          <div className="form-card-container">
+            <div className="form-section-header">
+              <div className="form-section-num">2</div>
+              <h2 className="form-section-title">Request Details & Schedule</h2>
             </div>
 
+            {/* Facility / Room: 719, 721, 724 */}
             <div className="form-field">
               <label className="field-label">
-                <span className="field-label-text">Semester <span className="required-dot">*</span></span>
+                <span className="field-label-text">Facility / Room <span className="required-dot">*</span></span>
               </label>
-              <div className="input-container">
-                <GraduationCap size={15} className="input-icon" />
-                <select
-                  value={semester}
-                  onChange={e => setSemester(e.target.value)}
-                  className="form-select"
-                  required
-                >
-                  {INITIAL_SEMESTERS.map(s => (
-                    <option key={s} value={s}>{s}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="form-field">
-              <label className="field-label">
-                <span className="field-label-text">Class / Module <span className="required-dot">*</span></span>
-              </label>
-              <div className="input-container">
-                <BookOpen size={15} className="input-icon" />
-                <select
-                  value={classModule}
-                  onChange={e => setClassModule(e.target.value)}
-                  className="form-select"
-                  required
-                >
-                  {INITIAL_MODULES.map(m => (
-                    <option key={m} value={m}>{m}</option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="form-field">
-              <label className="field-label">
-                <span className="field-label-text">Lecturers (In Charge) <span className="required-dot">*</span></span>
-              </label>
-              <select
-                value={lecturer}
-                onChange={e => setLecturer(e.target.value)}
-                className="form-select font-semibold"
-                required
-              >
-                {lecturers.map(l => (
-                  <option key={l.id} value={l.name}>
-                    {l.name}
-                  </option>
+              <div className="room-cards-grid">
+                {(['719', '721', '724'] as RoomId[]).map(room => (
+                  <button
+                    key={room}
+                    type="button"
+                    onClick={() => {
+                      setSelectedRoom(room);
+                      setSelectedMachineIds([]);
+                    }}
+                    className={`room-card-btn ${selectedRoom === room ? 'active' : ''}`}
+                  >
+                    <MapPin size={18} />
+                    <div>
+                      <div className="room-card-title">Studio {room}</div>
+                      <div className="room-card-sub">
+                        {room === '719' ? 'Sewing & Overlocking' : room === '721' ? 'Apparel Workshop' : 'Creative Studio'}
+                      </div>
+                    </div>
+                  </button>
                 ))}
-              </select>
+              </div>
+            </div>
+
+            {/* Date & Time Usage */}
+            <div className="grid-3">
+              <div className="form-field">
+                <label className="field-label">
+                  <span className="field-label-text">Usage Date <span className="required-dot">*</span></span>
+                </label>
+                <div className="input-container">
+                  <Calendar size={15} className="input-icon" />
+                  <input
+                    type="date"
+                    value={date}
+                    onChange={e => setDate(e.target.value)}
+                    className="form-input"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-field">
+                <label className="field-label">
+                  <span className="field-label-text">Start Time <span className="required-dot">*</span></span>
+                </label>
+                <div className="input-container">
+                  <Clock size={15} className="input-icon" />
+                  <input
+                    type="time"
+                    value={startTime}
+                    onChange={e => setStartTime(e.target.value)}
+                    className="form-input"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="form-field">
+                <label className="field-label">
+                  <span className="field-label-text">End Time <span className="required-dot">*</span></span>
+                </label>
+                <div className="input-container">
+                  <Clock size={15} className="input-icon" />
+                  <input
+                    type="time"
+                    value={endTime}
+                    onChange={e => setEndTime(e.target.value)}
+                    className="form-input"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Duration Shortcut Chips */}
+            <div className="form-field">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs font-bold text-muted">Preset Duration:</span>
+                {[2, 3, 4, 6].map(hours => (
+                  <button
+                    key={hours}
+                    type="button"
+                    onClick={() => handleDurationPreset(hours)}
+                    className={`room-chip ${durationHours === hours ? 'active' : ''}`}
+                    style={{ border: '1px solid #e2e8f0', color: durationHours === hours ? '#ffffff' : '#334155', background: durationHours === hours ? '#09090b' : '#f8fafc' }}
+                  >
+                    {hours} Hours
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Verified by: Lecturer's name */}
+            <div className="p-3 bg-slate-50 border border-slate-200 rounded-md flex justify-between items-center text-xs mt-2">
+              <div>
+                <span className="text-muted block text-[11px]">VERIFIED BY FACULTY LECTURER</span>
+                <span className="font-bold text-slate-800 text-sm">{lecturer}</span>
+              </div>
+              <span className="status-badge-chip badge-amber">ASSIGNED REVIEWER</span>
             </div>
           </div>
         </div>
 
         {/* ========================================================
-            SECTION 2: REQUEST DETAILS
+            COLUMN 2: MACHINES MATRIX & AGREEMENT SIGNATURE
            ======================================================== */}
-        <div className="form-section-block">
-          <div className="form-section-header">
-            <div className="form-section-num">2</div>
-            <h2 className="form-section-title">Request Details</h2>
-          </div>
-
-          {/* Facility / Room: 719, 721, 724 */}
-          <div className="form-field">
-            <label className="field-label">
-              <span className="field-label-text">Facility / Room <span className="required-dot">*</span></span>
-            </label>
-            <div className="room-cards-grid">
-              {(['719', '721', '724'] as RoomId[]).map(room => (
-                <button
-                  key={room}
-                  type="button"
-                  onClick={() => {
-                    setSelectedRoom(room);
-                    setSelectedMachineIds([]);
-                  }}
-                  className={`room-card-btn ${selectedRoom === room ? 'active' : ''}`}
-                >
-                  <MapPin size={18} />
-                  <div>
-                    <div className="room-card-title">Studio {room}</div>
-                    <div className="room-card-sub">
-                      {room === '719' ? 'Sewing & Overlocking' : room === '721' ? 'Apparel Workshop' : 'Creative Studio'}
-                    </div>
-                  </div>
-                </button>
-              ))}
+        <div className="dashboard-col">
+          {/* Block 3: Machine Types & Code */}
+          <div className="form-card-container">
+            <div className="form-section-header">
+              <div className="form-section-num">3</div>
+              <h2 className="form-section-title">Machine Types & Code (Studio {selectedRoom})</h2>
             </div>
-          </div>
 
-          {/* Date & Time Usage */}
-          <div className="grid-3">
-            <div className="form-field">
-              <label className="field-label">
-                <span className="field-label-text">Usage Date <span className="required-dot">*</span></span>
-              </label>
-              <div className="input-container">
-                <Calendar size={15} className="input-icon" />
-                <input
-                  type="date"
-                  value={date}
-                  onChange={e => setDate(e.target.value)}
-                  className="form-input"
-                  required
-                />
+            {/* Sewing Machine Group */}
+            <div className="mb-4">
+              <div className="machine-group-heading">
+                <span>🧵 Sewing Machine (Codes 2401 – 2416)</span>
+                <span className="text-xs text-muted font-normal">{sewingMachines.length} stations in Room {selectedRoom}</span>
+              </div>
+              <div className="machine-grid-chips">
+                {sewingMachines.map(m => {
+                  const isSelected = selectedMachineIds.includes(m.id);
+                  const isAvail = m.status === 'AVAILABLE';
+                  return (
+                    <button
+                      key={m.id}
+                      type="button"
+                      disabled={!isAvail && !isSelected}
+                      onClick={() => handleMachineToggle(m.id)}
+                      className={`machine-chip-btn ${isSelected ? 'selected' : ''} ${!isAvail && !isSelected ? 'disabled' : ''}`}
+                    >
+                      <span className="chip-code">#{m.code}</span>
+                      <span className="chip-status">
+                        {isSelected ? 'Selected' : isAvail ? 'Available' : m.status}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            <div className="form-field">
-              <label className="field-label">
-                <span className="field-label-text">Start Time <span className="required-dot">*</span></span>
-              </label>
-              <div className="input-container">
-                <Clock size={15} className="input-icon" />
-                <input
-                  type="time"
-                  value={startTime}
-                  onChange={e => setStartTime(e.target.value)}
-                  className="form-input"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="form-field">
-              <label className="field-label">
-                <span className="field-label-text">End Time <span className="required-dot">*</span></span>
-              </label>
-              <div className="input-container">
-                <Clock size={15} className="input-icon" />
-                <input
-                  type="time"
-                  value={endTime}
-                  onChange={e => setEndTime(e.target.value)}
-                  className="form-input"
-                  required
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Duration Chips */}
-          <div className="form-field">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-muted">Preset Duration:</span>
-              {[2, 3, 4, 6].map(hours => (
-                <button
-                  key={hours}
-                  type="button"
-                  onClick={() => handleDurationPreset(hours)}
-                  className={`room-chip ${durationHours === hours ? 'active' : ''}`}
-                  style={{ border: '1px solid #e2e8f0', color: durationHours === hours ? '#ffffff' : '#334155', background: durationHours === hours ? '#09090b' : '#f8fafc' }}
-                >
-                  {hours} hrs
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Machine types & Code: Sewing (2401-2416) & Overlocking (2101-2102) */}
-          <div className="form-field mt-2">
-            <label className="field-label">
-              <span className="field-label-text">Machine Types & Code (Studio {selectedRoom}) <span className="required-dot">*</span></span>
-            </label>
-
-            <div className="machine-selector-box">
-              {/* Sewing Machine Group */}
-              <div className="mb-3">
+            {/* Overlocking Machine Group */}
+            {overlockingMachines.length > 0 && (
+              <div className="pt-3 border-t border-slate-200">
                 <div className="machine-group-heading">
-                  <span>🧵 Sewing Machine (Codes 2401 – 2416)</span>
-                  <span className="text-xs text-muted font-normal">{sewingMachines.length} stations in Room {selectedRoom}</span>
+                  <span>⚙️ Overlocking Machine (Codes 2101 – 2102)</span>
+                  <span className="text-xs text-muted font-normal">{overlockingMachines.length} stations in Room {selectedRoom}</span>
                 </div>
                 <div className="machine-grid-chips">
-                  {sewingMachines.map(m => {
+                  {overlockingMachines.map(m => {
                     const isSelected = selectedMachineIds.includes(m.id);
                     const isAvail = m.status === 'AVAILABLE';
                     return (
@@ -346,106 +390,63 @@ export const RequestForm: React.FC = () => {
                   })}
                 </div>
               </div>
+            )}
+          </div>
 
-              {/* Overlocking Machine Group */}
-              {overlockingMachines.length > 0 && (
-                <div className="pt-3 border-t border-slate-200">
-                  <div className="machine-group-heading">
-                    <span>⚙️ Overlocking Machine (Codes 2101 – 2102)</span>
-                    <span className="text-xs text-muted font-normal">{overlockingMachines.length} stations in Room {selectedRoom}</span>
-                  </div>
-                  <div className="machine-grid-chips">
-                    {overlockingMachines.map(m => {
-                      const isSelected = selectedMachineIds.includes(m.id);
-                      const isAvail = m.status === 'AVAILABLE';
-                      return (
-                        <button
-                          key={m.id}
-                          type="button"
-                          disabled={!isAvail && !isSelected}
-                          onClick={() => handleMachineToggle(m.id)}
-                          className={`machine-chip-btn ${isSelected ? 'selected' : ''} ${!isAvail && !isSelected ? 'disabled' : ''}`}
-                        >
-                          <span className="chip-code">#{m.code}</span>
-                          <span className="chip-status">
-                            {isSelected ? 'Selected' : isAvail ? 'Available' : m.status}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
+          {/* Block 4: Agreement, Signature & Submit */}
+          <div className="form-card-container">
+            <div className="form-section-header">
+              <div className="form-section-num">4</div>
+              <h2 className="form-section-title">Student's Agreement & Sign-Off</h2>
             </div>
-          </div>
 
-          {/* Verified by: Lecturer's name */}
-          <div className="form-field mt-3">
-            <label className="field-label">
-              <span className="field-label-text">Verified by Lecturer</span>
-            </label>
-            <div className="p-3 bg-slate-50 border border-slate-200 rounded-md flex justify-between items-center text-xs">
-              <span className="font-bold text-slate-800 text-sm">{lecturer}</span>
-              <span className="text-muted">Designated faculty reviewer</span>
+            <div className="agreement-container">
+              <label className="agreement-label">
+                <input
+                  type="checkbox"
+                  checked={agreedToSafety}
+                  onChange={e => setAgreedToSafety(e.target.checked)}
+                  className="checkbox-clean"
+                  required
+                />
+                <span className="agreement-statement">
+                  <strong>Student's Agreement:</strong> I confirm that I will abide by all studio laboratory safety protocols, handle the allocated machine with care, maintain needle & thread cleanliness, and return the equipment on schedule for condition verification.
+                </span>
+              </label>
             </div>
-          </div>
-        </div>
 
-        {/* ========================================================
-            SECTION 3: STUDENT'S AGREEMENT & LECTURER APPROVAL
-           ======================================================== */}
-        <div className="form-section-block">
-          <div className="form-section-header">
-            <div className="form-section-num">3</div>
-            <h2 className="form-section-title">Student's Agreement & Lecturer Approval</h2>
-          </div>
-
-          <div className="agreement-container">
-            <label className="agreement-label">
-              <input
-                type="checkbox"
-                checked={agreedToSafety}
-                onChange={e => setAgreedToSafety(e.target.checked)}
-                className="checkbox-clean"
+            <div className="signature-card">
+              <SignaturePad
+                label="Student's Digital Signature"
                 required
+                onSave={sig => setSignatureData(sig)}
               />
-              <span className="agreement-statement">
-                <strong>Student's Agreement:</strong> I confirm that I will abide by all studio laboratory safety protocols, handle the allocated machine with care, maintain needle & thread cleanliness, and return the equipment on schedule for condition verification.
-              </span>
-            </label>
-          </div>
-
-          <div className="signature-card">
-            <SignaturePad
-              label="Student's Digital Signature"
-              required
-              onSave={sig => setSignatureData(sig)}
-            />
-          </div>
-
-          {/* Lecturer Approval Status */}
-          <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-md flex items-center justify-between text-xs">
-            <div>
-              <span className="font-bold text-amber-900 block">Lecturer Approval Status</span>
-              <span className="text-amber-800">Pending review by <strong>{lecturer}</strong></span>
             </div>
-            <span className="status-badge-chip badge-amber">PENDING APPROVAL</span>
+
+            {/* Lecturer Approval Status Box */}
+            <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-md flex items-center justify-between text-xs">
+              <div>
+                <span className="font-bold text-amber-900 block">Lecturer Approval Workflow</span>
+                <span className="text-amber-800">Pending review by <strong>{lecturer}</strong></span>
+              </div>
+              <span className="status-badge-chip badge-amber">PENDING APPROVAL</span>
+            </div>
+
+            {/* Error Banner */}
+            {formErrors.length > 0 && (
+              <div className="mt-3 p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-md flex items-start gap-2 text-xs">
+                <AlertCircle size={16} className="text-rose-600 flex-shrink-0 mt-0.5" />
+                <div>{formErrors[0]}</div>
+              </div>
+            )}
+
+            {/* Submit Button */}
+            <button type="submit" className="btn-primary-action mt-4">
+              <Send size={16} />
+              <span>SUBMIT REQUEST</span>
+            </button>
           </div>
         </div>
-
-        {/* Error Banner */}
-        {formErrors.length > 0 && (
-          <div className="mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-md flex items-start gap-2 text-xs">
-            <AlertCircle size={16} className="text-rose-600 flex-shrink-0 mt-0.5" />
-            <div>{formErrors[0]}</div>
-          </div>
-        )}
-
-        {/* Submit Button */}
-        <button type="submit" className="btn-primary-action">
-          <Send size={16} />
-          <span>SUBMIT REQUEST</span>
-        </button>
       </form>
     </div>
   );
