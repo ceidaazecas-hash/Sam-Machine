@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLab } from '../context/LabContext';
 import type { RoomId } from '../types/lab';
-import { INITIAL_MODULES, INITIAL_SEMESTERS } from '../data/initialData';
+import { INITIAL_SEMESTERS } from '../data/initialData';
 import { SignaturePad } from './SignaturePad';
 import { 
   Send, 
@@ -18,6 +18,7 @@ export const RequestForm: React.FC = () => {
     selectedRoom, 
     setSelectedRoom, 
     lecturers, 
+    modules,
     machines, 
     submitNewRequest, 
     setActivePassRequest,
@@ -28,8 +29,8 @@ export const RequestForm: React.FC = () => {
   const [studentName, setStudentName] = useState('Elena Gilbert');
   const [studentId] = useState('STU-2025-9014');
   const [semester, setSemester] = useState('Semester 3');
-  const [classModule, setClassModule] = useState('FD204 - Advanced Pattern Drafting');
-  const [lecturer, setLecturer] = useState('Prof. Clara Moreau');
+  const [classModule, setClassModule] = useState(modules[0] || 'FD204 - Advanced Pattern Drafting');
+  const [lecturer, setLecturer] = useState(lecturers[0]?.name || 'Prof. Clara Moreau');
 
   // Request Details
   const [date, setDate] = useState(() => {
@@ -40,17 +41,18 @@ export const RequestForm: React.FC = () => {
   const [startTime, setStartTime] = useState('10:00');
   const [endTime, setEndTime] = useState('14:00');
   const [durationHours, setDurationHours] = useState(4);
-  const [selectedMachineIds, setSelectedMachineIds] = useState<string[]>(['2404']);
+  const [selectedMachineIds, setSelectedMachineIds] = useState<string[]>([]);
 
   // Agreement & Signature
   const [agreedToSafety, setAgreedToSafety] = useState(false);
   const [signatureData, setSignatureData] = useState('');
   const [formErrors, setFormErrors] = useState<string[]>([]);
 
-  // Sewing Machines (2401 - 2416) & Overlocking Machines (2101 - 2102)
+  // Separate machines by category
   const roomMachines = machines.filter(m => m.room === selectedRoom);
   const sewingMachines = roomMachines.filter(m => m.type === 'SEWING');
   const overlockingMachines = roomMachines.filter(m => m.type === 'OVERLOCKING');
+  const customMachines = roomMachines.filter(m => m.type !== 'SEWING' && m.type !== 'OVERLOCKING');
 
   const handleMachineToggle = (id: string) => {
     setSelectedMachineIds(prev =>
@@ -183,7 +185,7 @@ export const RequestForm: React.FC = () => {
                     className="form-select"
                     required
                   >
-                    {INITIAL_MODULES.map(m => (
+                    {modules.map(m => (
                       <option key={m} value={m}>{m}</option>
                     ))}
                   </select>
@@ -341,42 +343,74 @@ export const RequestForm: React.FC = () => {
             </div>
 
             {/* Sewing Machine Group */}
-            <div className="machine-group-container">
-              <div className="machine-group-header">
-                <span>🧵 Sewing Machine (Codes 2401 – 2416)</span>
-                <span className="text-xs text-muted font-normal">{sewingMachines.length} stations in Room {selectedRoom}</span>
+            {sewingMachines.length > 0 && (
+              <div className="machine-group-container">
+                <div className="machine-group-header">
+                  <span>🧵 Sewing Machines ({sewingMachines.map(m => m.code).join(', ')})</span>
+                  <span className="text-xs text-muted font-normal">{sewingMachines.length} stations in Room {selectedRoom}</span>
+                </div>
+                <div className="machine-chips-grid">
+                  {sewingMachines.map(m => {
+                    const isSelected = selectedMachineIds.includes(m.id);
+                    const isAvail = m.status === 'AVAILABLE';
+                    return (
+                      <button
+                        key={m.id}
+                        type="button"
+                        disabled={!isAvail && !isSelected}
+                        onClick={() => handleMachineToggle(m.id)}
+                        className={`machine-chip-card ${isSelected ? 'selected' : ''} ${!isAvail && !isSelected ? 'disabled' : ''}`}
+                      >
+                        <span className="chip-code">#{m.code}</span>
+                        <span className="chip-status-text">
+                          {isSelected ? 'Selected' : isAvail ? 'Available' : m.status}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-              <div className="machine-chips-grid">
-                {sewingMachines.map(m => {
-                  const isSelected = selectedMachineIds.includes(m.id);
-                  const isAvail = m.status === 'AVAILABLE';
-                  return (
-                    <button
-                      key={m.id}
-                      type="button"
-                      disabled={!isAvail && !isSelected}
-                      onClick={() => handleMachineToggle(m.id)}
-                      className={`machine-chip-card ${isSelected ? 'selected' : ''} ${!isAvail && !isSelected ? 'disabled' : ''}`}
-                    >
-                      <span className="chip-code">#{m.code}</span>
-                      <span className="chip-status-text">
-                        {isSelected ? 'Selected' : isAvail ? 'Available' : m.status}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+            )}
 
             {/* Overlocking Machine Group */}
             {overlockingMachines.length > 0 && (
               <div className="machine-group-container">
                 <div className="machine-group-header">
-                  <span>⚙️ Overlocking Machine (Codes 2101 – 2102)</span>
+                  <span>⚙️ Overlocking Machines ({overlockingMachines.map(m => m.code).join(', ')})</span>
                   <span className="text-xs text-muted font-normal">{overlockingMachines.length} stations in Room {selectedRoom}</span>
                 </div>
                 <div className="machine-chips-grid">
                   {overlockingMachines.map(m => {
+                    const isSelected = selectedMachineIds.includes(m.id);
+                    const isAvail = m.status === 'AVAILABLE';
+                    return (
+                      <button
+                        key={m.id}
+                        type="button"
+                        disabled={!isAvail && !isSelected}
+                        onClick={() => handleMachineToggle(m.id)}
+                        className={`machine-chip-card ${isSelected ? 'selected' : ''} ${!isAvail && !isSelected ? 'disabled' : ''}`}
+                      >
+                        <span className="chip-code">#{m.code}</span>
+                        <span className="chip-status-text">
+                          {isSelected ? 'Selected' : isAvail ? 'Available' : m.status}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Custom / Additional Equipment */}
+            {customMachines.length > 0 && (
+              <div className="machine-group-container">
+                <div className="machine-group-header">
+                  <span>✨ Additional Studio Equipment</span>
+                  <span className="text-xs text-muted font-normal">{customMachines.length} stations in Room {selectedRoom}</span>
+                </div>
+                <div className="machine-chips-grid">
+                  {customMachines.map(m => {
                     const isSelected = selectedMachineIds.includes(m.id);
                     const isAvail = m.status === 'AVAILABLE';
                     return (

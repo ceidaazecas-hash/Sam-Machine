@@ -1,12 +1,12 @@
-export type RoomId = '719' | '721' | '724';
+export type RoomId = '719' | '721' | '724' | string;
 
-export type MachineType = 'SEWING' | 'OVERLOCKING';
+export type MachineType = 'SEWING' | 'OVERLOCKING' | 'CUSTOM' | string;
 
 export type MachineStatus = 'AVAILABLE' | 'RESERVED' | 'IN_USE' | 'MAINTENANCE';
 
 export interface Machine {
   id: string; // e.g. "2401"
-  code: string; // "2401" - "2416" or "2101" - "2102"
+  code: string; // "2401" - "2416" or custom
   type: MachineType;
   name: string;
   room: RoomId;
@@ -86,7 +86,7 @@ export interface Lecturer {
   email: string;
   department: string;
   modules: string[];
-  avatar: string;
+  avatar?: string;
 }
 
 export interface MaintenanceLog {

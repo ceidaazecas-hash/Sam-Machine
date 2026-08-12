@@ -16,7 +16,13 @@ import {
   LogOut,
   Eye,
   EyeOff,
-  AlertCircle
+  AlertCircle,
+  Download,
+  Plus,
+  Settings,
+  UserPlus,
+  BookPlus,
+  Cpu
 } from 'lucide-react';
 import { formatDate, getStatusBadge } from '../utils/helpers';
 import { SignaturePad } from './SignaturePad';
@@ -27,10 +33,17 @@ export const LecturerDashboard: React.FC = () => {
   const { 
     requests, 
     lecturers, 
+    modules,
     machines, 
     approveRequest, 
     rejectRequest, 
     updateMachineStatus,
+    addMachine,
+    addLecturer,
+    addClassModule,
+    exportRequestsToCSV,
+    exportMachinesToCSV,
+    exportStudentSummaryToCSV,
     setActiveTab,
     showToast 
   } = useLab();
@@ -43,15 +56,33 @@ export const LecturerDashboard: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [authError, setAuthError] = useState('');
 
-  const [activeSubTab, setActiveSubTab] = useState<'VERIFY' | 'MACHINE_REPORTS' | 'STUDENT_REPORTS' | 'HISTORY'>('VERIFY');
+  const [activeSubTab, setActiveSubTab] = useState<'VERIFY' | 'MACHINE_REPORTS' | 'STUDENT_REPORTS' | 'HISTORY' | 'MANAGE'>('VERIFY');
   const [selectedLecturer, setSelectedLecturer] = useState<string>('ALL');
 
-  // Modal for Approve / Reject
+  // Modals
   const [modalRequest, setModalRequest] = useState<BookingRequest | null>(null);
   const [actionType, setActionType] = useState<'APPROVE' | 'REJECT'>('APPROVE');
   const [feedbackNote, setFeedbackNote] = useState('');
   const [rejectionReason, setRejectionReason] = useState('');
   const [lecturerSig, setLecturerSig] = useState('');
+
+  // Add Machine Modal State
+  const [showAddMachineModal, setShowAddMachineModal] = useState(false);
+  const [newMachineCode, setNewMachineCode] = useState('');
+  const [newMachineType, setNewMachineType] = useState<'SEWING' | 'OVERLOCKING' | 'CUSTOM'>('SEWING');
+  const [newMachineRoom, setNewMachineRoom] = useState<'719' | '721' | '724'>('719');
+  const [newMachineModel, setNewMachineModel] = useState('');
+  const [newMachineNotes, setNewMachineNotes] = useState('');
+
+  // Add Lecturer Modal State
+  const [showAddLecturerModal, setShowAddLecturerModal] = useState(false);
+  const [newLecturerName, setNewLecturerName] = useState('');
+  const [newLecturerEmail, setNewLecturerEmail] = useState('');
+  const [newLecturerDept, setNewLecturerDept] = useState('Textile & Apparel Design');
+
+  // Add Module Modal State
+  const [showAddModuleModal, setShowAddModuleModal] = useState(false);
+  const [newModuleName, setNewModuleName] = useState('');
 
   // Machine note editing state
   const [editingMachineId, setEditingMachineId] = useState<string | null>(null);
@@ -115,6 +146,60 @@ export const LecturerDashboard: React.FC = () => {
     updateMachineStatus(m.id, m.status, machineNoteText);
     setEditingMachineId(null);
     setMachineNoteText('');
+  };
+
+  const handleCreateMachine = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMachineCode.trim()) {
+      showToast('Please enter a machine code.', 'error');
+      return;
+    }
+
+    addMachine({
+      code: newMachineCode.trim(),
+      name: `${newMachineType === 'SEWING' ? 'Lockstitch' : newMachineType === 'OVERLOCKING' ? 'Overlocker' : 'Equipment'} #${newMachineCode}`,
+      type: newMachineType,
+      room: newMachineRoom,
+      status: 'AVAILABLE',
+      model: newMachineModel || (newMachineType === 'SEWING' ? 'Juki DDL-8700 Industrial' : 'Pegasus M900 Overlocker'),
+      notes: newMachineNotes || 'Newly registered workstation equipment.'
+    });
+
+    setNewMachineCode('');
+    setNewMachineModel('');
+    setNewMachineNotes('');
+    setShowAddMachineModal(false);
+  };
+
+  const handleCreateLecturer = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newLecturerName.trim()) {
+      showToast('Please enter faculty name.', 'error');
+      return;
+    }
+
+    addLecturer({
+      name: newLecturerName.trim(),
+      email: newLecturerEmail || `${newLecturerName.toLowerCase().replace(/\s+/g, '.')}@fashion-institute.edu`,
+      department: newLecturerDept,
+      modules: []
+    });
+
+    setNewLecturerName('');
+    setNewLecturerEmail('');
+    setShowAddLecturerModal(false);
+  };
+
+  const handleCreateModule = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newModuleName.trim()) {
+      showToast('Please enter module title.', 'error');
+      return;
+    }
+
+    addClassModule(newModuleName.trim());
+    setNewModuleName('');
+    setShowAddModuleModal(false);
   };
 
   // Compute student tracking statistics
@@ -233,8 +318,20 @@ export const LecturerDashboard: React.FC = () => {
           <p className="page-intro-desc">Review student applications, maintain machine logs, and track compliance</p>
         </div>
 
-        {/* Right Controls: Filter & Lock */}
+        {/* Right Controls: Export, Filter & Lock */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+          {/* 1-Click Excel Export Button */}
+          <button
+            type="button"
+            onClick={exportRequestsToCSV}
+            className="room-chip"
+            style={{ border: '1px solid #cbd5e1', color: '#065f46', background: '#ecfdf5', padding: '0.3rem 0.65rem', fontSize: '0.72rem', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+            title="Download full request audit logs into Excel (CSV format)"
+          >
+            <Download size={12} />
+            <span>Export Excel (.csv)</span>
+          </button>
+
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
             <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>Filter:</span>
             <select
@@ -299,6 +396,16 @@ export const LecturerDashboard: React.FC = () => {
         >
           <FileText size={13} />
           <span>Track History</span>
+        </button>
+
+        {/* Manage & Add Items */}
+        <button
+          type="button"
+          className={`subnav-btn-minimal ${activeSubTab === 'MANAGE' ? 'active' : ''}`}
+          onClick={() => setActiveSubTab('MANAGE')}
+        >
+          <Settings size={13} />
+          <span>Inventory & Settings</span>
         </button>
       </div>
 
@@ -373,9 +480,33 @@ export const LecturerDashboard: React.FC = () => {
       {/* 2. REPORTS: EACH MACHINE */}
       {activeSubTab === 'MACHINE_REPORTS' && (
         <div className="form-card-container">
-          <div style={{ marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-light)' }}>
-            <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>Machine Telemetry & Notes</h3>
-            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Sewing Machines (2401–2416) & Overlocking Machines (2101–2102) in Rooms 719, 721, 724</p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-light)', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div>
+              <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>Machine Telemetry & Notes</h3>
+              <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Total {machines.length} machines registered across Studios 719, 721, 724</p>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.4rem' }}>
+              <button
+                type="button"
+                onClick={() => setShowAddMachineModal(true)}
+                className="room-chip"
+                style={{ border: '1px solid var(--border-light)', color: '#ffffff', background: 'var(--text-primary)', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
+              >
+                <Plus size={11} />
+                <span>Add Machine</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={exportMachinesToCSV}
+                className="room-chip"
+                style={{ border: '1px solid #cbd5e1', color: '#065f46', background: '#ecfdf5', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
+              >
+                <Download size={11} />
+                <span>Export Machines (.csv)</span>
+              </button>
+            </div>
           </div>
 
           <div className="table-responsive-wrapper">
@@ -395,7 +526,7 @@ export const LecturerDashboard: React.FC = () => {
                 {machines.map(m => (
                   <tr key={m.id}>
                     <td className="mono font-bold">#{m.code}</td>
-                    <td>{m.type === 'SEWING' ? 'Sewing Machine' : 'Overlocking Machine'}</td>
+                    <td>{m.type === 'SEWING' ? 'Sewing Machine' : m.type === 'OVERLOCKING' ? 'Overlocking Machine' : m.type}</td>
                     <td className="font-semibold">Room {m.room}</td>
                     <td>
                       <span className={`status-pill-subtle ${m.status === 'AVAILABLE' ? 'pill-green' : m.status === 'IN_USE' ? 'pill-amber' : 'pill-rose'}`}>
@@ -452,9 +583,21 @@ export const LecturerDashboard: React.FC = () => {
       {/* 3. REPORTS: STUDENTS REQUEST */}
       {activeSubTab === 'STUDENT_REPORTS' && (
         <div className="form-card-container">
-          <div style={{ marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-light)' }}>
-            <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>Student Requisition & Compliance Log</h3>
-            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Summary of applicant history and completed returns</p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-light)', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div>
+              <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>Student Requisition & Compliance Log</h3>
+              <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Summary of applicant history and completed returns</p>
+            </div>
+
+            <button
+              type="button"
+              onClick={exportStudentSummaryToCSV}
+              className="room-chip"
+              style={{ border: '1px solid #cbd5e1', color: '#065f46', background: '#ecfdf5', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
+            >
+              <Download size={11} />
+              <span>Export Summary (.csv)</span>
+            </button>
           </div>
 
           <div className="table-responsive-wrapper">
@@ -495,9 +638,21 @@ export const LecturerDashboard: React.FC = () => {
       {/* 4. TRACK HISTORY */}
       {activeSubTab === 'HISTORY' && (
         <div className="form-card-container">
-          <div style={{ marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-light)' }}>
-            <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>Full Activity Audit Log</h3>
-            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Chronological record of all equipment allocations and returns</p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-light)', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div>
+              <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>Full Activity Audit Log</h3>
+              <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Chronological record of all equipment allocations and returns</p>
+            </div>
+
+            <button
+              type="button"
+              onClick={exportRequestsToCSV}
+              className="room-chip"
+              style={{ border: '1px solid #cbd5e1', color: '#065f46', background: '#ecfdf5', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
+            >
+              <Download size={11} />
+              <span>Export Full Audit (.csv)</span>
+            </button>
           </div>
 
           <div className="table-responsive-wrapper">
@@ -548,7 +703,307 @@ export const LecturerDashboard: React.FC = () => {
         </div>
       )}
 
-      {/* Approve / Reject Modal */}
+      {/* 5. MANAGE & INVENTORY SETTINGS */}
+      {activeSubTab === 'MANAGE' && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem' }}>
+          {/* Manage Machines Card */}
+          <div className="form-card-container">
+            <div className="card-header-minimal">
+              <div className="card-title-minimal">
+                <Cpu size={14} />
+                <span>Machines Inventory ({machines.length})</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAddMachineModal(true)}
+                className="room-chip"
+                style={{ border: '1px solid var(--border-light)', background: 'var(--text-primary)', color: '#ffffff', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}
+              >
+                <Plus size={11} />
+                <span>Add Machine</span>
+              </button>
+            </div>
+
+            <div style={{ maxHeight: '280px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+              {machines.map(m => (
+                <div key={m.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0.65rem', background: 'var(--bg-card-subtle)', borderRadius: '4px', fontSize: '0.78rem' }}>
+                  <div>
+                    <span className="mono font-bold">#{m.code}</span>
+                    <span className="text-muted ml-2">Studio {m.room}</span>
+                    <span className="text-muted ml-2">({m.type})</span>
+                  </div>
+                  <span className={`status-pill-subtle ${m.status === 'AVAILABLE' ? 'pill-green' : m.status === 'IN_USE' ? 'pill-amber' : 'pill-rose'}`}>
+                    {m.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Manage Lecturers Card */}
+          <div className="form-card-container">
+            <div className="card-header-minimal">
+              <div className="card-title-minimal">
+                <UserPlus size={14} />
+                <span>Faculty Directory ({lecturers.length})</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAddLecturerModal(true)}
+                className="room-chip"
+                style={{ border: '1px solid var(--border-light)', background: 'var(--text-primary)', color: '#ffffff', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}
+              >
+                <Plus size={11} />
+                <span>Add Lecturer</span>
+              </button>
+            </div>
+
+            <div style={{ maxHeight: '280px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+              {lecturers.map(l => (
+                <div key={l.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0.65rem', background: 'var(--bg-card-subtle)', borderRadius: '4px', fontSize: '0.78rem' }}>
+                  <div>
+                    <span className="font-bold text-slate-900">{l.name}</span>
+                    <div className="text-xs text-muted">{l.department}</div>
+                  </div>
+                  <span className="status-pill-subtle pill-green">Active</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Manage Modules Card */}
+          <div className="form-card-container">
+            <div className="card-header-minimal">
+              <div className="card-title-minimal">
+                <BookPlus size={14} />
+                <span>Class & Modules ({modules.length})</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAddModuleModal(true)}
+                className="room-chip"
+                style={{ border: '1px solid var(--border-light)', background: 'var(--text-primary)', color: '#ffffff', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}
+              >
+                <Plus size={11} />
+                <span>Add Module</span>
+              </button>
+            </div>
+
+            <div style={{ maxHeight: '280px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+              {modules.map(mod => (
+                <div key={mod} style={{ padding: '0.5rem 0.65rem', background: 'var(--bg-card-subtle)', borderRadius: '4px', fontSize: '0.78rem', fontWeight: 600 }}>
+                  {mod}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================
+          MODAL: ADD MACHINE
+         ======================================================== */}
+      {showAddMachineModal && (
+        <div className="clean-modal-backdrop" onClick={() => setShowAddMachineModal(false)}>
+          <div className="clean-modal-dialog" onClick={e => e.stopPropagation()}>
+            <div className="clean-modal-header">
+              <h3 style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)' }}>Add New Studio Machine</h3>
+              <button type="button" onClick={() => setShowAddMachineModal(false)} className="btn-close">
+                <X size={15} />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateMachine} style={{ padding: '1rem' }}>
+              <div className="grid-2">
+                <div className="form-field">
+                  <label className="field-label">
+                    Machine Code / Number <span className="required-dot">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={newMachineCode}
+                    onChange={e => setNewMachineCode(e.target.value)}
+                    placeholder="e.g. 2417 or 2103"
+                    className="form-input"
+                    required
+                  />
+                </div>
+
+                <div className="form-field">
+                  <label className="field-label">
+                    Machine Type <span className="required-dot">*</span>
+                  </label>
+                  <select
+                    value={newMachineType}
+                    onChange={e => setNewMachineType(e.target.value as any)}
+                    className="form-select"
+                  >
+                    <option value="SEWING">Sewing Machine</option>
+                    <option value="OVERLOCKING">Overlocking Machine</option>
+                    <option value="CUSTOM">Specialty / Custom</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid-2">
+                <div className="form-field">
+                  <label className="field-label">
+                    Assigned Studio Room <span className="required-dot">*</span>
+                  </label>
+                  <select
+                    value={newMachineRoom}
+                    onChange={e => setNewMachineRoom(e.target.value as any)}
+                    className="form-select"
+                  >
+                    <option value="719">Studio 719</option>
+                    <option value="721">Studio 721</option>
+                    <option value="724">Studio 724</option>
+                  </select>
+                </div>
+
+                <div className="form-field">
+                  <label className="field-label">Model / Manufacturer</label>
+                  <input
+                    type="text"
+                    value={newMachineModel}
+                    onChange={e => setNewMachineModel(e.target.value)}
+                    placeholder="e.g. Juki DDL-8700 Industrial"
+                    className="form-input"
+                  />
+                </div>
+              </div>
+
+              <div className="form-field">
+                <label className="field-label">Initial Notes & Setup Info</label>
+                <textarea
+                  value={newMachineNotes}
+                  onChange={e => setNewMachineNotes(e.target.value)}
+                  placeholder="e.g. Teflon foot installed, standard bobbin case."
+                  rows={2}
+                  className="form-textarea"
+                />
+              </div>
+
+              <div className="clean-modal-footer" style={{ margin: '1rem -1rem -1rem -1rem' }}>
+                <button type="button" onClick={() => setShowAddMachineModal(false)} className="room-chip" style={{ border: '1px solid var(--border-light)', padding: '0.35rem 0.75rem' }}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn-action-approve" style={{ padding: '0.4rem 0.9rem', fontSize: '0.78rem' }}>
+                  Add Machine to Fleet
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================
+          MODAL: ADD LECTURER
+         ======================================================== */}
+      {showAddLecturerModal && (
+        <div className="clean-modal-backdrop" onClick={() => setShowAddLecturerModal(false)}>
+          <div className="clean-modal-dialog" onClick={e => e.stopPropagation()}>
+            <div className="clean-modal-header">
+              <h3 style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)' }}>Add Faculty Member</h3>
+              <button type="button" onClick={() => setShowAddLecturerModal(false)} className="btn-close">
+                <X size={15} />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateLecturer} style={{ padding: '1rem' }}>
+              <div className="form-field">
+                <label className="field-label">
+                  Faculty Name <span className="required-dot">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={newLecturerName}
+                  onChange={e => setNewLecturerName(e.target.value)}
+                  placeholder="e.g. Prof. Samantha Reed"
+                  className="form-input"
+                  required
+                />
+              </div>
+
+              <div className="form-field">
+                <label className="field-label">Email Address</label>
+                <input
+                  type="email"
+                  value={newLecturerEmail}
+                  onChange={e => setNewLecturerEmail(e.target.value)}
+                  placeholder="e.g. s.reed@fashion-institute.edu"
+                  className="form-input"
+                />
+              </div>
+
+              <div className="form-field">
+                <label className="field-label">Department / Discipline</label>
+                <input
+                  type="text"
+                  value={newLecturerDept}
+                  onChange={e => setNewLecturerDept(e.target.value)}
+                  placeholder="e.g. Textile & Apparel Design"
+                  className="form-input"
+                />
+              </div>
+
+              <div className="clean-modal-footer" style={{ margin: '1rem -1rem -1rem -1rem' }}>
+                <button type="button" onClick={() => setShowAddLecturerModal(false)} className="room-chip" style={{ border: '1px solid var(--border-light)', padding: '0.35rem 0.75rem' }}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn-action-approve" style={{ padding: '0.4rem 0.9rem', fontSize: '0.78rem' }}>
+                  Save Faculty Member
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================
+          MODAL: ADD MODULE
+         ======================================================== */}
+      {showAddModuleModal && (
+        <div className="clean-modal-backdrop" onClick={() => setShowAddModuleModal(false)}>
+          <div className="clean-modal-dialog" onClick={e => e.stopPropagation()}>
+            <div className="clean-modal-header">
+              <h3 style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)' }}>Add Class / Module</h3>
+              <button type="button" onClick={() => setShowAddModuleModal(false)} className="btn-close">
+                <X size={15} />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateModule} style={{ padding: '1rem' }}>
+              <div className="form-field">
+                <label className="field-label">
+                  Module Code & Title <span className="required-dot">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={newModuleName}
+                  onChange={e => setNewModuleName(e.target.value)}
+                  placeholder="e.g. FD305 - Tailoring Workshop"
+                  className="form-input"
+                  required
+                />
+              </div>
+
+              <div className="clean-modal-footer" style={{ margin: '1rem -1rem -1rem -1rem' }}>
+                <button type="button" onClick={() => setShowAddModuleModal(false)} className="room-chip" style={{ border: '1px solid var(--border-light)', padding: '0.35rem 0.75rem' }}>
+                  Cancel
+                </button>
+                <button type="submit" className="btn-action-approve" style={{ padding: '0.4rem 0.9rem', fontSize: '0.78rem' }}>
+                  Add to Curriculum
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================
+          MODAL: APPROVE / REJECT APPLICATION
+         ======================================================== */}
       {modalRequest && (
         <div className="clean-modal-backdrop" onClick={() => setModalRequest(null)}>
           <div className="clean-modal-dialog" onClick={e => e.stopPropagation()}>

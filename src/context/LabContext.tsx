@@ -13,6 +13,7 @@ import {
   INITIAL_MACHINES, 
   INITIAL_REQUESTS, 
   INITIAL_LECTURERS, 
+  INITIAL_MODULES,
   INITIAL_MAINTENANCE_LOGS 
 } from '../data/initialData';
 import { generateBookingId } from '../utils/helpers';
@@ -29,6 +30,7 @@ interface LabContextType {
   machines: Machine[];
   requests: BookingRequest[];
   lecturers: Lecturer[];
+  modules: string[];
   maintenanceLogs: MaintenanceLog[];
   currentRole: UserRole;
   selectedRoom: RoomId;
@@ -56,24 +58,33 @@ interface LabContextType {
   addMaintenanceLog: (log: Omit<MaintenanceLog, 'id' | 'reportedAt'>) => void;
   resolveMaintenanceLog: (logId: string, resolutionNotes: string) => void;
   resetDemoData: () => void;
+
+  // Dynamic Additions by Lecturer
+  addMachine: (machine: Omit<Machine, 'id' | 'totalUsageHours' | 'healthScore'>) => Machine;
+  addLecturer: (lecturer: Omit<Lecturer, 'id'>) => Lecturer;
+  addClassModule: (moduleName: string) => void;
+
+  // Excel / CSV Export functions
+  exportRequestsToCSV: () => void;
+  exportMachinesToCSV: () => void;
+  exportStudentSummaryToCSV: () => void;
 }
 
 const LabContext = createContext<LabContextType | undefined>(undefined);
 
 const STORAGE_KEYS = {
-  MACHINES: 'studio_lab_machines_v1',
-  REQUESTS: 'studio_lab_requests_v1',
-  LOGS: 'studio_lab_logs_v1',
-  THEME: 'studio_lab_theme_v1',
-  SOUND: 'studio_lab_sound_v1'
+  MACHINES: 'studio_lab_machines_v2',
+  REQUESTS: 'studio_lab_requests_v2',
+  LECTURERS: 'studio_lab_lecturers_v2',
+  MODULES: 'studio_lab_modules_v2',
+  LOGS: 'studio_lab_logs_v2',
+  THEME: 'studio_lab_theme_v2',
+  SOUND: 'studio_lab_sound_v2'
 };
 
 export const LabProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Theme state
-  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
-    const saved = localStorage.getItem(STORAGE_KEYS.THEME);
-    return saved === 'light' ? 'light' : 'dark';
-  });
+  const [theme, setTheme] = useState<'dark' | 'light'>('light');
 
   // Sound state
   const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
@@ -105,6 +116,22 @@ export const LabProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     return INITIAL_REQUESTS;
   });
 
+  const [lecturers, setLecturers] = useState<Lecturer[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.LECTURERS);
+    if (saved) {
+      try { return JSON.parse(saved); } catch { /* ignore */ }
+    }
+    return INITIAL_LECTURERS;
+  });
+
+  const [modules, setModules] = useState<string[]>(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.MODULES);
+    if (saved) {
+      try { return JSON.parse(saved); } catch { /* ignore */ }
+    }
+    return INITIAL_MODULES;
+  });
+
   const [maintenanceLogs, setMaintenanceLogs] = useState<MaintenanceLog[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.LOGS);
     if (saved) {
@@ -112,8 +139,6 @@ export const LabProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
     return INITIAL_MAINTENANCE_LOGS;
   });
-
-  const lecturers = INITIAL_LECTURERS;
 
   // Sync to localStorage
   useEffect(() => {
@@ -125,19 +150,16 @@ export const LabProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [requests]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.LOGS, JSON.stringify(maintenanceLogs));
-  }, [maintenanceLogs]);
+    localStorage.setItem(STORAGE_KEYS.LECTURERS, JSON.stringify(lecturers));
+  }, [lecturers]);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.THEME, theme);
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
-    } else {
-      document.documentElement.classList.add('light');
-      document.documentElement.classList.remove('dark');
-    }
-  }, [theme]);
+    localStorage.setItem(STORAGE_KEYS.MODULES, JSON.stringify(modules));
+  }, [modules]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.LOGS, JSON.stringify(maintenanceLogs));
+  }, [maintenanceLogs]);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEYS.SOUND, soundEnabled ? 'true' : 'false');
@@ -343,10 +365,10 @@ export const LabProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       origin: { y: 0.6 }
     });
 
-    showToast(`Return verified & signed by ${inspection.verifiedByLecturer}! Machine is now marked as available.`, 'success');
+    showToast(`Return verified & signed by ${inspection.verifiedByLecturer}! Machine is now available.`, 'success');
   };
 
-  // Machine status manual update (by Lab Tech or Lecturer)
+  // Machine status manual update
   const updateMachineStatus = (machineId: string, status: MachineStatus, notes?: string) => {
     setMachines(prev =>
       prev.map(m => {
@@ -399,15 +421,229 @@ export const LabProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     showToast(`Maintenance #${logId} resolved. Machine #${target.machineCode} returned to service.`, 'success');
   };
 
+  // =========================================================================
+  // DYNAMIC ADDITIONS (ADD MACHINE, LECTURER, CLASS/MODULE)
+  // =========================================================================
+
+  const addMachine = (m: Omit<Machine, 'id' | 'totalUsageHours' | 'healthScore'>): Machine => {
+    const id = m.code.trim();
+    const newMachine: Machine = {
+      ...m,
+      id,
+      code: id,
+      totalUsageHours: 0,
+      healthScore: 100,
+      lastMaintained: new Date().toISOString().slice(0, 10)
+    };
+
+    setMachines(prev => [...prev, newMachine]);
+    showToast(`Machine #${id} successfully added to Room ${m.room}!`, 'success');
+    return newMachine;
+  };
+
+  const addLecturer = (l: Omit<Lecturer, 'id'>): Lecturer => {
+    const id = `LEC-${String(lecturers.length + 1).padStart(2, '0')}`;
+    const newLecturer: Lecturer = {
+      ...l,
+      id
+    };
+
+    setLecturers(prev => [...prev, newLecturer]);
+    showToast(`Faculty member "${l.name}" added successfully!`, 'success');
+    return newLecturer;
+  };
+
+  const addClassModule = (moduleName: string) => {
+    const trimmed = moduleName.trim();
+    if (!trimmed) return;
+    if (modules.includes(trimmed)) {
+      showToast('This module is already in the course directory.', 'error');
+      return;
+    }
+
+    setModules(prev => [...prev, trimmed]);
+    showToast(`Module "${trimmed}" added to active curriculum!`, 'success');
+  };
+
+  // =========================================================================
+  // EXCEL / CSV EXPORT UTILITIES (UTF-8 BOM COMPATIBLE WITH EXCEL)
+  // =========================================================================
+
+  const downloadCSV = (content: string, filename: string) => {
+    const blob = new Blob(['\uFEFF' + content], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    showToast(`Exported ${filename} successfully.`, 'success');
+  };
+
+  const escapeCSV = (val: any): string => {
+    if (val === null || val === undefined) return '""';
+    const str = String(val).replace(/"/g, '""');
+    return `"${str}"`;
+  };
+
+  const exportRequestsToCSV = () => {
+    const headers = [
+      'Request ID',
+      'Student Name',
+      'Student ID',
+      'Semester',
+      'Class / Module',
+      'Lecturer In Charge',
+      'Studio Room',
+      'Machines Allocated',
+      'Usage Date',
+      'Start Time',
+      'End Time',
+      'Duration (Hours)',
+      'Agreement Signed',
+      'Approval Status',
+      'Decision Timestamp',
+      'Lecturer Feedback',
+      'Return Timestamp',
+      'Return Condition',
+      'Return Inspection Notes',
+      'Verified By Lecturer'
+    ];
+
+    const rows = requests.map(r => [
+      escapeCSV(r.id),
+      escapeCSV(r.applicant.studentName),
+      escapeCSV(r.applicant.studentId),
+      escapeCSV(r.applicant.semester),
+      escapeCSV(r.applicant.classModule),
+      escapeCSV(r.applicant.lecturer),
+      escapeCSV(`Studio ${r.requestDetails.facilityRoom}`),
+      escapeCSV(r.requestDetails.machineIds.join('; ')),
+      escapeCSV(r.requestDetails.date),
+      escapeCSV(r.requestDetails.startTime),
+      escapeCSV(r.requestDetails.endTime),
+      escapeCSV(r.requestDetails.durationHours),
+      escapeCSV(r.requestDetails.studentAgreement ? 'Yes' : 'No'),
+      escapeCSV(r.approval.status),
+      escapeCSV(r.approval.decisionTimestamp || '-'),
+      escapeCSV(r.approval.lecturerFeedback || '-'),
+      escapeCSV(r.returnInfo?.returnedAt || '-'),
+      escapeCSV(r.returnInfo?.returnCondition || '-'),
+      escapeCSV(r.returnInfo?.lecturerNotes || '-'),
+      escapeCSV(r.returnInfo?.verifiedByLecturer || r.approval.verifiedByLecturer || '-')
+    ]);
+
+    const csvString = [headers.join(','), ...rows.map(row => row.join(','))].join('\r\n');
+    const dateStr = new Date().toISOString().slice(0, 10);
+    downloadCSV(csvString, `Equipment_Requests_Audit_${dateStr}.csv`);
+  };
+
+  const exportMachinesToCSV = () => {
+    const headers = [
+      'Machine ID',
+      'Machine Code',
+      'Machine Type',
+      'Studio Room',
+      'Status',
+      'Model Description',
+      'Total Usage (Hours)',
+      'Health Score (%)',
+      'Last Maintained Date',
+      'Current Booking ID',
+      'Maintenance Notes'
+    ];
+
+    const rows = machines.map(m => [
+      escapeCSV(m.id),
+      escapeCSV(m.code),
+      escapeCSV(m.type),
+      escapeCSV(`Studio ${m.room}`),
+      escapeCSV(m.status),
+      escapeCSV(m.model),
+      escapeCSV(m.totalUsageHours),
+      escapeCSV(m.healthScore),
+      escapeCSV(m.lastMaintained || '-'),
+      escapeCSV(m.currentBookingId || '-'),
+      escapeCSV(m.notes || '-')
+    ]);
+
+    const csvString = [headers.join(','), ...rows.map(row => row.join(','))].join('\r\n');
+    const dateStr = new Date().toISOString().slice(0, 10);
+    downloadCSV(csvString, `Equipment_Machines_Inventory_${dateStr}.csv`);
+  };
+
+  const exportStudentSummaryToCSV = () => {
+    const studentMap = new Map<string, {
+      name: string;
+      studentId: string;
+      semester: string;
+      classModule: string;
+      totalBookings: number;
+      completedReturns: number;
+      pendingBookings: number;
+    }>();
+
+    requests.forEach(r => {
+      const sId = r.applicant.studentId;
+      if (!studentMap.has(sId)) {
+        studentMap.set(sId, {
+          name: r.applicant.studentName,
+          studentId: sId,
+          semester: r.applicant.semester,
+          classModule: r.applicant.classModule,
+          totalBookings: 0,
+          completedReturns: 0,
+          pendingBookings: 0
+        });
+      }
+      const st = studentMap.get(sId)!;
+      st.totalBookings += 1;
+      if (r.approval.status === 'RETURNED') st.completedReturns += 1;
+      if (r.approval.status === 'PENDING') st.pendingBookings += 1;
+    });
+
+    const headers = [
+      'Student Name',
+      'Student ID',
+      'Semester',
+      'Class / Module',
+      'Total Bookings',
+      'Completed Returns',
+      'Pending Requests',
+      'Compliance Standing'
+    ];
+
+    const rows = Array.from(studentMap.values()).map(st => [
+      escapeCSV(st.name),
+      escapeCSV(st.studentId),
+      escapeCSV(st.semester),
+      escapeCSV(st.classModule),
+      escapeCSV(st.totalBookings),
+      escapeCSV(st.completedReturns),
+      escapeCSV(st.pendingBookings),
+      escapeCSV('Verified Student')
+    ]);
+
+    const csvString = [headers.join(','), ...rows.map(row => row.join(','))].join('\r\n');
+    const dateStr = new Date().toISOString().slice(0, 10);
+    downloadCSV(csvString, `Student_Compliance_Summary_${dateStr}.csv`);
+  };
+
   // Reset demo data
   const resetDemoData = () => {
     setMachines(INITIAL_MACHINES);
     setRequests(INITIAL_REQUESTS);
+    setLecturers(INITIAL_LECTURERS);
+    setModules(INITIAL_MODULES);
     setMaintenanceLogs(INITIAL_MAINTENANCE_LOGS);
     localStorage.removeItem(STORAGE_KEYS.MACHINES);
     localStorage.removeItem(STORAGE_KEYS.REQUESTS);
+    localStorage.removeItem(STORAGE_KEYS.LECTURERS);
+    localStorage.removeItem(STORAGE_KEYS.MODULES);
     localStorage.removeItem(STORAGE_KEYS.LOGS);
-    showToast('Demo data restored to initial pristine state.', 'info');
+    showToast('All inventory and records restored to initial state.', 'info');
   };
 
   return (
@@ -416,6 +652,7 @@ export const LabProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         machines,
         requests,
         lecturers,
+        modules,
         maintenanceLogs,
         currentRole,
         selectedRoom,
@@ -438,7 +675,13 @@ export const LabProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         updateMachineStatus,
         addMaintenanceLog,
         resolveMaintenanceLog,
-        resetDemoData
+        resetDemoData,
+        addMachine,
+        addLecturer,
+        addClassModule,
+        exportRequestsToCSV,
+        exportMachinesToCSV,
+        exportStudentSummaryToCSV
       }}
     >
       {children}
