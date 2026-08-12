@@ -56,8 +56,7 @@ export const INITIAL_SEMESTERS = [
   'Semester 8'
 ];
 
-// Sewing Machines: 2401 - 2416
-// Overlocking Machines: 2101 - 2102
+// Machines across Rooms 719, 721, 724
 export const INITIAL_MACHINES: Machine[] = [
   // Room 719
   {
@@ -302,7 +301,9 @@ export const INITIAL_MACHINES: Machine[] = [
   }
 ];
 
+// Comprehensive Requests with multiple dates (Aug 08 to Aug 18, 2026)
 export const INITIAL_REQUESTS: BookingRequest[] = [
+  // 1. IN_USE - Today (Aug 12)
   {
     id: 'REQ-2026-0089',
     applicant: {
@@ -323,7 +324,7 @@ export const INITIAL_REQUESTS: BookingRequest[] = [
       machineIds: ['2402'],
       purposeNotes: 'Assembling structured blazer collar and sleeve heads using heavyweight wool.',
       studentAgreement: true,
-      studentSignature: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"><path d="M 10 30 Q 50 10 90 35 T 180 20" stroke="%233b82f6" stroke-width="2" fill="none"/></svg>',
+      studentSignature: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"><path d="M 10 30 Q 50 10 90 35 T 180 20" stroke="%230f172a" stroke-width="2" fill="none"/></svg>',
       submittedAt: '2026-08-12T10:15:00Z'
     },
     approval: {
@@ -331,9 +332,10 @@ export const INITIAL_REQUESTS: BookingRequest[] = [
       verifiedByLecturer: 'Prof. Clara Moreau',
       decisionTimestamp: '2026-08-12T11:00:00Z',
       lecturerFeedback: 'Approved for blazer studio project. Ensure correct presser foot pressure for wool.',
-      lecturerSignature: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"><path d="M 15 25 Q 60 5 110 30 T 170 15" stroke="%2310b981" stroke-width="2" fill="none"/></svg>'
+      lecturerSignature: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"><path d="M 15 25 Q 60 5 110 30 T 170 15" stroke="%230f172a" stroke-width="2" fill="none"/></svg>'
     }
   },
+  // 2. IN_USE - Today (Aug 12)
   {
     id: 'REQ-2026-0091',
     applicant: {
@@ -354,7 +356,7 @@ export const INITIAL_REQUESTS: BookingRequest[] = [
       machineIds: ['2409'],
       purposeNotes: 'Silk georgette French seams and rolled hem finish for evening gown bodice.',
       studentAgreement: true,
-      studentSignature: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"><path d="M 10 20 Q 70 40 120 15 T 185 30" stroke="%233b82f6" stroke-width="2" fill="none"/></svg>',
+      studentSignature: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"><path d="M 10 20 Q 70 40 120 15 T 185 30" stroke="%230f172a" stroke-width="2" fill="none"/></svg>',
       submittedAt: '2026-08-12T09:30:00Z'
     },
     approval: {
@@ -362,9 +364,10 @@ export const INITIAL_REQUESTS: BookingRequest[] = [
       verifiedByLecturer: 'Assoc. Prof. Elena Rostova',
       decisionTimestamp: '2026-08-12T10:00:00Z',
       lecturerFeedback: 'Approved. Microtex 60/8 needle provided at technical desk.',
-      lecturerSignature: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"><path d="M 20 30 Q 70 10 130 35 T 180 20" stroke="%2310b981" stroke-width="2" fill="none"/></svg>'
+      lecturerSignature: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"><path d="M 20 30 Q 70 10 130 35 T 180 20" stroke="%230f172a" stroke-width="2" fill="none"/></svg>'
     }
   },
+  // 3. PENDING - Tomorrow (Aug 13)
   {
     id: 'REQ-2026-0092',
     applicant: {
@@ -385,7 +388,7 @@ export const INITIAL_REQUESTS: BookingRequest[] = [
       machineIds: ['2403', '2101'],
       purposeNotes: 'First trial sewing basic darts and edge serging on calico toile.',
       studentAgreement: true,
-      studentSignature: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"><path d="M 10 35 Q 50 15 100 30 T 175 10" stroke="%233b82f6" stroke-width="2" fill="none"/></svg>',
+      studentSignature: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"><path d="M 10 35 Q 50 15 100 30 T 175 10" stroke="%230f172a" stroke-width="2" fill="none"/></svg>',
       submittedAt: '2026-08-12T14:20:00Z'
     },
     approval: {
@@ -393,6 +396,68 @@ export const INITIAL_REQUESTS: BookingRequest[] = [
       verifiedByLecturer: 'Prof. Clara Moreau'
     }
   },
+  // 4. PENDING - Friday (Aug 14)
+  {
+    id: 'REQ-2026-0095',
+    applicant: {
+      studentName: 'Lucas Dubois',
+      studentId: 'STU-2024-4112',
+      semester: 'Semester 4',
+      classModule: 'FD205 - Industrial Production Lab',
+      lecturer: 'Mr. David Tan',
+      email: 'l.dubois@student.fashion-institute.edu',
+      contactNumber: '+1 (555) 332-9900'
+    },
+    requestDetails: {
+      facilityRoom: '721',
+      date: '2026-08-14',
+      startTime: '10:00',
+      endTime: '14:00',
+      durationHours: 4,
+      machineIds: ['2407', '2102'],
+      purposeNotes: 'Denim jacket flat-felled seam assembly and edge finishing.',
+      studentAgreement: true,
+      studentSignature: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"><path d="M 12 25 Q 70 10 120 40 T 175 18" stroke="%230f172a" stroke-width="2" fill="none"/></svg>',
+      submittedAt: '2026-08-12T15:10:00Z'
+    },
+    approval: {
+      status: 'PENDING',
+      verifiedByLecturer: 'Mr. David Tan'
+    }
+  },
+  // 5. APPROVED - Upcoming Monday (Aug 17)
+  {
+    id: 'REQ-2026-0098',
+    applicant: {
+      studentName: 'Hannah Kim',
+      studentId: 'STU-2023-1189',
+      semester: 'Semester 7',
+      classModule: 'FD401 - Final Major Project Studio',
+      lecturer: 'Prof. Clara Moreau',
+      email: 'h.kim@student.fashion-institute.edu',
+      contactNumber: '+1 (555) 771-4455'
+    },
+    requestDetails: {
+      facilityRoom: '724',
+      date: '2026-08-17',
+      startTime: '09:00',
+      endTime: '15:00',
+      durationHours: 6,
+      machineIds: ['2412', '2413'],
+      purposeNotes: 'Graduation collection tailoring: wool outerwear and structured lining.',
+      studentAgreement: true,
+      studentSignature: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"><path d="M 15 28 Q 65 8 115 32 T 180 15" stroke="%230f172a" stroke-width="2" fill="none"/></svg>',
+      submittedAt: '2026-08-11T16:00:00Z'
+    },
+    approval: {
+      status: 'APPROVED',
+      verifiedByLecturer: 'Prof. Clara Moreau',
+      decisionTimestamp: '2026-08-12T08:30:00Z',
+      lecturerFeedback: 'Pre-approved for graduation collection production slot.',
+      lecturerSignature: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"><path d="M 15 25 Q 60 5 110 30 T 170 15" stroke="%230f172a" stroke-width="2" fill="none"/></svg>'
+    }
+  },
+  // 6. RETURNED - Yesterday (Aug 11)
   {
     id: 'REQ-2026-0085',
     applicant: {
@@ -413,7 +478,7 @@ export const INITIAL_REQUESTS: BookingRequest[] = [
       machineIds: ['2414'],
       purposeNotes: 'Testing stitch endurance on custom jacquard weave samples.',
       studentAgreement: true,
-      studentSignature: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"><path d="M 15 20 Q 80 45 130 15 T 190 25" stroke="%233b82f6" stroke-width="2" fill="none"/></svg>',
+      studentSignature: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"><path d="M 15 20 Q 80 45 130 15 T 190 25" stroke="%230f172a" stroke-width="2" fill="none"/></svg>',
       submittedAt: '2026-08-11T08:00:00Z'
     },
     approval: {
@@ -421,7 +486,7 @@ export const INITIAL_REQUESTS: BookingRequest[] = [
       verifiedByLecturer: 'Dr. Marcus Vance',
       decisionTimestamp: '2026-08-11T08:45:00Z',
       lecturerFeedback: 'Sample test parameters verified. Good luck with tension evaluation.',
-      lecturerSignature: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"><path d="M 15 25 Q 60 5 110 30 T 170 15" stroke="%2310b981" stroke-width="2" fill="none"/></svg>'
+      lecturerSignature: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"><path d="M 15 25 Q 60 5 110 30 T 170 15" stroke="%230f172a" stroke-width="2" fill="none"/></svg>'
     },
     returnInfo: {
       returnedAt: '2026-08-11T13:05:00Z',
@@ -436,6 +501,52 @@ export const INITIAL_REQUESTS: BookingRequest[] = [
       verifiedByLecturer: 'Dr. Marcus Vance',
       lecturerNotes: 'Returned in pristine condition. Lint removed from hook area. Approved.',
       studentReturnNotes: 'Completed test run on 6 jacquard panels without issue.',
+      isAccepted: true
+    }
+  },
+  // 7. RETURNED - Earlier (Aug 09)
+  {
+    id: 'REQ-2026-0078',
+    applicant: {
+      studentName: 'Chloe Bennett',
+      studentId: 'STU-2024-9910',
+      semester: 'Semester 3',
+      classModule: 'FD308 - Draping & Tailoring',
+      lecturer: 'Assoc. Prof. Elena Rostova',
+      email: 'c.bennett@student.fashion-institute.edu',
+      contactNumber: '+1 (555) 665-3321'
+    },
+    requestDetails: {
+      facilityRoom: '719',
+      date: '2026-08-09',
+      startTime: '13:00',
+      endTime: '16:00',
+      durationHours: 3,
+      machineIds: ['2404'],
+      purposeNotes: 'Draping bias-cut satin skirt and testing micro-hem finishing.',
+      studentAgreement: true,
+      studentSignature: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"><path d="M 18 22 Q 75 35 125 12 T 180 25" stroke="%230f172a" stroke-width="2" fill="none"/></svg>',
+      submittedAt: '2026-08-09T09:15:00Z'
+    },
+    approval: {
+      status: 'RETURNED',
+      verifiedByLecturer: 'Assoc. Prof. Elena Rostova',
+      decisionTimestamp: '2026-08-09T10:00:00Z',
+      lecturerFeedback: 'Approved for bias silk sample testing.',
+      lecturerSignature: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="50"><path d="M 20 30 Q 70 10 130 35 T 180 20" stroke="%230f172a" stroke-width="2" fill="none"/></svg>'
+    },
+    returnInfo: {
+      returnedAt: '2026-08-09T16:10:00Z',
+      returnCondition: 'GOOD',
+      checklist: {
+        needleIntact: true,
+        bobbinCaseClean: true,
+        tensionCalibrated: true,
+        accessoriesReturned: true,
+        workspaceCleaned: true
+      },
+      verifiedByLecturer: 'Assoc. Prof. Elena Rostova',
+      lecturerNotes: 'All parts intact. Workstation wiped down.',
       isAccepted: true
     }
   }

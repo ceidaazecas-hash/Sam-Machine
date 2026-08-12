@@ -18,7 +18,7 @@ export const RequestForm: React.FC = () => {
     selectedRoom, 
     setSelectedRoom, 
     lecturers, 
-    modules,
+    modules, 
     machines, 
     submitNewRequest, 
     setActivePassRequest,
@@ -32,16 +32,13 @@ export const RequestForm: React.FC = () => {
   const [classModule, setClassModule] = useState(modules[0] || 'FD204 - Advanced Pattern Drafting');
   const [lecturer, setLecturer] = useState(lecturers[0]?.name || 'Prof. Clara Moreau');
 
-  // Request Details
-  const [date, setDate] = useState(() => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow.toISOString().slice(0, 10);
-  });
+  // Request Details & Dates
+  const [date, setDate] = useState('2026-08-13');
   const [startTime, setStartTime] = useState('10:00');
   const [endTime, setEndTime] = useState('14:00');
   const [durationHours, setDurationHours] = useState(4);
   const [selectedMachineIds, setSelectedMachineIds] = useState<string[]>([]);
+  const [purposeNotes, setPurposeNotes] = useState('Pattern drafting and garment sample testing.');
 
   // Agreement & Signature
   const [agreedToSafety, setAgreedToSafety] = useState(false);
@@ -103,6 +100,7 @@ export const RequestForm: React.FC = () => {
         endTime,
         durationHours,
         machineIds: selectedMachineIds,
+        purposeNotes,
         studentAgreement: agreedToSafety,
         studentSignature: signatureData,
         submittedAt: new Date().toISOString()
@@ -246,11 +244,35 @@ export const RequestForm: React.FC = () => {
               </div>
             </div>
 
+            {/* Quick Date Presets */}
+            <div className="form-field">
+              <label className="field-label">Select Booking Date <span className="required-dot">*</span></label>
+              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginBottom: '0.65rem' }}>
+                {[
+                  { label: 'Today (Aug 12)', val: '2026-08-12' },
+                  { label: 'Tomorrow (Aug 13)', val: '2026-08-13' },
+                  { label: 'Friday (Aug 14)', val: '2026-08-14' },
+                  { label: 'Next Mon (Aug 17)', val: '2026-08-17' },
+                  { label: 'Next Tue (Aug 18)', val: '2026-08-18' }
+                ].map(d => (
+                  <button
+                    key={d.val}
+                    type="button"
+                    onClick={() => setDate(d.val)}
+                    className={`room-chip ${date === d.val ? 'active' : ''}`}
+                    style={{ border: date === d.val ? '1px solid var(--text-primary)' : '1px solid var(--border-medium)', color: date === d.val ? '#ffffff' : 'var(--text-primary)', background: date === d.val ? 'var(--text-primary)' : '#ffffff', padding: '0.35rem 0.75rem', fontSize: '0.8rem', fontWeight: 700 }}
+                  >
+                    {d.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {/* Date & Time Usage */}
             <div className="grid-3">
               <div className="form-field">
                 <label className="field-label">
-                  Usage Date <span className="required-dot">*</span>
+                  Custom Date <span className="required-dot">*</span>
                 </label>
                 <div className="input-container">
                   <Calendar size={16} className="input-icon" />
@@ -307,7 +329,7 @@ export const RequestForm: React.FC = () => {
                     type="button"
                     onClick={() => handleDurationPreset(hours)}
                     className={`room-chip ${durationHours === hours ? 'active' : ''}`}
-                    style={{ border: '1px solid var(--border-light)', color: durationHours === hours ? '#ffffff' : 'var(--text-secondary)', background: durationHours === hours ? 'var(--text-primary)' : 'var(--bg-card-subtle)', padding: '0.35rem 0.85rem', fontSize: '0.85rem' }}
+                    style={{ border: durationHours === hours ? '1px solid var(--text-primary)' : '1px solid var(--border-medium)', color: durationHours === hours ? '#ffffff' : 'var(--text-primary)', background: durationHours === hours ? 'var(--text-primary)' : '#ffffff', padding: '0.35rem 0.85rem', fontSize: '0.82rem', fontWeight: 700 }}
                   >
                     {hours} Hours
                   </button>
@@ -315,16 +337,16 @@ export const RequestForm: React.FC = () => {
               </div>
             </div>
 
-            {/* Verified by Lecturer Display */}
-            <div className="detail-card-grid mt-2 mb-0">
-              <div className="detail-item">
-                <span className="detail-label">Verified by Lecturer</span>
-                <span className="detail-value">{lecturer}</span>
-              </div>
-              <div className="detail-item">
-                <span className="detail-label">Role / Status</span>
-                <span className="detail-value text-muted">Designated Faculty Reviewer</span>
-              </div>
+            {/* Purpose Notes */}
+            <div className="form-field">
+              <label className="field-label">Purpose of Studio Booking</label>
+              <textarea
+                value={purposeNotes}
+                onChange={e => setPurposeNotes(e.target.value)}
+                rows={2}
+                placeholder="e.g. Assembling collar and sleeves for studio project."
+                className="form-textarea"
+              />
             </div>
           </div>
         </div>
