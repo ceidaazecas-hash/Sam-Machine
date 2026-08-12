@@ -9,10 +9,19 @@ import {
   Award, 
   FileText, 
   ShieldCheck, 
-  Edit3
+  Edit3,
+  Lock,
+  Unlock,
+  KeyRound,
+  LogOut,
+  Eye,
+  EyeOff,
+  AlertCircle
 } from 'lucide-react';
 import { formatDate, getStatusBadge } from '../utils/helpers';
 import { SignaturePad } from './SignaturePad';
+
+const LECTURER_PASSCODE = 'SamSam22';
 
 export const LecturerDashboard: React.FC = () => {
   const { 
@@ -22,8 +31,17 @@ export const LecturerDashboard: React.FC = () => {
     approveRequest, 
     rejectRequest, 
     updateMachineStatus,
+    setActiveTab,
     showToast 
   } = useLab();
+
+  // Authentication State
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return sessionStorage.getItem('lecturer_authenticated') === 'true';
+  });
+  const [enteredPasscode, setEnteredPasscode] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [authError, setAuthError] = useState('');
 
   const [activeSubTab, setActiveSubTab] = useState<'VERIFY' | 'MACHINE_REPORTS' | 'STUDENT_REPORTS' | 'HISTORY'>('VERIFY');
   const [selectedLecturer, setSelectedLecturer] = useState<string>('ALL');
@@ -38,6 +56,26 @@ export const LecturerDashboard: React.FC = () => {
   // Machine note editing state
   const [editingMachineId, setEditingMachineId] = useState<string | null>(null);
   const [machineNoteText, setMachineNoteText] = useState('');
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (enteredPasscode === LECTURER_PASSCODE) {
+      setIsAuthenticated(true);
+      sessionStorage.setItem('lecturer_authenticated', 'true');
+      setAuthError('');
+      showToast('Lecturer access granted.', 'success');
+    } else {
+      setAuthError('Incorrect passcode. Access is restricted to authorized faculty.');
+      showToast('Access denied: incorrect password.', 'error');
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    sessionStorage.removeItem('lecturer_authenticated');
+    setEnteredPasscode('');
+    showToast('Lecturer session locked.', 'info');
+  };
 
   const filteredRequests = requests.filter(r => {
     if (selectedLecturer === 'ALL') return true;
@@ -111,8 +149,84 @@ export const LecturerDashboard: React.FC = () => {
 
   const studentTrackList = Array.from(studentMap.values());
 
+  // =========================================================================
+  // PASSWORD GATE IF NOT AUTHENTICATED
+  // =========================================================================
+  if (!isAuthenticated) {
+    return (
+      <div className="fluid-page-wrapper flex items-center justify-center py-12" style={{ minHeight: '60vh' }}>
+        <div className="form-card-container" style={{ maxWidth: '440px', margin: '0 auto', textAlign: 'center' }}>
+          <div className="w-12 h-12 rounded-full bg-slate-900 text-white flex items-center justify-center mx-auto mb-3" style={{ width: '48px', height: '48px', margin: '0 auto 1rem auto' }}>
+            <Lock size={22} />
+          </div>
+
+          <span className="page-intro-badge">FACULTY ACCESS ONLY</span>
+          <h2 className="text-xl font-bold text-slate-900 mt-1 mb-1">Lecturer Verification Portal</h2>
+          <p className="text-xs text-muted mb-5">
+            Please enter your faculty passcode to access approvals, machine reports, and student logs.
+          </p>
+
+          <form onSubmit={handleLogin} className="space-y-4 text-left">
+            <div className="form-field">
+              <label className="field-label">
+                <span className="field-label-text">Faculty Passcode <span className="required-dot">*</span></span>
+              </label>
+              <div className="input-container">
+                <KeyRound size={15} className="input-icon" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={enteredPasscode}
+                  onChange={e => {
+                    setEnteredPasscode(e.target.value);
+                    if (authError) setAuthError('');
+                  }}
+                  placeholder="Enter passcode"
+                  className="form-input"
+                  autoFocus
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 text-slate-400 hover:text-slate-700 bg-transparent border-none cursor-pointer"
+                  style={{ position: 'absolute', right: '0.75rem', background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b' }}
+                >
+                  {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                </button>
+              </div>
+            </div>
+
+            {authError && (
+              <div className="p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded-md flex items-center gap-2 text-xs" style={{ marginBottom: '1rem' }}>
+                <AlertCircle size={15} className="text-rose-600 flex-shrink-0" />
+                <span>{authError}</span>
+              </div>
+            )}
+
+            <button type="submit" className="btn-primary-action">
+              <Unlock size={16} />
+              <span>UNLOCK LECTURER PORTAL</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('REQUEST')}
+              className="w-full text-center text-xs text-muted hover:text-slate-900 bg-transparent border-none cursor-pointer pt-2 block"
+              style={{ width: '100%', textAlign: 'center', marginTop: '0.75rem', background: 'transparent', border: 'none', cursor: 'pointer', color: '#64748b' }}
+            >
+              ← Return to Student Request Form
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  // =========================================================================
+  // AUTHENTICATED LECTURER HUB
+  // =========================================================================
   return (
-    <div className="main-content-area wide">
+    <div className="fluid-page-wrapper">
       {/* Intro Header */}
       <div className="page-intro flex justify-between items-start flex-wrap gap-3">
         <div>
@@ -121,20 +235,33 @@ export const LecturerDashboard: React.FC = () => {
           <p className="page-intro-desc">Review student applications, maintain machine logs, and track compliance</p>
         </div>
 
-        {/* Lecturer Filter */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold text-muted">Filter:</span>
-          <select
-            value={selectedLecturer}
-            onChange={e => setSelectedLecturer(e.target.value)}
-            className="form-select text-xs py-1"
-            style={{ minHeight: '34px', width: 'auto' }}
+        {/* Right Controls: Filter & Lock/Sign Out */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs font-bold text-muted">Filter:</span>
+            <select
+              value={selectedLecturer}
+              onChange={e => setSelectedLecturer(e.target.value)}
+              className="form-select text-xs py-1"
+              style={{ minHeight: '34px', width: 'auto' }}
+            >
+              <option value="ALL">All Lecturers</option>
+              {lecturers.map(l => (
+                <option key={l.id} value={l.name}>{l.name}</option>
+              ))}
+            </select>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="room-chip flex items-center gap-1"
+            style={{ border: '1px solid #e2e8f0', color: '#be123c', background: '#fff1f2', padding: '0.4rem 0.75rem', fontSize: '0.75rem', fontWeight: 700 }}
+            title="Lock Lecturer Portal"
           >
-            <option value="ALL">All Lecturers</option>
-            {lecturers.map(l => (
-              <option key={l.id} value={l.name}>{l.name}</option>
-            ))}
-          </select>
+            <LogOut size={13} />
+            <span>Lock Portal</span>
+          </button>
         </div>
       </div>
 

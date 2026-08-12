@@ -24,9 +24,8 @@ export const Navbar: React.FC = () => {
   return (
     <header className="site-header">
       <div className="header-inner">
-        {/* Brand / Title */}
+        {/* Brand / Title (ATELIER badge removed as requested) */}
         <div className="brand-group" onClick={() => setActiveTab('REQUEST')} style={{ cursor: 'pointer' }}>
-          <div className="brand-badge">ATELIER</div>
           <div>
             <div className="brand-title">EQUIPMENT & FACILITY LAB</div>
             <div className="brand-subtitle">Studios 719 • 721 • 724</div>
