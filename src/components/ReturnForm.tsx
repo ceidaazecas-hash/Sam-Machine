@@ -104,27 +104,27 @@ export const ReturnForm: React.FC = () => {
       <div className="return-layout-container">
         {/* Left Column: Select Active Session */}
         <div className="sidebar-sessions-box">
-          <div className="card-header-minimal" style={{ marginBottom: '0.65rem' }}>
-            <span className="card-title-minimal" style={{ fontSize: '0.8rem' }}>Active Sessions</span>
+          <div className="card-header-minimal" style={{ marginBottom: '0.75rem' }}>
+            <span className="card-title-minimal" style={{ fontSize: '0.88rem' }}>Active Sessions</span>
             <span className="tab-badge">{activeBookings.length} In Use</span>
           </div>
 
           <div className="input-container">
-            <Search size={13} className="input-icon" />
+            <Search size={15} className="input-icon" />
             <input
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search student or room..."
               className="form-input"
-              style={{ fontSize: '0.78rem', minHeight: '34px', paddingLeft: '2rem' }}
+              style={{ fontSize: '0.85rem', minHeight: '38px', paddingLeft: '2.25rem' }}
             />
           </div>
 
           <div className="sidebar-sessions-list">
             {filteredBookings.length === 0 ? (
-              <div className="p-4 text-center text-xs text-muted">
-                <FileCheck size={22} className="mx-auto mb-1 opacity-40" />
+              <div className="p-6 text-center text-xs text-muted">
+                <FileCheck size={26} className="mx-auto mb-1 opacity-40" />
                 <span>No active sessions found</span>
               </div>
             ) : (
@@ -145,7 +145,7 @@ export const ReturnForm: React.FC = () => {
                       {b.applicant.semester} • {b.applicant.classModule}
                     </div>
 
-                    <div className="session-item-row mt-1 text-[11px] text-muted">
+                    <div className="session-item-row mt-1 text-xs text-muted">
                       <span>Machines: <strong>{b.requestDetails.machineIds.join(', ')}</strong></span>
                       <span>{b.requestDetails.startTime} - {b.requestDetails.endTime}</span>
                     </div>
@@ -159,8 +159,8 @@ export const ReturnForm: React.FC = () => {
         {/* Right Column: Return Form */}
         <div className="form-card-container">
           {!activeRequest ? (
-            <div className="p-8 text-center text-muted">
-              <RotateCcw size={32} className="mx-auto mb-2 opacity-30" />
+            <div className="p-12 text-center text-muted">
+              <RotateCcw size={36} className="mx-auto mb-2 opacity-30 text-slate-900" />
               <h3 className="font-bold text-sm text-slate-800">Select an Active Session</h3>
               <p className="text-xs text-muted mt-1">Choose a student booking from the left list to process equipment return.</p>
             </div>
@@ -223,9 +223,9 @@ export const ReturnForm: React.FC = () => {
 
                 <div className="detail-item">
                   <span className="detail-label">Machine Types & Code</span>
-                  <div className="flex gap-1 mt-0.5">
+                  <div className="flex gap-1.5 mt-0.5">
                     {activeRequest.requestDetails.machineIds.map(mId => (
-                      <span key={mId} className="mono text-xs font-bold bg-slate-900 text-white px-1.5 py-0.5 rounded">
+                      <span key={mId} className="mono text-xs font-bold bg-slate-900 text-white px-2 py-0.5 rounded">
                         #{mId}
                       </span>
                     ))}
@@ -239,12 +239,12 @@ export const ReturnForm: React.FC = () => {
 
                 <div className="detail-item">
                   <span className="detail-label">Student's Agreement</span>
-                  <span className="detail-value text-emerald-700">✓ Confirmed & Signed</span>
+                  <span className="detail-value font-bold text-slate-900">✓ Confirmed & Signed</span>
                 </div>
 
                 <div className="detail-item">
                   <span className="detail-label">Lecturer Approval</span>
-                  <span className="detail-value text-emerald-700">✓ Approved for Studio Use</span>
+                  <span className="detail-value font-bold text-slate-900">✓ Approved for Studio Use</span>
                 </div>
               </div>
 
@@ -289,10 +289,10 @@ export const ReturnForm: React.FC = () => {
                 </div>
               </div>
 
-              {/* Condition Rating */}
+              {/* Condition Rating (Strict Black & White) */}
               <div className="form-field">
                 <label className="field-label">Condition Rating</label>
-                <div className="flex gap-1.5 flex-wrap">
+                <div className="flex gap-2 flex-wrap">
                   {[
                     { id: 'EXCELLENT', label: 'Excellent Condition' },
                     { id: 'GOOD', label: 'Good Working Order' },
@@ -304,7 +304,7 @@ export const ReturnForm: React.FC = () => {
                       type="button"
                       onClick={() => setReturnCondition(cond.id as any)}
                       className={`room-chip ${returnCondition === cond.id ? 'active' : ''}`}
-                      style={{ border: '1px solid var(--border-light)', color: returnCondition === cond.id ? '#ffffff' : 'var(--text-secondary)', background: returnCondition === cond.id ? 'var(--text-primary)' : 'var(--bg-card-subtle)' }}
+                      style={{ border: returnCondition === cond.id ? '1px solid var(--text-primary)' : '1px solid var(--border-medium)', color: returnCondition === cond.id ? '#ffffff' : 'var(--text-primary)', background: returnCondition === cond.id ? 'var(--text-primary)' : '#ffffff', padding: '0.35rem 0.85rem', fontSize: '0.82rem', fontWeight: 700 }}
                     >
                       {cond.label}
                     </button>
@@ -389,9 +389,9 @@ export const ReturnForm: React.FC = () => {
                 />
               </div>
 
-              {/* Submit Return */}
+              {/* Submit Return (Solid Black with White Text) */}
               <button type="submit" className="btn-submit-primary">
-                <CheckCircle2 size={15} />
+                <CheckCircle2 size={16} />
                 <span>LECTURER'S APPROVAL / ACCEPT RETURN</span>
               </button>
             </form>

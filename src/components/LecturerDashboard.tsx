@@ -282,7 +282,7 @@ export const LecturerDashboard: React.FC = () => {
             </div>
 
             {authError && (
-              <div style={{ padding: '0.65rem', background: 'var(--accent-rose-bg)', border: '1px solid #fecdd3', color: '#be123c', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', marginBottom: '0.85rem' }}>
+              <div style={{ padding: '0.65rem', background: 'var(--bg-card-subtle)', border: '1px solid var(--border-medium)', color: 'var(--text-primary)', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.75rem', marginBottom: '0.85rem' }}>
                 <AlertCircle size={14} />
                 <span>{authError}</span>
               </div>
@@ -318,27 +318,27 @@ export const LecturerDashboard: React.FC = () => {
           <p className="page-intro-desc">Review student applications, maintain machine logs, and track compliance</p>
         </div>
 
-        {/* Right Controls: Export, Filter & Lock */}
+        {/* Right Controls: Export, Filter & Lock (Strict Black & White) */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
           {/* 1-Click Excel Export Button */}
           <button
             type="button"
             onClick={exportRequestsToCSV}
             className="room-chip"
-            style={{ border: '1px solid #cbd5e1', color: '#065f46', background: '#ecfdf5', padding: '0.3rem 0.65rem', fontSize: '0.72rem', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+            style={{ border: '1px solid var(--border-dark)', color: 'var(--text-primary)', background: '#ffffff', padding: '0.35rem 0.75rem', fontSize: '0.78rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
             title="Download full request audit logs into Excel (CSV format)"
           >
-            <Download size={12} />
+            <Download size={13} />
             <span>Export Excel (.csv)</span>
           </button>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
-            <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)' }}>Filter:</span>
+            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)' }}>Filter:</span>
             <select
               value={selectedLecturer}
               onChange={e => setSelectedLecturer(e.target.value)}
               className="form-select"
-              style={{ minHeight: '30px', padding: '0.2rem 0.5rem', fontSize: '0.75rem', width: 'auto' }}
+              style={{ minHeight: '34px', padding: '0.2rem 0.65rem', fontSize: '0.78rem', width: 'auto' }}
             >
               <option value="ALL">All Lecturers</option>
               {lecturers.map(l => (
@@ -351,10 +351,10 @@ export const LecturerDashboard: React.FC = () => {
             type="button"
             onClick={handleLogout}
             className="room-chip"
-            style={{ border: '1px solid #fecdd3', color: '#be123c', background: '#fff1f2', padding: '0.25rem 0.65rem', fontSize: '0.72rem', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}
+            style={{ border: '1px solid var(--border-medium)', color: 'var(--text-secondary)', background: '#ffffff', padding: '0.35rem 0.75rem', fontSize: '0.78rem', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
             title="Lock Lecturer Portal"
           >
-            <LogOut size={12} />
+            <LogOut size={13} />
             <span>Lock Portal</span>
           </button>
         </div>
@@ -367,7 +367,7 @@ export const LecturerDashboard: React.FC = () => {
           className={`subnav-btn-minimal ${activeSubTab === 'VERIFY' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('VERIFY')}
         >
-          <Clock size={13} />
+          <Clock size={14} />
           <span>Verifying Applications ({pendingRequests.length})</span>
         </button>
 
@@ -376,7 +376,7 @@ export const LecturerDashboard: React.FC = () => {
           className={`subnav-btn-minimal ${activeSubTab === 'MACHINE_REPORTS' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('MACHINE_REPORTS')}
         >
-          <Layers size={13} />
+          <Layers size={14} />
           <span>Reports: Each Machine</span>
         </button>
 
@@ -385,7 +385,7 @@ export const LecturerDashboard: React.FC = () => {
           className={`subnav-btn-minimal ${activeSubTab === 'STUDENT_REPORTS' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('STUDENT_REPORTS')}
         >
-          <Award size={13} />
+          <Award size={14} />
           <span>Reports: Students Request</span>
         </button>
 
@@ -394,7 +394,7 @@ export const LecturerDashboard: React.FC = () => {
           className={`subnav-btn-minimal ${activeSubTab === 'HISTORY' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('HISTORY')}
         >
-          <FileText size={13} />
+          <FileText size={14} />
           <span>Track History</span>
         </button>
 
@@ -404,7 +404,7 @@ export const LecturerDashboard: React.FC = () => {
           className={`subnav-btn-minimal ${activeSubTab === 'MANAGE' ? 'active' : ''}`}
           onClick={() => setActiveSubTab('MANAGE')}
         >
-          <Settings size={13} />
+          <Settings size={14} />
           <span>Inventory & Settings</span>
         </button>
       </div>
@@ -414,22 +414,22 @@ export const LecturerDashboard: React.FC = () => {
         <div>
           {pendingRequests.length === 0 ? (
             <div className="form-card-container text-center py-8">
-              <ShieldCheck size={32} className="mx-auto mb-2 text-emerald-600 opacity-60" />
+              <ShieldCheck size={36} className="mx-auto mb-2 opacity-40 text-slate-900" />
               <h3 className="font-bold text-sm text-slate-800">All Applications Verified</h3>
               <p className="text-xs text-muted mt-0.5">There are currently no pending student equipment requests requiring review.</p>
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '1rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '1.25rem' }}>
               {pendingRequests.map(req => (
                 <div key={req.id} className="form-card-container" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', paddingBottom: '0.5rem', marginBottom: '0.65rem', borderBottom: '1px solid var(--border-light)' }}>
                       <div>
-                        <span className="mono" style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>{req.id}</span>
-                        <h3 style={{ fontSize: '0.92rem', fontWeight: 700, color: 'var(--text-primary)' }}>{req.applicant.studentName}</h3>
-                        <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{req.applicant.semester} • {req.applicant.classModule}</div>
+                        <span className="mono font-bold" style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{req.id}</span>
+                        <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-primary)' }}>{req.applicant.studentName}</h3>
+                        <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{req.applicant.semester} • {req.applicant.classModule}</div>
                       </div>
-                      <span className="status-pill-subtle pill-amber">PENDING</span>
+                      <span className="status-pill-subtle pill-green">PENDING</span>
                     </div>
 
                     <div className="detail-card-grid" style={{ marginBottom: '0.85rem' }}>
@@ -452,13 +452,13 @@ export const LecturerDashboard: React.FC = () => {
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', paddingTop: '0.5rem', borderTop: '1px solid var(--border-light)' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', paddingTop: '0.65rem', borderTop: '1px solid var(--border-light)' }}>
                     <button
                       type="button"
                       onClick={() => handleOpenAction(req, 'REJECT')}
                       className="btn-action-reject"
                     >
-                      <X size={12} />
+                      <X size={13} />
                       <span>Reject</span>
                     </button>
                     <button
@@ -466,7 +466,7 @@ export const LecturerDashboard: React.FC = () => {
                       onClick={() => handleOpenAction(req, 'APPROVE')}
                       className="btn-action-approve"
                     >
-                      <Check size={12} />
+                      <Check size={13} />
                       <span>Approve</span>
                     </button>
                   </div>
@@ -482,8 +482,8 @@ export const LecturerDashboard: React.FC = () => {
         <div className="form-card-container">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-light)', flexWrap: 'wrap', gap: '0.5rem' }}>
             <div>
-              <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>Machine Telemetry & Notes</h3>
-              <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Total {machines.length} machines registered across Studios 719, 721, 724</p>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-primary)' }}>Machine Telemetry & Notes</h3>
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Total {machines.length} machines registered across Studios 719, 721, 724</p>
             </div>
 
             <div style={{ display: 'flex', gap: '0.4rem' }}>
@@ -491,9 +491,9 @@ export const LecturerDashboard: React.FC = () => {
                 type="button"
                 onClick={() => setShowAddMachineModal(true)}
                 className="room-chip"
-                style={{ border: '1px solid var(--border-light)', color: '#ffffff', background: 'var(--text-primary)', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
+                style={{ border: '1px solid var(--text-primary)', color: '#ffffff', background: 'var(--text-primary)', fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
               >
-                <Plus size={11} />
+                <Plus size={12} />
                 <span>Add Machine</span>
               </button>
 
@@ -501,9 +501,9 @@ export const LecturerDashboard: React.FC = () => {
                 type="button"
                 onClick={exportMachinesToCSV}
                 className="room-chip"
-                style={{ border: '1px solid #cbd5e1', color: '#065f46', background: '#ecfdf5', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
+                style={{ border: '1px solid var(--border-dark)', color: 'var(--text-primary)', background: '#ffffff', fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
               >
-                <Download size={11} />
+                <Download size={12} />
                 <span>Export Machines (.csv)</span>
               </button>
             </div>
@@ -534,14 +534,14 @@ export const LecturerDashboard: React.FC = () => {
                       </span>
                     </td>
                     <td className="text-xs">{m.totalUsageHours} hrs</td>
-                    <td style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', maxWidth: '280px' }}>
+                    <td style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', maxWidth: '280px' }}>
                       {editingMachineId === m.id ? (
                         <input
                           type="text"
                           value={machineNoteText}
                           onChange={e => setMachineNoteText(e.target.value)}
                           className="form-input"
-                          style={{ minHeight: '28px', padding: '0.2rem 0.5rem', fontSize: '0.75rem' }}
+                          style={{ minHeight: '32px', padding: '0.25rem 0.65rem', fontSize: '0.8rem' }}
                         />
                       ) : (
                         <span>"{m.notes || 'In standard working order.'}"</span>
@@ -553,7 +553,7 @@ export const LecturerDashboard: React.FC = () => {
                           type="button"
                           onClick={() => handleSaveMachineNote(m)}
                           className="btn-action-approve"
-                          style={{ padding: '0.2rem 0.5rem', fontSize: '0.7rem' }}
+                          style={{ padding: '0.25rem 0.65rem', fontSize: '0.75rem' }}
                         >
                           Save
                         </button>
@@ -565,9 +565,9 @@ export const LecturerDashboard: React.FC = () => {
                             setMachineNoteText(m.notes || '');
                           }}
                           className="room-chip"
-                          style={{ border: '1px solid var(--border-light)', color: 'var(--text-primary)', background: 'var(--bg-card-subtle)', fontSize: '0.7rem' }}
+                          style={{ border: '1px solid var(--border-medium)', color: 'var(--text-primary)', background: '#ffffff', fontSize: '0.75rem' }}
                         >
-                          <Edit3 size={10} style={{ display: 'inline', marginRight: '0.2rem' }} />
+                          <Edit3 size={11} style={{ display: 'inline', marginRight: '0.2rem' }} />
                           Edit
                         </button>
                       )}
@@ -585,17 +585,17 @@ export const LecturerDashboard: React.FC = () => {
         <div className="form-card-container">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-light)', flexWrap: 'wrap', gap: '0.5rem' }}>
             <div>
-              <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>Student Requisition & Compliance Log</h3>
-              <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Summary of applicant history and completed returns</p>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-primary)' }}>Student Requisition & Compliance Log</h3>
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Summary of applicant history and completed returns</p>
             </div>
 
             <button
               type="button"
               onClick={exportStudentSummaryToCSV}
               className="room-chip"
-              style={{ border: '1px solid #cbd5e1', color: '#065f46', background: '#ecfdf5', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
+              style={{ border: '1px solid var(--border-dark)', color: 'var(--text-primary)', background: '#ffffff', fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
             >
-              <Download size={11} />
+              <Download size={12} />
               <span>Export Summary (.csv)</span>
             </button>
           </div>
@@ -618,10 +618,10 @@ export const LecturerDashboard: React.FC = () => {
                   <tr key={st.studentId}>
                     <td className="font-bold">{st.name}</td>
                     <td>{st.semester}</td>
-                    <td style={{ fontSize: '0.75rem' }}>{st.classModule}</td>
+                    <td style={{ fontSize: '0.8rem' }}>{st.classModule}</td>
                     <td className="font-semibold">{st.totalBookings}</td>
-                    <td style={{ color: '#059669', fontWeight: 600 }}>{st.completedReturns}</td>
-                    <td style={{ color: '#d97706', fontWeight: 600 }}>{st.pendingBookings}</td>
+                    <td className="font-bold">{st.completedReturns}</td>
+                    <td className="font-semibold text-slate-600">{st.pendingBookings}</td>
                     <td>
                       <span className="status-pill-subtle pill-green">
                         Verified Student
@@ -640,17 +640,17 @@ export const LecturerDashboard: React.FC = () => {
         <div className="form-card-container">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-light)', flexWrap: 'wrap', gap: '0.5rem' }}>
             <div>
-              <h3 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>Full Activity Audit Log</h3>
-              <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Chronological record of all equipment allocations and returns</p>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-primary)' }}>Full Activity Audit Log</h3>
+              <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Chronological record of all equipment allocations and returns</p>
             </div>
 
             <button
               type="button"
               onClick={exportRequestsToCSV}
               className="room-chip"
-              style={{ border: '1px solid #cbd5e1', color: '#065f46', background: '#ecfdf5', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
+              style={{ border: '1px solid var(--border-dark)', color: 'var(--text-primary)', background: '#ffffff', fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
             >
-              <Download size={11} />
+              <Download size={12} />
               <span>Export Full Audit (.csv)</span>
             </button>
           </div>
@@ -677,7 +677,7 @@ export const LecturerDashboard: React.FC = () => {
                       <td className="font-semibold">{r.applicant.studentName}</td>
                       <td>Room {r.requestDetails.facilityRoom}</td>
                       <td>{r.requestDetails.machineIds.join(', ')}</td>
-                      <td style={{ fontSize: '0.75rem' }}>
+                      <td style={{ fontSize: '0.8rem' }}>
                         {formatDate(r.requestDetails.date)} ({r.requestDetails.startTime} - {r.requestDetails.endTime})
                       </td>
                       <td>
@@ -685,9 +685,9 @@ export const LecturerDashboard: React.FC = () => {
                           {badge.label}
                         </span>
                       </td>
-                      <td style={{ fontSize: '0.75rem' }}>
+                      <td style={{ fontSize: '0.8rem' }}>
                         {r.returnInfo ? (
-                          <span style={{ color: '#059669', fontWeight: 600 }}>
+                          <span className="font-bold text-slate-900">
                             ✓ Returned ({r.returnInfo.returnCondition})
                           </span>
                         ) : (
@@ -710,23 +710,23 @@ export const LecturerDashboard: React.FC = () => {
           <div className="form-card-container">
             <div className="card-header-minimal">
               <div className="card-title-minimal">
-                <Cpu size={14} />
+                <Cpu size={15} />
                 <span>Machines Inventory ({machines.length})</span>
               </div>
               <button
                 type="button"
                 onClick={() => setShowAddMachineModal(true)}
                 className="room-chip"
-                style={{ border: '1px solid var(--border-light)', background: 'var(--text-primary)', color: '#ffffff', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}
+                style={{ border: '1px solid var(--text-primary)', background: 'var(--text-primary)', color: '#ffffff', fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
               >
-                <Plus size={11} />
+                <Plus size={12} />
                 <span>Add Machine</span>
               </button>
             </div>
 
-            <div style={{ maxHeight: '280px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+            <div style={{ maxHeight: '300px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
               {machines.map(m => (
-                <div key={m.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0.65rem', background: 'var(--bg-card-subtle)', borderRadius: '4px', fontSize: '0.78rem' }}>
+                <div key={m.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.65rem 0.85rem', background: 'var(--bg-card-subtle)', borderRadius: '6px', fontSize: '0.85rem' }}>
                   <div>
                     <span className="mono font-bold">#{m.code}</span>
                     <span className="text-muted ml-2">Studio {m.room}</span>
@@ -744,23 +744,23 @@ export const LecturerDashboard: React.FC = () => {
           <div className="form-card-container">
             <div className="card-header-minimal">
               <div className="card-title-minimal">
-                <UserPlus size={14} />
+                <UserPlus size={15} />
                 <span>Faculty Directory ({lecturers.length})</span>
               </div>
               <button
                 type="button"
                 onClick={() => setShowAddLecturerModal(true)}
                 className="room-chip"
-                style={{ border: '1px solid var(--border-light)', background: 'var(--text-primary)', color: '#ffffff', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}
+                style={{ border: '1px solid var(--text-primary)', background: 'var(--text-primary)', color: '#ffffff', fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
               >
-                <Plus size={11} />
+                <Plus size={12} />
                 <span>Add Lecturer</span>
               </button>
             </div>
 
-            <div style={{ maxHeight: '280px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+            <div style={{ maxHeight: '300px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
               {lecturers.map(l => (
-                <div key={l.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0.65rem', background: 'var(--bg-card-subtle)', borderRadius: '4px', fontSize: '0.78rem' }}>
+                <div key={l.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.65rem 0.85rem', background: 'var(--bg-card-subtle)', borderRadius: '6px', fontSize: '0.85rem' }}>
                   <div>
                     <span className="font-bold text-slate-900">{l.name}</span>
                     <div className="text-xs text-muted">{l.department}</div>
@@ -775,23 +775,23 @@ export const LecturerDashboard: React.FC = () => {
           <div className="form-card-container">
             <div className="card-header-minimal">
               <div className="card-title-minimal">
-                <BookPlus size={14} />
+                <BookPlus size={15} />
                 <span>Class & Modules ({modules.length})</span>
               </div>
               <button
                 type="button"
                 onClick={() => setShowAddModuleModal(true)}
                 className="room-chip"
-                style={{ border: '1px solid var(--border-light)', background: 'var(--text-primary)', color: '#ffffff', fontSize: '0.72rem', display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}
+                style={{ border: '1px solid var(--text-primary)', background: 'var(--text-primary)', color: '#ffffff', fontSize: '0.78rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}
               >
-                <Plus size={11} />
+                <Plus size={12} />
                 <span>Add Module</span>
               </button>
             </div>
 
-            <div style={{ maxHeight: '280px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+            <div style={{ maxHeight: '300px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
               {modules.map(mod => (
-                <div key={mod} style={{ padding: '0.5rem 0.65rem', background: 'var(--bg-card-subtle)', borderRadius: '4px', fontSize: '0.78rem', fontWeight: 600 }}>
+                <div key={mod} style={{ padding: '0.65rem 0.85rem', background: 'var(--bg-card-subtle)', borderRadius: '6px', fontSize: '0.85rem', fontWeight: 600 }}>
                   {mod}
                 </div>
               ))}
@@ -807,13 +807,13 @@ export const LecturerDashboard: React.FC = () => {
         <div className="clean-modal-backdrop" onClick={() => setShowAddMachineModal(false)}>
           <div className="clean-modal-dialog" onClick={e => e.stopPropagation()}>
             <div className="clean-modal-header">
-              <h3 style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)' }}>Add New Studio Machine</h3>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-primary)' }}>Add New Studio Machine</h3>
               <button type="button" onClick={() => setShowAddMachineModal(false)} className="btn-close">
-                <X size={15} />
+                <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleCreateMachine} style={{ padding: '1rem' }}>
+            <form onSubmit={handleCreateMachine} style={{ padding: '1.25rem' }}>
               <div className="grid-2">
                 <div className="form-field">
                   <label className="field-label">
@@ -884,11 +884,11 @@ export const LecturerDashboard: React.FC = () => {
                 />
               </div>
 
-              <div className="clean-modal-footer" style={{ margin: '1rem -1rem -1rem -1rem' }}>
-                <button type="button" onClick={() => setShowAddMachineModal(false)} className="room-chip" style={{ border: '1px solid var(--border-light)', padding: '0.35rem 0.75rem' }}>
+              <div className="clean-modal-footer" style={{ margin: '1.25rem -1.25rem -1.25rem -1.25rem' }}>
+                <button type="button" onClick={() => setShowAddMachineModal(false)} className="btn-action-reject">
                   Cancel
                 </button>
-                <button type="submit" className="btn-action-approve" style={{ padding: '0.4rem 0.9rem', fontSize: '0.78rem' }}>
+                <button type="submit" className="btn-action-approve">
                   Add Machine to Fleet
                 </button>
               </div>
@@ -904,13 +904,13 @@ export const LecturerDashboard: React.FC = () => {
         <div className="clean-modal-backdrop" onClick={() => setShowAddLecturerModal(false)}>
           <div className="clean-modal-dialog" onClick={e => e.stopPropagation()}>
             <div className="clean-modal-header">
-              <h3 style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)' }}>Add Faculty Member</h3>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-primary)' }}>Add Faculty Member</h3>
               <button type="button" onClick={() => setShowAddLecturerModal(false)} className="btn-close">
-                <X size={15} />
+                <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleCreateLecturer} style={{ padding: '1rem' }}>
+            <form onSubmit={handleCreateLecturer} style={{ padding: '1.25rem' }}>
               <div className="form-field">
                 <label className="field-label">
                   Faculty Name <span className="required-dot">*</span>
@@ -947,11 +947,11 @@ export const LecturerDashboard: React.FC = () => {
                 />
               </div>
 
-              <div className="clean-modal-footer" style={{ margin: '1rem -1rem -1rem -1rem' }}>
-                <button type="button" onClick={() => setShowAddLecturerModal(false)} className="room-chip" style={{ border: '1px solid var(--border-light)', padding: '0.35rem 0.75rem' }}>
+              <div className="clean-modal-footer" style={{ margin: '1.25rem -1.25rem -1.25rem -1.25rem' }}>
+                <button type="button" onClick={() => setShowAddLecturerModal(false)} className="btn-action-reject">
                   Cancel
                 </button>
-                <button type="submit" className="btn-action-approve" style={{ padding: '0.4rem 0.9rem', fontSize: '0.78rem' }}>
+                <button type="submit" className="btn-action-approve">
                   Save Faculty Member
                 </button>
               </div>
@@ -967,13 +967,13 @@ export const LecturerDashboard: React.FC = () => {
         <div className="clean-modal-backdrop" onClick={() => setShowAddModuleModal(false)}>
           <div className="clean-modal-dialog" onClick={e => e.stopPropagation()}>
             <div className="clean-modal-header">
-              <h3 style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)' }}>Add Class / Module</h3>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-primary)' }}>Add Class / Module</h3>
               <button type="button" onClick={() => setShowAddModuleModal(false)} className="btn-close">
-                <X size={15} />
+                <X size={16} />
               </button>
             </div>
 
-            <form onSubmit={handleCreateModule} style={{ padding: '1rem' }}>
+            <form onSubmit={handleCreateModule} style={{ padding: '1.25rem' }}>
               <div className="form-field">
                 <label className="field-label">
                   Module Code & Title <span className="required-dot">*</span>
@@ -988,11 +988,11 @@ export const LecturerDashboard: React.FC = () => {
                 />
               </div>
 
-              <div className="clean-modal-footer" style={{ margin: '1rem -1rem -1rem -1rem' }}>
-                <button type="button" onClick={() => setShowAddModuleModal(false)} className="room-chip" style={{ border: '1px solid var(--border-light)', padding: '0.35rem 0.75rem' }}>
+              <div className="clean-modal-footer" style={{ margin: '1.25rem -1.25rem -1.25rem -1.25rem' }}>
+                <button type="button" onClick={() => setShowAddModuleModal(false)} className="btn-action-reject">
                   Cancel
                 </button>
-                <button type="submit" className="btn-action-approve" style={{ padding: '0.4rem 0.9rem', fontSize: '0.78rem' }}>
+                <button type="submit" className="btn-action-approve">
                   Add to Curriculum
                 </button>
               </div>
@@ -1008,16 +1008,16 @@ export const LecturerDashboard: React.FC = () => {
         <div className="clean-modal-backdrop" onClick={() => setModalRequest(null)}>
           <div className="clean-modal-dialog" onClick={e => e.stopPropagation()}>
             <div className="clean-modal-header">
-              <h3 style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 800, color: 'var(--text-primary)' }}>
                 {actionType === 'APPROVE' ? 'Approve Student Application' : 'Reject Student Application'}
               </h3>
               <button type="button" onClick={() => setModalRequest(null)} className="btn-close">
-                <X size={15} />
+                <X size={16} />
               </button>
             </div>
 
-            <div style={{ padding: '1rem' }}>
-              <div className="detail-card-grid" style={{ marginBottom: '0.85rem' }}>
+            <div style={{ padding: '1.25rem' }}>
+              <div className="detail-card-grid" style={{ marginBottom: '1rem' }}>
                 <div className="detail-item">
                   <span className="detail-label">Student</span>
                   <span className="detail-value">{modalRequest.applicant.studentName}</span>
@@ -1063,14 +1063,13 @@ export const LecturerDashboard: React.FC = () => {
             </div>
 
             <div className="clean-modal-footer">
-              <button type="button" onClick={() => setModalRequest(null)} className="room-chip" style={{ border: '1px solid var(--border-light)', padding: '0.35rem 0.75rem' }}>
+              <button type="button" onClick={() => setModalRequest(null)} className="btn-action-reject">
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleConfirmAction}
                 className={actionType === 'APPROVE' ? 'btn-action-approve' : 'btn-action-reject'}
-                style={{ padding: '0.4rem 0.9rem', fontSize: '0.78rem' }}
               >
                 {actionType === 'APPROVE' ? 'Confirm Approval' : 'Confirm Rejection'}
               </button>

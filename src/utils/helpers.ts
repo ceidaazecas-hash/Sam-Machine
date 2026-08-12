@@ -36,35 +36,36 @@ export function formatDateTime(dateTimeStr: string): string {
   }
 }
 
+// Clean Monochrome Badges (Black & White)
 export function getStatusBadge(status: RequestStatus): { label: string; colorClass: string; bgClass: string } {
   switch (status) {
     case 'PENDING':
-      return { label: 'Pending Verification', colorClass: 'text-amber-500', bgClass: 'bg-amber-500/10 border-amber-500/30' };
+      return { label: 'Pending Verification', colorClass: 'text-slate-900 font-bold', bgClass: 'bg-slate-100 border-slate-300' };
     case 'APPROVED':
-      return { label: 'Approved', colorClass: 'text-emerald-400', bgClass: 'bg-emerald-500/10 border-emerald-500/30' };
+      return { label: 'Approved', colorClass: 'text-white font-bold', bgClass: 'bg-slate-900 border-slate-900' };
     case 'IN_USE':
-      return { label: 'In Studio Usage', colorClass: 'text-cyan-400', bgClass: 'bg-cyan-500/10 border-cyan-500/30' };
+      return { label: 'In Studio Usage', colorClass: 'text-white font-bold', bgClass: 'bg-slate-900 border-slate-900' };
     case 'RETURNED':
-      return { label: 'Completed & Returned', colorClass: 'text-blue-400', bgClass: 'bg-blue-500/10 border-blue-500/30' };
+      return { label: 'Completed & Returned', colorClass: 'text-slate-700 font-semibold', bgClass: 'bg-slate-100 border-slate-200' };
     case 'REJECTED':
-      return { label: 'Request Rejected', colorClass: 'text-rose-400', bgClass: 'bg-rose-500/10 border-rose-500/30' };
+      return { label: 'Request Rejected', colorClass: 'text-slate-500 line-through', bgClass: 'bg-white border-slate-300' };
     case 'OVERDUE':
-      return { label: 'Overdue Return', colorClass: 'text-purple-400', bgClass: 'bg-purple-500/10 border-purple-500/30' };
+      return { label: 'Overdue Return', colorClass: 'text-white font-bold', bgClass: 'bg-black border-black' };
     default:
-      return { label: status, colorClass: 'text-slate-400', bgClass: 'bg-slate-500/10 border-slate-500/30' };
+      return { label: status, colorClass: 'text-slate-700', bgClass: 'bg-slate-100 border-slate-200' };
   }
 }
 
 export function getMachineStatusBadge(status: MachineStatus): { label: string; dotColor: string } {
   switch (status) {
     case 'AVAILABLE':
-      return { label: 'Ready / Available', dotColor: 'bg-emerald-500' };
+      return { label: 'Ready / Available', dotColor: 'bg-slate-900' };
     case 'IN_USE':
-      return { label: 'Active Session', dotColor: 'bg-cyan-500' };
+      return { label: 'Active Session', dotColor: 'bg-slate-700' };
     case 'RESERVED':
-      return { label: 'Reserved', dotColor: 'bg-amber-500' };
+      return { label: 'Reserved', dotColor: 'bg-slate-400' };
     case 'MAINTENANCE':
-      return { label: 'Under Maintenance', dotColor: 'bg-rose-500' };
+      return { label: 'Under Maintenance', dotColor: 'bg-slate-300' };
   }
 }
 

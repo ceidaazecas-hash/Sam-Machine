@@ -31,14 +31,14 @@ export const Navbar: React.FC = () => {
           <span className="brand-subtitle">Studios 719 • 721 • 724</span>
         </div>
 
-        {/* 3 Main Navigation Tabs */}
+        {/* 3 Main Navigation Tabs (Strict Black & White) */}
         <nav className="header-nav">
           <button
             type="button"
             className={`nav-tab-btn ${activeTab === 'REQUEST' ? 'active' : ''}`}
             onClick={() => setActiveTab('REQUEST')}
           >
-            <FileEdit size={13} />
+            <FileEdit size={14} />
             <span>1. REQUEST</span>
           </button>
 
@@ -47,7 +47,7 @@ export const Navbar: React.FC = () => {
             className={`nav-tab-btn ${activeTab === 'RETURN' ? 'active' : ''}`}
             onClick={() => setActiveTab('RETURN')}
           >
-            <RotateCcw size={13} />
+            <RotateCcw size={14} />
             <span>2. RETURN</span>
             {activeInUseCount > 0 && (
               <span className="tab-badge">{activeInUseCount}</span>
@@ -59,10 +59,10 @@ export const Navbar: React.FC = () => {
             className={`nav-tab-btn ${activeTab === 'LECTURER' ? 'active' : ''}`}
             onClick={() => setActiveTab('LECTURER')}
           >
-            <UserCheck size={13} />
+            <UserCheck size={14} />
             <span>3. LECTURER</span>
             {pendingRequestsCount > 0 && (
-              <span className="tab-badge amber">{pendingRequestsCount}</span>
+              <span className="tab-badge">{pendingRequestsCount}</span>
             )}
           </button>
         </nav>
@@ -89,7 +89,7 @@ export const Navbar: React.FC = () => {
             className="icon-button"
             title="Reset to Initial Demo Data"
           >
-            <RefreshCw size={13} />
+            <RefreshCw size={14} />
           </button>
         </div>
       </div>
