@@ -142,7 +142,7 @@ export const RequestForm: React.FC = () => {
                   Student's Name <span className="required-dot">*</span>
                 </label>
                 <div className="input-container">
-                  <User size={14} className="input-icon" />
+                  <User size={16} className="input-icon" />
                   <input
                     type="text"
                     value={studentName}
@@ -159,7 +159,7 @@ export const RequestForm: React.FC = () => {
                   Semester <span className="required-dot">*</span>
                 </label>
                 <div className="input-container">
-                  <GraduationCap size={14} className="input-icon" />
+                  <GraduationCap size={16} className="input-icon" />
                   <select
                     value={semester}
                     onChange={e => setSemester(e.target.value)}
@@ -178,7 +178,7 @@ export const RequestForm: React.FC = () => {
                   Class / Module <span className="required-dot">*</span>
                 </label>
                 <div className="input-container">
-                  <BookOpen size={14} className="input-icon" />
+                  <BookOpen size={16} className="input-icon" />
                   <select
                     value={classModule}
                     onChange={e => setClassModule(e.target.value)}
@@ -253,7 +253,7 @@ export const RequestForm: React.FC = () => {
                   Usage Date <span className="required-dot">*</span>
                 </label>
                 <div className="input-container">
-                  <Calendar size={14} className="input-icon" />
+                  <Calendar size={16} className="input-icon" />
                   <input
                     type="date"
                     value={date}
@@ -269,7 +269,7 @@ export const RequestForm: React.FC = () => {
                   Start Time <span className="required-dot">*</span>
                 </label>
                 <div className="input-container">
-                  <Clock size={14} className="input-icon" />
+                  <Clock size={16} className="input-icon" />
                   <input
                     type="time"
                     value={startTime}
@@ -285,7 +285,7 @@ export const RequestForm: React.FC = () => {
                   End Time <span className="required-dot">*</span>
                 </label>
                 <div className="input-container">
-                  <Clock size={14} className="input-icon" />
+                  <Clock size={16} className="input-icon" />
                   <input
                     type="time"
                     value={endTime}
@@ -300,14 +300,14 @@ export const RequestForm: React.FC = () => {
             {/* Duration Shortcut Chips */}
             <div className="form-field">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-semibold text-muted">Preset Duration:</span>
+                <span className="text-sm font-semibold text-muted">Preset Duration:</span>
                 {[2, 3, 4, 6].map(hours => (
                   <button
                     key={hours}
                     type="button"
                     onClick={() => handleDurationPreset(hours)}
                     className={`room-chip ${durationHours === hours ? 'active' : ''}`}
-                    style={{ border: '1px solid var(--border-light)', color: durationHours === hours ? '#ffffff' : 'var(--text-secondary)', background: durationHours === hours ? 'var(--text-primary)' : 'var(--bg-card-subtle)' }}
+                    style={{ border: '1px solid var(--border-light)', color: durationHours === hours ? '#ffffff' : 'var(--text-secondary)', background: durationHours === hours ? 'var(--text-primary)' : 'var(--bg-card-subtle)', padding: '0.35rem 0.85rem', fontSize: '0.85rem' }}
                   >
                     {hours} Hours
                   </button>
@@ -347,7 +347,7 @@ export const RequestForm: React.FC = () => {
               <div className="machine-group-container">
                 <div className="machine-group-header">
                   <span>🧵 Sewing Machines ({sewingMachines.map(m => m.code).join(', ')})</span>
-                  <span className="text-xs text-muted font-normal">{sewingMachines.length} stations in Room {selectedRoom}</span>
+                  <span className="text-sm text-muted font-normal">{sewingMachines.length} stations in Room {selectedRoom}</span>
                 </div>
                 <div className="machine-chips-grid">
                   {sewingMachines.map(m => {
@@ -377,7 +377,7 @@ export const RequestForm: React.FC = () => {
               <div className="machine-group-container">
                 <div className="machine-group-header">
                   <span>⚙️ Overlocking Machines ({overlockingMachines.map(m => m.code).join(', ')})</span>
-                  <span className="text-xs text-muted font-normal">{overlockingMachines.length} stations in Room {selectedRoom}</span>
+                  <span className="text-sm text-muted font-normal">{overlockingMachines.length} stations in Room {selectedRoom}</span>
                 </div>
                 <div className="machine-chips-grid">
                   {overlockingMachines.map(m => {
@@ -407,7 +407,7 @@ export const RequestForm: React.FC = () => {
               <div className="machine-group-container">
                 <div className="machine-group-header">
                   <span>✨ Additional Studio Equipment</span>
-                  <span className="text-xs text-muted font-normal">{customMachines.length} stations in Room {selectedRoom}</span>
+                  <span className="text-sm text-muted font-normal">{customMachines.length} stations in Room {selectedRoom}</span>
                 </div>
                 <div className="machine-chips-grid">
                   {customMachines.map(m => {
@@ -468,23 +468,27 @@ export const RequestForm: React.FC = () => {
             {/* Lecturer Approval Status */}
             <div className="status-banner-subtle">
               <div>
-                <span className="font-bold text-slate-800 block">Lecturer Approval Workflow</span>
-                <span className="text-slate-600">Pending verification by <strong>{lecturer}</strong></span>
+                <span className="font-bold text-slate-800" style={{ display: 'block', marginBottom: '0.2rem' }}>
+                  Lecturer Approval Workflow
+                </span>
+                <span className="text-slate-600">
+                  Pending verification by <strong>{lecturer}</strong>
+                </span>
               </div>
               <span className="status-tag-amber">PENDING APPROVAL</span>
             </div>
 
             {/* Error Banner */}
             {formErrors.length > 0 && (
-              <div className="mt-2.5 p-2.5 bg-rose-50 border border-rose-200 text-rose-800 rounded flex items-center gap-2 text-xs">
-                <AlertCircle size={14} className="text-rose-600 flex-shrink-0" />
+              <div className="mt-3 p-3 bg-rose-50 border border-rose-200 text-rose-800 rounded flex items-center gap-2 text-sm">
+                <AlertCircle size={16} className="text-rose-600 flex-shrink-0" />
                 <span>{formErrors[0]}</span>
               </div>
             )}
 
             {/* Submit Button */}
             <button type="submit" className="btn-submit-primary">
-              <Send size={14} />
+              <Send size={16} />
               <span>SUBMIT REQUEST</span>
             </button>
           </div>
