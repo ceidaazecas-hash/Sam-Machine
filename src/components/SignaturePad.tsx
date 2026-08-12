@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { RotateCcw, Check, PenTool } from 'lucide-react';
 
 interface SignaturePadProps {
@@ -18,19 +18,22 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
   const [isDrawing, setIsDrawing] = useState(false);
   const [hasDrawn, setHasDrawn] = useState(Boolean(initialSignature));
 
-  useEffect(() => {
+  const initCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas dimensions based on display size
     const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * 2;
-    canvas.height = rect.height * 2;
-    ctx.scale(2, 2);
+    if (rect.width === 0 || rect.height === 0) return;
 
-    ctx.strokeStyle = '#3b82f6';
+    // Support Retina & high-DPI screens
+    const dpr = window.devicePixelRatio || 2;
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    ctx.scale(dpr, dpr);
+
+    ctx.strokeStyle = '#000000';
     ctx.lineWidth = 2.5;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -44,7 +47,38 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
     }
   }, [initialSignature]);
 
+  useEffect(() => {
+    initCanvas();
+    const handleResize = () => {
+      // Re-init canvas on orientation change or window resize
+      initCanvas();
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [initCanvas]);
+
+  const getCoordinates = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+
+    if ('touches' in e) {
+      const touch = e.touches[0] || e.changedTouches[0];
+      return {
+        x: touch.clientX - rect.left,
+        y: touch.clientY - rect.top
+      };
+    }
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+  };
+
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+    if ('touches' in e && e.cancelable) {
+      e.preventDefault();
+    }
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -53,26 +87,23 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
     setIsDrawing(true);
     setHasDrawn(true);
 
-    const rect = canvas.getBoundingClientRect();
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-
+    const { x, y } = getCoordinates(e);
     ctx.beginPath();
-    ctx.moveTo(clientX - rect.left, clientY - rect.top);
+    ctx.moveTo(x, y);
   };
 
   const draw = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
     if (!isDrawing) return;
+    if ('touches' in e && e.cancelable) {
+      e.preventDefault();
+    }
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const rect = canvas.getBoundingClientRect();
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-
-    ctx.lineTo(clientX - rect.left, clientY - rect.top);
+    const { x, y } = getCoordinates(e);
+    ctx.lineTo(x, y);
     ctx.stroke();
   };
 
@@ -100,9 +131,9 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
   return (
     <div className="signature-pad-container">
       <div className="signature-header">
-        <label className="signature-label">
-          <PenTool size={15} className="text-primary" />
-          <span>{label} {required && <span className="text-rose-400">*</span>}</span>
+        <label className="field-label flex items-center gap-1.5 mb-0">
+          <PenTool size={14} />
+          <span>{label} {required && <span className="req-star">*</span>}</span>
         </label>
         <button
           type="button"
@@ -129,7 +160,7 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
         />
         {!hasDrawn && (
           <div className="signature-placeholder">
-            <span>Sign or draw your approval with mouse / finger</span>
+            <span>Sign with finger, Apple Pencil, or mouse</span>
           </div>
         )}
         <div className="signature-guide-line" />
@@ -137,8 +168,8 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({
 
       {hasDrawn && (
         <div className="signature-status">
-          <Check size={13} className="text-emerald-400" />
-          <span>Digital signature captured</span>
+          <Check size={13} className="text-emerald-600" />
+          <span>Signature recorded</span>
         </div>
       )}
     </div>

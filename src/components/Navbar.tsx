@@ -28,46 +28,48 @@ export const Navbar: React.FC = () => {
         <div className="brand-group" onClick={() => setActiveTab('REQUEST')} style={{ cursor: 'pointer' }}>
           <div className="brand-badge-square">LAB</div>
           <div>
-            <div className="brand-title">FACILITY & EQUIPMENT MANAGEMENT</div>
-            <div className="brand-subtitle">Rooms 719 • 721 • 724 • Sewing & Overlocking</div>
+            <div className="brand-title">FACILITY & EQUIPMENT</div>
+            <div className="brand-subtitle">Rooms 719 • 721 • 724</div>
           </div>
         </div>
 
-        {/* 3 Main Navigation Tabs (Exactly matching the 3 sections in user spec) */}
-        <nav className="header-nav">
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'REQUEST' ? 'active' : ''}`}
-            onClick={() => setActiveTab('REQUEST')}
-          >
-            <FileEdit size={16} />
-            <span>1. REQUEST</span>
-          </button>
+        {/* 3 Main Navigation Tabs (Horizontally scrollable on mobile) */}
+        <div className="header-nav-scroll-wrapper">
+          <nav className="header-nav">
+            <button
+              type="button"
+              className={`nav-tab-btn ${activeTab === 'REQUEST' ? 'active' : ''}`}
+              onClick={() => setActiveTab('REQUEST')}
+            >
+              <FileEdit size={15} />
+              <span>1. REQUEST</span>
+            </button>
 
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'RETURN' ? 'active' : ''}`}
-            onClick={() => setActiveTab('RETURN')}
-          >
-            <RotateCcw size={16} />
-            <span>2. RETURN</span>
-            {activeInUseCount > 0 && (
-              <span className="tab-pill-badge">{activeInUseCount}</span>
-            )}
-          </button>
+            <button
+              type="button"
+              className={`nav-tab-btn ${activeTab === 'RETURN' ? 'active' : ''}`}
+              onClick={() => setActiveTab('RETURN')}
+            >
+              <RotateCcw size={15} />
+              <span>2. RETURN</span>
+              {activeInUseCount > 0 && (
+                <span className="tab-pill-badge">{activeInUseCount}</span>
+              )}
+            </button>
 
-          <button
-            type="button"
-            className={`nav-tab-btn ${activeTab === 'LECTURER' ? 'active' : ''}`}
-            onClick={() => setActiveTab('LECTURER')}
-          >
-            <UserCheck size={16} />
-            <span>3. LECTURER</span>
-            {pendingRequestsCount > 0 && (
-              <span className="tab-pill-badge amber">{pendingRequestsCount}</span>
-            )}
-          </button>
-        </nav>
+            <button
+              type="button"
+              className={`nav-tab-btn ${activeTab === 'LECTURER' ? 'active' : ''}`}
+              onClick={() => setActiveTab('LECTURER')}
+            >
+              <UserCheck size={15} />
+              <span>3. LECTURER</span>
+              {pendingRequestsCount > 0 && (
+                <span className="tab-pill-badge amber">{pendingRequestsCount}</span>
+              )}
+            </button>
+          </nav>
+        </div>
 
         {/* Right Actions: Room Selector & Reset */}
         <div className="header-actions">
@@ -91,7 +93,7 @@ export const Navbar: React.FC = () => {
             className="action-icon-btn"
             title="Reset Demo Data"
           >
-            <RefreshCw size={15} />
+            <RefreshCw size={14} />
           </button>
         </div>
       </div>
